@@ -5508,6 +5508,7 @@ var CHART_CLANS = [
      "frames": [
       {
        "label": "造化三神",
+       "flat": true,
        "members": [
         "amenominakanushi",
         "takamimusuhi",
@@ -5554,17 +5555,6 @@ var CHART_CLANS = [
        ]
       },
       {
-       "label": "イザナミの遺体から生まれた神々",
-       "members": [
-        "kanayamabiko",
-        "kanayamabime",
-        "haniyasuhiko",
-        "haniyasuhime",
-        "mizuhanome",
-        "wakumusuhi"
-       ]
-      },
-      {
        "label": "禊祓の神々",
        "members": [
         "yasomagatsuhi",
@@ -5580,6 +5570,7 @@ var CHART_CLANS = [
        "frames": [
         {
          "label": "綿津見三神",
+         "flat": true,
          "members": [
           "sokotsuwatatsumi",
           "nakatsuwatatsumi",
@@ -5588,6 +5579,7 @@ var CHART_CLANS = [
         },
         {
          "label": "住吉三神",
+         "flat": true,
          "members": [
           "sokotsutsunoo",
           "nakatsutsunoo",
@@ -5598,6 +5590,7 @@ var CHART_CLANS = [
       },
       {
        "label": "三貴神",
+       "flat": true,
        "members": [
         "amaterasu",
         "tsukuyomi",
@@ -5655,6 +5648,19 @@ var CHART_CLANS = [
     }
    ],
    "childFrames": {
+    "izanami": [
+     {
+      "label": "イザナミの遺体から生まれた神々",
+      "members": [
+       "kanayamabiko",
+       "kanayamabime",
+       "haniyasuhiko",
+       "haniyasuhime",
+       "mizuhanome",
+       "wakumusuhi"
+      ]
+     }
+    ],
     "kagutsuchi": [
      {
       "label": "剣の血から生まれた神々",
@@ -5699,6 +5705,7 @@ var CHART_CLANS = [
       "frames": [
        {
         "label": "宗像三女神",
+        "flat": true,
         "members": [
          "takiribime",
          "ichikishimahime",
@@ -5707,6 +5714,7 @@ var CHART_CLANS = [
        },
        {
         "label": "五男神",
+        "flat": true,
         "members": [
          "amenooshihomimi",
          "amenohohi",
@@ -14669,6 +14677,10 @@ function crestSVG(type){
 var SVGNS = "http://www.w3.org/2000/svg";
 var NW = 150, NH = 52, SPG = 30, HGAP = 34, VGAP = 58, ROWGAP = 58;
 var MAXROW = 2450, FRAMEPAD = 12, BLOCKHEAD = 40, BLOCKPAD = 18, BLOCKGAP = 60;
+/* ブロック見出し帯と本体先頭の間の余白。枠は先頭行の28px上まで伸び、ラベルは
+   さらにその上に文字が乗るため、余白がないと先頭枠のラベルが見出し文字と
+   同じ位置に重なって二重に見える（別天津神ブロックの造化三神など）。 */
+var HEADROOM = 30;
 var CHIPW = 216, CHIPH = 38, GUT = 18;
 var CLANS = (typeof CHART_CLANS !== "undefined") ? CHART_CLANS : [];
 var clan = null, byId = {}, units = {}, kidsOf = {}, unitOf = {};
@@ -14764,7 +14776,7 @@ function makeFrameDefs(rawDefs, keyBase, scope){
   var out = [];
   (rawDefs || []).forEach(function(d){
     var key = keyBase + ":" + d.label;
-    var def = {key: key, label: d.label, members: d.members || [], scope: scope, chain: null, subtreeCount: 0, frames: []};
+    var def = {key: key, label: d.label, members: d.members || [], scope: scope, chain: null, subtreeCount: 0, frames: [], flat: !!d.flat};
     def.members.forEach(function(mid){ def.subtreeCount += countSubtree(unitOf[mid] || mid); });
     def.frames = makeFrameDefs(d.frames, key, scope);
     out.push(def); frameDefsAll.push(def);
@@ -14834,19 +14846,21 @@ function svgTextWidth(cls, str){
   if (_measureCache[cacheKey] != null) return _measureCache[cacheKey];
   var el = _measureEls[cls];
   if (!el || !el.isConnected){
-    el = document.createElementNS(SVGNS, "text");
-    el.setAttribute("style", "visibility:hidden");
-    if (cls === "chip"){
-      var g = document.createElementNS(SVGNS, "g");
-      g.setAttribute("class", "chip");
-      g.setAttribute("style", "visibility:hidden");
-      el.setAttribute("class", "");
-      g.appendChild(el);
-      document.getElementById("canvas").appendChild(g);
-    } else {
-      el.setAttribute("class", cls);
-      document.getElementById("canvas").appendChild(el);
+    /* 計測用テキストは専用の不可視レイヤーに隔離する。以前は .frame-label 等の
+       実クラスを付けた <text> が canvas 直下に裸で残り、本物のラベルと
+       セレクタ上で混ざっていた（表示はされないが配線対象に混入していた）。 */
+    var layer = document.getElementById("measureLayer");
+    if (!layer){
+      layer = document.createElementNS(SVGNS, "g");
+      layer.setAttribute("id", "measureLayer");
+      layer.setAttribute("style", "visibility:hidden");
+      document.getElementById("canvas").appendChild(layer);
     }
+    el = document.createElementNS(SVGNS, "text");
+    var g = document.createElementNS(SVGNS, "g");
+    g.setAttribute("class", cls);
+    g.appendChild(el);
+    layer.appendChild(g);
     _measureEls[cls] = el;
   }
   el.textContent = str;
@@ -14895,6 +14909,22 @@ function applyFrames(items, defs){
   var flat = flattenDefs(defs, [], []);
   items.forEach(function(it){ it.frames = []; });
   flat.forEach(function(d){ items.forEach(function(it){ if (d.members.indexOf(it.rootId) >= 0) it.frames = d.chain; }); });
+  /* 並び替え：同じ枠のメンバーが離散していると、枠の外接矩形が無関係な人物を
+     大量に呑み込んでしまう（名前順のままだと三貴神の枠に39柱入る等）。
+     所属フレーム（外側→内側の定義順）のまとまりごとに並べ替え、枠をタイトにする。
+     枠なしのアイテムは後ろへ（元の相対順は安定ソートで維持）。 */
+  var defOrder = {};
+  flat.forEach(function(d, i){ defOrder[d.key] = i; });
+  items = items.map(function(it, i){ return {it: it, i: i}; }).sort(function(a, b){
+    var ca = a.it.frames || [], cb = b.it.frames || [];
+    var n = Math.max(ca.length, cb.length);
+    for (var k = 0; k < n; k++){
+      var va = ca[k] != null ? defOrder[ca[k]] : 9999;
+      var vb = cb[k] != null ? defOrder[cb[k]] : 9999;
+      if (va !== vb) return va - vb;
+    }
+    return a.i - b.i;
+  }).map(function(w){ return w.it; });
   var sorted = flat.slice().sort(function(a, b){ return b.chain.length - a.chain.length; });
   var result = items;
   sorted.forEach(function(d){
@@ -14909,13 +14939,34 @@ function applyFrames(items, defs){
   return result;
 }
 function packRows(items, maxW){
-  var rows = [], cur = [], curW = 0;
+  /* 枠のまとまり（最も深い所属フレームが同じ連続区間）は、1行に収まる幅なら
+     行の途中で割らない。割れると枠の外接矩形が隣の行の無関係な人物まで広がる。 */
+  function deepestKey(it){ var f = it.frames || []; return f.length ? f[f.length - 1] : null; }
+  var segs = [], curSeg = [], curKey = null;
   items.forEach(function(it){
-    if (cur.length && curW + HGAP + it.w > maxW){ rows.push({items: cur, w: curW, h: Math.max.apply(null, cur.map(function(i){ return i.h; }))}); cur = []; curW = 0; }
-    if (cur.length) curW += HGAP;
-    curW += it.w; cur.push(it);
+    var k = deepestKey(it);
+    if (curSeg.length && (k === null || k !== curKey)){ segs.push(curSeg); curSeg = []; }
+    curSeg.push(it); curKey = k;
   });
-  if (cur.length) rows.push({items: cur, w: curW, h: Math.max.apply(null, cur.map(function(i){ return i.h; }))});
+  if (curSeg.length) segs.push(curSeg);
+  /* flat 枠の区間は幅が上限を超えても割らない。メンバー本人のカードだけを囲む
+     枠なので、行が割れてカードが複数行に散ると外接矩形が他人を呑み込む
+     （三貴神：須佐之男の箱が幅2446あり、3柱が2行に散って12柱入って見えた）。 */
+  var flatKeys = {};
+  frameDefsAll.forEach(function(d){ if (d.flat) flatKeys[d.key] = 1; });
+  var rows = [], cur = [], curW = 0;
+  function flush(){ if (cur.length){ rows.push({items: cur, w: curW, h: Math.max.apply(null, cur.map(function(i){ return i.h; }))}); cur = []; curW = 0; } }
+  function add(it){ if (cur.length) curW += HGAP; curW += it.w; cur.push(it); }
+  segs.forEach(function(seg){
+    var segW = seg.reduce(function(a, i){ return a + i.w; }, 0) + HGAP * (seg.length - 1);
+    if (seg.length > 1 && (segW <= maxW || flatKeys[deepestKey(seg[0])])){
+      if (cur.length && curW + HGAP + segW > maxW) flush();
+      seg.forEach(add);
+    } else {
+      seg.forEach(function(it){ if (cur.length && curW + HGAP + it.w > maxW) flush(); add(it); });
+    }
+  });
+  flush();
   return rows;
 }
 function measureUnit(uid){
@@ -14979,19 +15030,35 @@ function computeFrameRects(){
   frameRects = [];
   frameDefsAll.forEach(function(d){
     if (collapsedGroups[d.key]) return;
-    var rects = (itemRects[d.scope] || []).filter(function(r){ return d.members.indexOf(r.rootId) >= 0; });
-    if (!rects.length) return;
-    var x1 = Math.min.apply(null, rects.map(function(r){ return r.x; })) - FRAMEPAD;
-    var y1 = Math.min.apply(null, rects.map(function(r){ return r.y; })) - FRAMEPAD - 16;
-    var x2 = Math.max.apply(null, rects.map(function(r){ return r.x + r.w; })) + FRAMEPAD;
-    var y2 = Math.max.apply(null, rects.map(function(r){ return r.y + r.h; })) + FRAMEPAD;
+    var x1, y1, x2, y2;
+    if (d.flat){
+      /* flat 枠：メンバー本人のカードだけを囲む（子孫の行は含めない）。
+         数詞入りの名称（造化三神・三貴神など）で、ユニットの箱ごと囲むと
+         子孫まで入って名前と中身が食い違うための指定。 */
+      var pts = d.members.map(function(mid){ return pos[mid]; }).filter(function(p){ return !!p; });
+      if (!pts.length) return;
+      x1 = Math.min.apply(null, pts.map(function(p){ return p.x; })) - FRAMEPAD;
+      y1 = Math.min.apply(null, pts.map(function(p){ return p.y; })) - FRAMEPAD - 16;
+      x2 = Math.max.apply(null, pts.map(function(p){ return p.x + NW; })) + FRAMEPAD;
+      y2 = Math.max.apply(null, pts.map(function(p){ return p.y + NH; })) + FRAMEPAD;
+    } else {
+      var rects = (itemRects[d.scope] || []).filter(function(r){ return d.members.indexOf(r.rootId) >= 0; });
+      if (!rects.length) return;
+      x1 = Math.min.apply(null, rects.map(function(r){ return r.x; })) - FRAMEPAD;
+      y1 = Math.min.apply(null, rects.map(function(r){ return r.y; })) - FRAMEPAD - 16;
+      x2 = Math.max.apply(null, rects.map(function(r){ return r.x + r.w; })) + FRAMEPAD;
+      y2 = Math.max.apply(null, rects.map(function(r){ return r.y + r.h; })) + FRAMEPAD;
+    }
     frameRects.push({key: d.key, label: d.label, x: x1, y: y1, w: x2 - x1, h: y2 - y1, depth: d.chain ? d.chain.length : 1});
   });
-  /* 入れ子の外側枠は内側枠を包むよう広げる */
+  /* 入れ子の外側枠は内側枠を包むよう広げる。
+     キーは ":" 区切りで連結される（makeFrameDefs）ので、子孫判定も ":" で見る。
+     以前は "/" で判定していたため一度も発動せず、外側と内側のラベルが
+     同じ位置に重なって描かれていた（誓約で生まれた神々／五男神など）。 */
   frameRects.forEach(function(a){
     frameRects.forEach(function(b){
-      if (a !== b && b.key.indexOf(a.key + "/") === 0){
-        var x1 = Math.min(a.x, b.x - 6), y1 = Math.min(a.y, b.y - 20), x2 = Math.max(a.x + a.w, b.x + b.w + 6), y2 = Math.max(a.y + a.h, b.y + b.h + 6);
+      if (a !== b && b.key.indexOf(a.key + ":") === 0){
+        var x1 = Math.min(a.x, b.x - 8), y1 = Math.min(a.y, b.y - 26), x2 = Math.max(a.x + a.w, b.x + b.w + 8), y2 = Math.max(a.y + a.h, b.y + b.h + 8);
         a.x = x1; a.y = y1; a.w = x2 - x1; a.h = y2 - y1;
       }
     });
@@ -15009,15 +15076,21 @@ function layoutAll(){
       else { var roots = (b.forest === "__leftover__") ? leftoverRoots(b.id) : (b.forest || []); body = {kind: "forest", f: measureForest(roots, blockFrameDefs[b.id])}; body.w = body.f.w; body.h = body.f.h; }
     }
     var bw = (body ? body.w : 420) + BLOCKPAD * 2;
-    var bh = BLOCKHEAD + (body ? body.h + BLOCKPAD : 30);
+    /* 見出し（副題つき）と右端のトグルが重ならないよう、ブロック幅の最小値を
+       両テキストの実測幅から決める（宇宙の外ブロックは本体幅186pxしかなく、
+       見出しと「1名　閉じる」が重なっていた）。 */
+    var headNeed = Math.ceil(svgTextWidth("block-label", b.label + (b.sub ? "　" + b.sub : ""))) +
+      Math.ceil(svgTextWidth("block-toggle", (blockCounts[b.id] || 0) + "名　閉じる ▾")) + 14 + 14 + 24;
+    if (headNeed > bw) bw = headNeed;
+    var bh = BLOCKHEAD + (body ? HEADROOM + body.h + BLOCKPAD : 30);
     blockBoxes.push({def: b, x: 0, y: y, w: bw, h: bh, body: body});
     maxW = Math.max(maxW, bw);
     y += bh + BLOCKGAP;
   });
   blockBoxes.forEach(function(bb){
     if (!bb.body) return;
-    if (bb.body.kind === "tree") placeUnit(bb.def.tree, BLOCKPAD, bb.y + BLOCKHEAD);
-    else placeItems(bb.body.f.rows, BLOCKPAD, bb.y + BLOCKHEAD, bb.def.id, "ff:" + bb.def.id);
+    if (bb.body.kind === "tree") placeUnit(bb.def.tree, BLOCKPAD, bb.y + BLOCKHEAD + HEADROOM);
+    else placeItems(bb.body.f.rows, BLOCKPAD, bb.y + BLOCKHEAD + HEADROOM, bb.def.id, "ff:" + bb.def.id);
   });
   computeFrameRects();
   contentBox = {minX: -20, minY: -20, maxX: maxW + 20, maxY: y - BLOCKGAP + 20};
@@ -15118,7 +15191,7 @@ function render(){
   /* クリック配線 */
   document.querySelectorAll("#nodes .node").forEach(function(n){ n.addEventListener("click", function(ev){ ev.stopPropagation(); selectPerson(n.dataset.id); }); });
   document.querySelectorAll(".block-head").forEach(function(h){ h.addEventListener("click", function(){ var b = h.dataset.block; if (collapsedBlocks[b]) delete collapsedBlocks[b]; else collapsedBlocks[b] = 1; layoutAll(); render(); }); });
-  document.querySelectorAll(".frame-label").forEach(function(h){ h.addEventListener("click", function(){ collapsedGroups[h.dataset.frame] = 1; layoutAll(); render(); }); });
+  document.querySelectorAll("#ui .frame-label").forEach(function(h){ h.addEventListener("click", function(){ collapsedGroups[h.dataset.frame] = 1; layoutAll(); render(); }); });
   document.querySelectorAll(".chip[data-portal]").forEach(function(h){ h.addEventListener("click", function(){ gotoPortal(h.dataset.portal, h.dataset.root || null); }); });
   document.querySelectorAll(".chip[data-group]").forEach(function(h){ h.addEventListener("click", function(){ delete collapsedGroups[h.dataset.group]; layoutAll(); render(); flashFrame(h.dataset.group); }); });
 }
