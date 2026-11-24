@@ -222,12 +222,22 @@ footer{
   #stage{height:62vh; height:62dvh; min-height:420px; flex:none}
   aside{width:auto; border-left:0; border-top:1px solid var(--panel-line); max-height:none}
 }
-/* ===== 共通の読み物エリア（家系ごとのテーマ切替の影響を受けない固定配色） ===== */
+/* ===== 共通の読み物エリア =====
+   導入文（.common-intro）は選択中の家系のテーマ色に連動する（作者要望 2026-11-25）。
+   下部の読み物（.common-reading）は家系によらない固定配色のまま。 */
 .common-intro,.common-reading{
-  background:#fdfcf7; color:#2e2c26;
   font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic UI","Yu Gothic",Meiryo,sans-serif;
 }
-.common-intro{border-bottom:1px solid #ddd6c2}
+.common-reading{background:#fdfcf7; color:#2e2c26}
+.common-intro{
+  /* 家系の地色グラデーション（--bg）の上に、基調色の淡い膜（--accent-soft）を重ねる。
+     明るい家では淡く色づいた紙面に、暗い家（賀茂・平家・ギリシャ等）では暗い地に
+     家の色が差した面になり、文字は家系の文字色（--ink）で可読性を保つ。 */
+  background:linear-gradient(var(--accent-soft), var(--accent-soft)), var(--bg);
+  color:var(--ink);
+  border-bottom:1px solid var(--panel-line);
+}
+.common-intro a{color:var(--accent)}
 .common-intro .ci-in{max-width:860px; margin:0 auto; padding:26px 20px 8px; font-size:14px; line-height:2; }
 .common-intro p+p{margin-top:12px}
 .common-reading{border-top:1px solid #ddd6c2}
