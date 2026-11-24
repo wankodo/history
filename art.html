@@ -759,8 +759,15 @@ return '<div class="work-block"><div class="w-label">' + esc(label) + '</div>'
 }
 function row(label, content){ return '<div class="row"><dt>' + esc(label) + '</dt><dd>' + val(content) + '</dd></div>'; }
 
+/* 死亡日データが無い人の扱い：1900年以降生まれは「存命」とみなし、
+それ以前・生年不明は「不明」（没年不詳）とする */
+function isLiving(a){
+if(a.death) return false;
+return a.bYear !== null && a.bYear !== undefined && a.bYear >= 1900;
+}
+
 function openDetail(a, pushHash){
-const living = !a.death;
+const living = isLiving(a);
 const lateLabel = living ? "代表作（近作）" : "代表作（晩年）";
 const lateMissing = living
 ? "パブリックドメインの作品データが不足しているため、近作が見つけられていません。"
