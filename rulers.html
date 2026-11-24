@@ -508,6 +508,35 @@ function jumpToRuler(r){
   if (map) map.flyTo([r.lat, r.lng], Math.max(map.getZoom(), 3), { duration: 0.8 });
   document.getElementById("detailCard").scrollIntoView({ behavior: "smooth", block: "center" });
 }
+var ANDY_EGG = { name: "andy", nameEn: "わんこ堂", title: "サイト管理者", kind: "カメラマン", polity: "日本国Webサイト内", start: 2026, end: null, lat: 35.6762, lng: 139.6503, img: "andy-portrait.jpg" };
+var EGG_QUERIES = ["このサイト", "このウェブページ", "このwebページ", "このページ", "この資料", "このホームページ", "このウェブサイト", "このサイトについて", "このページについて", "この資料について"];
+function selectAndyEgg(){
+  state.selected = ANDY_EGG;
+  document.getElementById("detailBody").innerHTML =
+    '<div class="detail"><div class="dface"><img src="andy-portrait.jpg" alt="andyの肖像"></div><div class="dinfo">' +
+    '<div class="dname">andy<span class="den">わんこ堂</span></div>' +
+    '<div class="drow"><b>肩書き：</b>サイト管理者</div>' +
+    '<div class="drow"><b>分類：</b>カメラマン</div>' +
+    '<div class="drow"><b>国・王朝：</b>日本国Webサイト内</div>' +
+    '<div class="drow"><b>在位期間：</b>2026/11/24〜</div>' +
+    '<div class="drow"><b>出身：</b>群馬県前橋市</div>' +
+    '<div class="drow"><b>誕生日：</b>1990/08/22</div>' +
+    '<div class="drow"><b>家族構成：</b>秘匿</div>' +
+    '<div class="drow"><b>宗教：</b>秘匿</div>' +
+    '</div></div>';
+  renderMarkers();
+  if (map && markerLayer) {
+    var mk = L.marker([ANDY_EGG.lat, ANDY_EGG.lng], { icon: pinIcon(ANDY_EGG, true), zIndexOffset: 1000, keyboard: false });
+    mk.on("click", function(){ selectAndyEgg(); });
+    mk.addTo(markerLayer);
+  }
+}
+function jumpToAndyEgg(){
+  applyYear(2026);
+  selectAndyEgg();
+  if (map) map.flyTo([ANDY_EGG.lat, ANDY_EGG.lng], Math.max(map.getZoom(), 3), { duration: 0.8 });
+  document.getElementById("detailCard").scrollIntoView({ behavior: "smooth", block: "center" });
+}
 function doSearch(){
   var input = document.getElementById("searchInput");
   var q = normStr(input.value);
@@ -515,6 +544,21 @@ function doSearch(){
   var note = document.getElementById("searchNote");
   document.getElementById("searchClear").style.display = q ? "" : "none";
   if (!q){ box.style.display = "none"; box.innerHTML = ""; note.style.display = "none"; return; }
+  if (EGG_QUERIES.indexOf(q) >= 0) {
+    box.innerHTML = "";
+    note.style.display = "block";
+    note.textContent = "1件見つかりました。タップすると、その人の時代へ移動して詳細を表示します。";
+    box.style.display = "grid";
+    var eb = document.createElement("button");
+    eb.type = "button";
+    eb.className = "ruler-item";
+    eb.innerHTML = '<span class="ri-name"></span><br><span class="ri-sub"></span>';
+    eb.querySelector(".ri-name").textContent = "andy（わんこ堂）";
+    eb.querySelector(".ri-sub").textContent = "日本国Webサイト内（2026/11/24〜）｜サイト管理者";
+    eb.addEventListener("click", function(){ jumpToAndyEgg(); });
+    box.appendChild(eb);
+    return;
+  }
   var hits = RULERS.filter(function(r){
     return normStr(r.name).indexOf(q) >= 0 || normStr(r.nameEn).indexOf(q) >= 0 ||
            normStr(r.polity).indexOf(q) >= 0 || normStr(r.house).indexOf(q) >= 0 ||
