@@ -45,6 +45,22 @@ religion.html 専用デザイン（共通CSS・DEF/HUDテーマは使わない�
 --serif:"Hiragino Mincho ProN","Hiragino Mincho Pro","YuMincho","Yu Mincho","MS PMincho",serif;
 --sans:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic UI","Yu Gothic",sans-serif;
 }
+/* 明暗切替（ダーク）：生成り〜薄墨の地を夜の色に読み替えた配色。
+色相は保ち、金は暗い地で映えるよう明度だけを上げる。
+肖像・作品画像そのものの色には触れない。 */
+html[data-theme="dark"]{
+--paper:#171410;
+--paper-deep:#100e0a;
+--ink:#eae6da;
+--ink-soft:#b6b1a2;
+--ink-faint:#948e7a;
+--line:#2f2b1f;
+--gold:#c2a059;
+}
+/* 切替時は色がふわっと移る（このページの流儀に合わせてゆっくり） */
+*,*::before,*::after{
+transition:background-color .8s ease,border-color .8s ease,color .8s ease,box-shadow .8s ease;
+}
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
 body{
@@ -76,11 +92,36 @@ transition:color .8s ease;
 
 /* ---------- ヘッダー ---------- */
 header{
+position:relative;
 max-width:1080px;
 margin:0 auto;
 padding:64px 32px 0;
 text-align:center;
 }
+/* ---------- 明暗切替トグル ---------- */
+.theme-toggle{
+position:absolute;top:24px;right:32px;
+display:flex;align-items:center;gap:10px;
+background:none;border:none;cursor:pointer;
+font:inherit;color:var(--ink-soft);
+padding:4px 0;
+}
+.theme-toggle:hover{color:var(--gold);}
+.tt-label{font-size:11px;letter-spacing:.26em;}
+.tt-switch{
+width:34px;height:18px;flex:0 0 auto;
+border:1px solid var(--ink-soft);border-radius:999px;
+position:relative;
+}
+.tt-knob{
+position:absolute;top:50%;left:2px;
+transform:translateY(-50%);
+width:12px;height:12px;border-radius:50%;
+background:var(--ink-soft);
+transition:left .6s ease,background-color .8s ease;
+}
+html[data-theme="dark"] .tt-knob{left:18px;background:var(--ink);}
+html[data-theme="dark"] .tt-switch{border-color:var(--ink);}
 header .kicker{
 font-size:11px;
 letter-spacing:.55em;
@@ -223,6 +264,14 @@ background:rgba(255,255,255,.18);
 text-align:center;font-size:11px;letter-spacing:.18em;color:var(--ink-faint);
 padding:10px 0 0;
 }
+/* 地図まわりはダーク時に夜の色へ（陸地・ピンの色はJSの mapPalette が連動） */
+html[data-theme="dark"] .map-frame{background:rgba(0,0,0,.28);}
+html[data-theme="dark"] #map{background:#1a1712;}
+html[data-theme="dark"] .leaflet-container{background:#1a1712;}
+html[data-theme="dark"] .leaflet-bar{border-color:rgba(194,160,89,.45)!important;}
+html[data-theme="dark"] .leaflet-bar a{background:rgba(23,20,16,.95);color:var(--ink-soft);border-bottom-color:var(--line);}
+html[data-theme="dark"] .leaflet-control-attribution{background:rgba(23,20,16,.8)!important;color:var(--ink-faint)!important;}
+html[data-theme="dark"] .leaflet-control-attribution a{color:var(--ink-faint)!important;}
 
 /* ---------- 一覧 ---------- */
 main{
@@ -343,6 +392,12 @@ max-width:min(300px,100%);
 max-height:72vh;
 object-fit:contain;
 }
+/* 肖像プレースホルダ（頭文字）はダーク時に明度を寄せる */
+html[data-theme="dark"] .d-portrait{
+color:rgba(234,230,218,.55);
+border-color:rgba(194,160,89,.45);
+box-shadow:0 0 0 6px var(--paper),0 0 0 7px rgba(194,160,89,.3);
+}
 .d-name{
 font-family:var(--serif);font-weight:400;
 font-size:clamp(28px,5vw,38px);letter-spacing:.24em;text-indent:.24em;
@@ -426,6 +481,7 @@ letter-spacing:.08em;line-height:2.1;
 
 @media (max-width:640px){
 header{padding:44px 20px 0;}
+.theme-toggle{top:14px;right:20px;}
 .sitebar .sb-in{padding:8px 20px;}
 .controls{padding:34px 20px 4px;}
 .map-sec{padding:14px 20px 0;}
@@ -436,6 +492,14 @@ dl.profile .row{gap:14px;}
 dl.profile dt{flex-basis:96px;}
 }
 </style>
+<script>
+/* 明暗切替の保存値を、描画前に反映する（ちらつき防止） */
+try{
+if(localStorage.getItem("religion-theme") === "dark"){
+document.documentElement.setAttribute("data-theme","dark");
+}
+}catch(e){}
+</script>
 <style>
 /* プライバシーポリシー（共通・移動サイトと同一文面/同一流儀） */
 .pp-footer{text-align:center;margin:1rem 0 0;}
@@ -456,6 +520,10 @@ dl.profile dt{flex-basis:96px;}
 <div class="sitebar"><div class="sb-in"><a class="sb-name" href="index.html">歴史系ツール集</a><span class="sb-tool">宗教家名簿</span></div></div>
 
 <header>
+<button type="button" class="theme-toggle" id="themeToggle" aria-pressed="false">
+<span class="tt-label">明度反転</span>
+<span class="tt-switch"><span class="tt-knob"></span></span>
+</button>
 <div class="kicker">Historical Figures</div>
 <h1>宗教家名簿</h1>
 <p class="sub">祈りと歩みを、静かに辿る。</p>
@@ -652,15 +720,30 @@ $("#moreBtn").addEventListener("click", renderBatch);
 
 /* ---------- 地図（Leaflet + 同梱 land.geojson、外部タイルなし） ---------- */
 let map = null, pinLayer = null, landLayer = null;
+/* 地図の色は明暗に連動する（ダーク時は陸地を夜の薄墨に、ピンの金は明るく） */
+function mapPalette(){
+const dark = document.documentElement.getAttribute("data-theme") === "dark";
+return dark
+? { land:"#2b2517", landStroke:"rgba(194,160,89,.45)", dot:"#c2a059", dotStroke:"#8a6f35", pinBorder:"#a08c5a", sel:"#c2a059", label:"#eae6da", halo:"rgba(14,12,9,.9)" }
+: { land:"#ded2b4", landStroke:"rgba(154,125,67,.4)", dot:"#9a7d43", dotStroke:"#7c6530", pinBorder:"#a08c5a", sel:"#7c6530", label:"#26241e", halo:"rgba(245,242,234,.92)" };
+}
 function initMap(){
 map = L.map("map", { worldCopyJump:true, minZoom:2, maxZoom:9, zoomSnap:0.5, renderer:L.canvas() });
 map.fitBounds([[-58,-180],[84,180]]);
 pinLayer = L.layerGroup().addTo(map);
 fetch("land.geojson").then(res => res.json()).then(j => {
-landLayer = L.geoJSON(j, { style:{ fillColor:"#ded2b4", fillOpacity:1, color:"rgba(154,125,67,.4)", weight:0.6 } }).addTo(map);
+const pal = mapPalette();
+landLayer = L.geoJSON(j, { style:{ fillColor:pal.land, fillOpacity:1, color:pal.landStroke, weight:0.6 } }).addTo(map);
 landLayer.bringToBack();
 renderPins();
 }).catch(() => {});
+}
+function restyleMap(){
+if(landLayer){
+const pal = mapPalette();
+landLayer.setStyle({ fillColor:pal.land, fillOpacity:1, color:pal.landStroke, weight:0.6 });
+}
+renderPins();
 }
 /* 肖像ピン表示の条件：年代か検索で絞り込み中で、座標のある表示対象が
 PIN_LIMIT 人以下なら肖像ピン。それ以外（すべての時代・人数超過）はドット。 */
@@ -692,14 +775,15 @@ return url ? url.replace(/([?&]width=)\d+/, "$1100") : null;
 /* 統治者ページの pinIcon を移植。肖像が無い人は頭文字の丸（画像が読めない場合も
 onerror で画像を外して頭文字が見える二重構え） */
 function pinIcon(a, isSel){
+const pal = mapPalette();
 const size = isSel ? 54 : 36;
 const letter = '<span class="pin-letter" style="background:hsl(' + hashHue(a.name) + ',45%,52%)">' + esc(a.name.charAt(0)) + '</span>';
 const img = pinThumb(a.img);
 const face = img ? letter + '<img class="pin-img" src="' + esc(img) + '" alt="" onerror="this.remove()">' : letter;
 const html = '<div class="pin' + (isSel ? ' sel' : '') + '">'
-+ (isSel ? '<span class="pin-pulse" style="border-color:#7c6530"></span>' : '')
-+ '<span class="pin-face" style="border-color:' + (isSel ? '#7c6530' : '#a08c5a') + ';width:' + size + 'px;height:' + size + 'px">' + face + '</span>'
-+ '<span class="pin-name" style="color:' + (isSel ? '#7c6530' : '#26241e') + ';text-shadow:0 0 3px rgba(245,242,234,.92),0 0 3px rgba(245,242,234,.92),0 0 3px rgba(245,242,234,.92)">' + esc(a.name) + '</span></div>';
++ (isSel ? '<span class="pin-pulse" style="border-color:' + pal.sel + '"></span>' : '')
++ '<span class="pin-face" style="border-color:' + (isSel ? pal.sel : pal.pinBorder) + ';width:' + size + 'px;height:' + size + 'px">' + face + '</span>'
++ '<span class="pin-name" style="color:' + (isSel ? pal.sel : pal.label) + ';text-shadow:0 0 3px ' + pal.halo + ',0 0 3px ' + pal.halo + ',0 0 3px ' + pal.halo + '">' + esc(a.name) + '</span></div>';
 return L.divIcon({ className:'pin-wrap', html:html, iconSize:[110,84], iconAnchor:[55, size / 2] });
 }
 function addPin(a, j){
@@ -724,9 +808,10 @@ order.forEach(k => { groups[k].forEach((a, j) => { if(a === currentDetail) selIn
 /* 絞り込みの外から詳細を開いた場合（ハッシュ直リンク等）も選択ピンだけは出す */
 if(currentDetail && hasCoords(currentDetail) && !selInList) addPin(currentDetail, 0);
 } else {
+const pal = mapPalette();
 items.forEach(a => {
 const mk = L.circleMarker([a.birthLat, a.birthLng], {
-radius:5, color:"#7c6530", weight:1, fillColor:"#9a7d43", fillOpacity:0.75
+radius:5, color:pal.dotStroke, weight:1, fillColor:pal.dot, fillOpacity:0.75
 });
 mk.bindTooltip(esc(a.name), { direction:"top", offset:[0,-6] });
 mk.on("click", () => openDetail(a, true));
@@ -871,6 +956,22 @@ eraAll.classList.add("on");
 eraNum.value = "";
 renderList();
 });
+
+/* ---------- 明暗切替トグル ---------- */
+const themeToggle = $("#themeToggle");
+function syncThemeBtn(){
+themeToggle.setAttribute("aria-pressed",
+document.documentElement.getAttribute("data-theme") === "dark" ? "true" : "false");
+}
+themeToggle.addEventListener("click", () => {
+const dark = document.documentElement.getAttribute("data-theme") !== "dark";
+if(dark){ document.documentElement.setAttribute("data-theme","dark"); }
+else { document.documentElement.removeAttribute("data-theme"); }
+try{ localStorage.setItem("religion-theme", dark ? "dark" : "light"); }catch(e){}
+syncThemeBtn();
+restyleMap();
+});
+syncThemeBtn();
 
 initMap();
 renderList();
