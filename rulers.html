@@ -251,6 +251,18 @@ var borderCache = {};
 var imgCache = {};
 var pins = [];
 var rafPending = false;
+var pulsePhase = 0, pulseTimer = null;
+function startPulse(){
+  if (pulseTimer) return;
+  pulseTimer = setInterval(function(){
+    if (!state.selected){ stopPulse(); return; }
+    pulsePhase = (pulsePhase + 0.06) % 1;
+    draw();
+  }, 60);
+}
+function stopPulse(){
+  if (pulseTimer){ clearInterval(pulseTimer); pulseTimer = null; }
+}
 
 function fmtYear(y){
   if (y < 0) return "紀元前" + (-y) + "年";
@@ -390,14 +402,31 @@ function drawPins(g, pal){
       pins.push({ x: cx + dx, y: cy + dy, r: R, ruler: r });
     });
   });
-  function onScreen(p){ return p.x >= -40 && p.x <= g.W + 40 && p.y >= -40 && p.y <= g.H + 40; }
-  pins.forEach(function(p){
-    if (!onScreen(p)) return;
+  function onScreen(p){ return p.x >= -60 && p.x <= g.W + 60 && p.y >= -60 && p.y <= g.H + 60; }
+  function paintPin(p){
     var r = p.ruler;
     var isSel = state.selected === r;
+    var rr = isSel ? p.r * 1.55 : p.r;
+    if (isSel){
+      ctx.save();
+      ctx.globalAlpha = 0.35 * (1 - pulsePhase);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, rr + 3 + pulsePhase * 13, 0, 6.28319);
+      ctx.strokeStyle = pal.sel;
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      ctx.restore();
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, rr + 5, 0, 6.28319);
+      ctx.fillStyle = pal.sel;
+      ctx.globalAlpha = 0.22;
+      ctx.fill();
+      ctx.restore();
+    }
     ctx.save();
     ctx.beginPath();
-    ctx.arc(p.x, p.y, p.r, 0, 6.28319);
+    ctx.arc(p.x, p.y, rr, 0, 6.28319);
     ctx.clip();
     var drawn = false;
     if (r.img){
@@ -405,27 +434,38 @@ function drawPins(g, pal){
       if (im.complete && im.naturalWidth > 0){
         var s = Math.min(im.naturalWidth, im.naturalHeight);
         var sx = (im.naturalWidth - s) / 2, sy = (im.naturalHeight - s) * 0.2;
-        ctx.drawImage(im, sx, sy, s, s, p.x - p.r, p.y - p.r, p.r * 2, p.r * 2);
+        ctx.drawImage(im, sx, sy, s, s, p.x - rr, p.y - rr, rr * 2, rr * 2);
         drawn = true;
       }
     }
     if (!drawn){
       ctx.fillStyle = "hsl(" + hashHue(r.polity + r.name) + ",45%,52%)";
-      ctx.fillRect(p.x - p.r, p.y - p.r, p.r * 2, p.r * 2);
+      ctx.fillRect(p.x - rr, p.y - rr, rr * 2, rr * 2);
       ctx.fillStyle = "#fff";
-      ctx.font = "800 " + Math.round(p.r * 1.05) + "px sans-serif";
+      ctx.font = "800 " + Math.round(rr * 1.05) + "px sans-serif";
       ctx.textAlign = "center"; ctx.textBaseline = "middle";
       ctx.fillText(r.name.charAt(0), p.x, p.y + 1);
     }
     ctx.restore();
+    ctx.save();
+    if (isSel){ ctx.shadowColor = pal.sel; ctx.shadowBlur = 16; }
     ctx.beginPath();
-    ctx.arc(p.x, p.y, p.r, 0, 6.28319);
+    ctx.arc(p.x, p.y, rr, 0, 6.28319);
     ctx.strokeStyle = isSel ? pal.sel : pal.ring;
-    ctx.lineWidth = isSel ? 3.5 : 1.6;
+    ctx.lineWidth = isSel ? 4 : 1.6;
     ctx.stroke();
-  });
+    ctx.restore();
+    p._rr = rr;
+  }
+  var selPin = null;
   pins.forEach(function(p){
     if (!onScreen(p)) return;
+    if (state.selected === p.ruler){ selPin = p; return; }
+    paintPin(p);
+  });
+  if (selPin) paintPin(selPin);
+  pins.forEach(function(p){
+    if (!onScreen(p) || p === selPin) return;
     ctx.font = "600 10.5px 'Hiragino Kaku Gothic ProN',sans-serif";
     ctx.textAlign = "center"; ctx.textBaseline = "top";
     ctx.lineWidth = 3; ctx.strokeStyle = pal.halo;
@@ -434,6 +474,15 @@ function drawPins(g, pal){
     ctx.fillStyle = pal.label;
     ctx.fillText(p.ruler.name, p.x, ly);
   });
+  if (selPin){
+    ctx.font = "800 13px 'Hiragino Kaku Gothic ProN',sans-serif";
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    ctx.lineWidth = 4; ctx.strokeStyle = pal.halo;
+    var sly = selPin.y + (selPin._rr || selPin.r) + 3;
+    ctx.strokeText(selPin.ruler.name, selPin.x, sly);
+    ctx.fillStyle = pal.sel;
+    ctx.fillText(selPin.ruler.name, selPin.x, sly);
+  }
 }
 function esc(s){
   return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
@@ -442,6 +491,7 @@ function esc(s){
 }
 function selectRuler(r){
   state.selected = r;
+  startPulse();
   var face = r.img
     ? '<img src="' + esc(r.img) + '" alt="' + esc(r.name) + 'の肖像">'
     : '<div class="dph" style="background:hsl(' + hashHue(r.polity + r.name) + ',45%,52%)">' + esc(r.name.charAt(0)) + '</div>';
@@ -478,7 +528,7 @@ function renderList(){
     b.querySelector(".ri-sub").textContent = r.polity + "（" + reignText(r) + "）";
     b.addEventListener("click", function(){
       selectRuler(r);
-      document.getElementById("detailCard").scrollIntoView({ behavior: "smooth", block: "nearest" });
+      canvas.scrollIntoView({ behavior: "smooth", block: "center" });
     });
     el.appendChild(b);
   });
@@ -503,6 +553,7 @@ function applyYear(y){
   y = Math.max(-3200, Math.min(2026, Math.round(y)));
   state.year = y;
   state.selected = null;
+  stopPulse();
   document.getElementById("detailBody").innerHTML = '<p class="note">地図のピン、または下の一覧をタップすると、ここに詳細を表示します。</p>';
   document.getElementById("yearInput").value = y;
   document.getElementById("eraSel").value = String(y);
