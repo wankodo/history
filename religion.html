@@ -172,6 +172,31 @@ cursor:pointer;padding:2px 0;
 transition:color .8s ease,border-color .8s ease;
 }
 .era-all.on{color:var(--gold);border-bottom-color:var(--gold);}
+.era-sub{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:4px;}
+.era-num{display:flex;align-items:center;gap:8px;}
+.era-num input{
+font-family:var(--serif);font-size:16px;color:var(--ink);
+background:transparent;border:none;border-bottom:1px solid var(--ink-faint);
+padding:2px 2px 3px;width:6.5em;outline:none;border-radius:0;
+}
+.era-num button{
+font-family:var(--sans);font-size:11px;letter-spacing:.22em;
+background:none;border:none;border-bottom:1px solid transparent;
+color:var(--ink-soft);cursor:pointer;padding:2px 0;
+}
+.era-num button:hover{color:var(--gold);}
+/* ---------- 地図の肖像ピン（統治者ページの .pin を金の意匠に移植） ---------- */
+.pin-wrap{background:none;border:none}
+.pin{position:relative;display:flex;flex-direction:column;align-items:center;width:110px}
+.pin-face{position:relative;border-radius:50%;overflow:hidden;border-style:solid;border-width:2px;flex:none;display:block;box-shadow:0 2px 8px rgba(60,50,20,.35)}
+.pin.sel .pin-face{border-width:3.5px}
+.pin-letter{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:16px}
+.pin.sel .pin-letter{font-size:24px}
+.pin-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.pin-name{margin-top:2px;font-size:10.5px;font-weight:600;white-space:nowrap;line-height:1.25;font-family:var(--sans)}
+.pin.sel .pin-name{font-size:12.5px;font-weight:800}
+.pin-pulse{position:absolute;left:50%;top:27px;width:54px;height:54px;margin:-27px 0 0 -27px;border:3px solid;border-radius:50%;animation:pinPulse 1.6s ease-out infinite;pointer-events:none;z-index:-1}
+@keyframes pinPulse{0%{transform:scale(.6);opacity:.85}100%{transform:scale(1.55);opacity:0}}
 .count{
 text-align:center;
 font-size:11.5px;letter-spacing:.32em;color:var(--ink-faint);
@@ -453,7 +478,10 @@ dl.profile dt{flex-basis:96px;}
 <span class="era-year"><span id="eraYear">すべての時代</span></span>
 </div>
 <input type="range" id="era" min="-600" max="2026" step="1" value="2026">
+<div class="era-sub">
+<span class="era-num"><input type="number" id="eraNum" step="1" placeholder="年を入力" aria-label="年代を数値で入力"><button type="button" id="eraNumBtn">表示</button></span>
 <button type="button" class="era-all on" id="eraAll">すべての時代</button>
+</div>
 </div>
 </div>
 
@@ -634,11 +662,69 @@ landLayer.bringToBack();
 renderPins();
 }).catch(() => {});
 }
+/* 肖像ピン表示の条件：年代か検索で絞り込み中で、座標のある表示対象が
+PIN_LIMIT 人以下なら肖像ピン。それ以外（すべての時代・人数超過）はドット。 */
+const PIN_LIMIT = 600, PIN_SPIRAL = 0.4;
+function hashHue(str){
+let h = 0;
+const s = String(str || "");
+for(let i = 0; i < s.length; i++){ h = (h * 31 + s.charCodeAt(i)) | 0; }
+return ((h % 360) + 360) % 360;
+}
+function hasCoords(a){ return a.birthLat !== null && a.birthLat !== undefined && a.birthLng !== null && a.birthLng !== undefined; }
+function pinMode(){
+if(state.year === null && !state.q) return false;
+let n = 0;
+currentList.forEach(a => { if(hasCoords(a)) n++; });
+return n <= PIN_LIMIT;
+}
+/* 同一座標の重なりを黄金角スパイラルで散らす（統治者ページの pinLatLng を流用し、
+係数だけ 2.0度→0.4度に絞った。出生地ベースでは最大でも数十人規模のため） */
+function pinLatLng(a, j){
+if(!j) return [a.birthLat, a.birthLng];
+const ang = j * 2.399963, dist = PIN_SPIRAL * Math.sqrt(j);
+return [a.birthLat + Math.sin(ang) * dist * 0.7, a.birthLng + Math.cos(ang) * dist];
+}
+/* ピン用に小さいサムネイル幅へ書き換える（元は width=320） */
+function pinThumb(url){
+return url ? url.replace(/([?&]width=)\d+/, "$1100") : null;
+}
+/* 統治者ページの pinIcon を移植。肖像が無い人は頭文字の丸（画像が読めない場合も
+onerror で画像を外して頭文字が見える二重構え） */
+function pinIcon(a, isSel){
+const size = isSel ? 54 : 36;
+const letter = '<span class="pin-letter" style="background:hsl(' + hashHue(a.name) + ',45%,52%)">' + esc(a.name.charAt(0)) + '</span>';
+const img = pinThumb(a.img);
+const face = img ? letter + '<img class="pin-img" src="' + esc(img) + '" alt="" onerror="this.remove()">' : letter;
+const html = '<div class="pin' + (isSel ? ' sel' : '') + '">'
++ (isSel ? '<span class="pin-pulse" style="border-color:#7c6530"></span>' : '')
++ '<span class="pin-face" style="border-color:' + (isSel ? '#7c6530' : '#a08c5a') + ';width:' + size + 'px;height:' + size + 'px">' + face + '</span>'
++ '<span class="pin-name" style="color:' + (isSel ? '#7c6530' : '#26241e') + ';text-shadow:0 0 3px rgba(245,242,234,.92),0 0 3px rgba(245,242,234,.92),0 0 3px rgba(245,242,234,.92)">' + esc(a.name) + '</span></div>';
+return L.divIcon({ className:'pin-wrap', html:html, iconSize:[110,84], iconAnchor:[55, size / 2] });
+}
+function addPin(a, j){
+const isSel = currentDetail === a;
+const mk = L.marker(pinLatLng(a, j), { icon:pinIcon(a, isSel), zIndexOffset:isSel ? 1000 : 0, keyboard:false });
+mk.on("click", () => openDetail(a, true));
+mk.addTo(pinLayer);
+}
 function renderPins(){
 if(!map || !pinLayer) return;
 pinLayer.clearLayers();
-currentList.forEach(a => {
-if(a.birthLat === null || a.birthLat === undefined) return;
+const items = currentList.filter(hasCoords);
+if(pinMode()){
+const groups = {}, order = [];
+items.forEach(a => {
+const k = a.birthLat.toFixed(2) + "," + a.birthLng.toFixed(2);
+if(!groups[k]){ groups[k] = []; order.push(k); }
+groups[k].push(a);
+});
+let selInList = false;
+order.forEach(k => { groups[k].forEach((a, j) => { if(a === currentDetail) selInList = true; addPin(a, j); }); });
+/* 絞り込みの外から詳細を開いた場合（ハッシュ直リンク等）も選択ピンだけは出す */
+if(currentDetail && hasCoords(currentDetail) && !selInList) addPin(currentDetail, 0);
+} else {
+items.forEach(a => {
 const mk = L.circleMarker([a.birthLat, a.birthLng], {
 radius:5, color:"#7c6530", weight:1, fillColor:"#9a7d43", fillOpacity:0.75
 });
@@ -646,6 +732,14 @@ mk.bindTooltip(esc(a.name), { direction:"top", offset:[0,-6] });
 mk.on("click", () => openDetail(a, true));
 mk.addTo(pinLayer);
 });
+if(currentDetail && hasCoords(currentDetail) && items.indexOf(currentDetail) < 0) addPin(currentDetail, 0);
+}
+}
+/* 詳細を開いた人物を「選択中」にし、ピンを最前面ハイライト＋地図を寄せる
+（統治者ページの selectRuler／jumpToRuler の一式に相当。選択中は currentDetail） */
+function selectPerson(a){
+renderPins();
+if(map && hasCoords(a)) map.flyTo([a.birthLat, a.birthLng], Math.max(map.getZoom(), 3), { duration:0.8 });
 }
 
 /* ---------- 詳細描画 ---------- */
@@ -712,12 +806,14 @@ $("#closeBtn").addEventListener("click", closeDetail);
 if(setHash){
 history.replaceState(null, "", "#" + encodeURIComponent(a.name));
 }
+selectPerson(a);
 }
 function closeDetail(){
 $("#overlay").classList.remove("open");
 document.body.style.overflow = "";
 currentDetail = null;
 history.replaceState(null, "", location.pathname + location.search);
+renderPins();
 }
 document.addEventListener("keydown", e => { if(e.key === "Escape") closeDetail(); });
 $("#overlay").addEventListener("click", e => { if(e.target.id === "overlay") closeDetail(); });
@@ -745,16 +841,34 @@ era.min = String(minY);
 era.max = "2026";
 era.value = "2026";
 })();
+const eraNum = $("#eraNum");
+/* 数値入力で年へ直接ジャンプ（統治者ページの applyYear と同じ流儀：
+範囲内に丸めて、スライダー・表示・数値欄を相互に同期させる） */
+function applyEraYear(y){
+if(isNaN(y)) return;
+const min = parseInt(era.min, 10), max = parseInt(era.max, 10);
+y = Math.max(min, Math.min(max, Math.round(y)));
+era.value = y;
+state.year = y;
+eraYear.innerHTML = fmtYear(y) + "<small>この年に生きていた人</small>";
+eraAll.classList.remove("on");
+eraNum.value = y;
+renderList();
+}
 era.addEventListener("input", () => {
 state.year = parseInt(era.value, 10);
 eraYear.innerHTML = fmtYear(state.year) + "<small>この年に生きていた人</small>";
 eraAll.classList.remove("on");
+eraNum.value = state.year;
 renderList();
 });
+$("#eraNumBtn").addEventListener("click", () => applyEraYear(parseInt(eraNum.value, 10)));
+eraNum.addEventListener("keydown", e => { if(e.key === "Enter") applyEraYear(parseInt(eraNum.value, 10)); });
 eraAll.addEventListener("click", () => {
 state.year = null;
 eraYear.textContent = "すべての時代";
 eraAll.classList.add("on");
+eraNum.value = "";
 renderList();
 });
 
