@@ -374,6 +374,31 @@ color:rgba(232,230,225,.6);
 border-color:rgba(232,230,225,.25);
 box-shadow:0 0 0 6px var(--paper),0 0 0 7px rgba(232,230,225,.2);
 }
+/* 肖像が無い人：展示室のキャプション風タイポグラフィ「NO IMAGE」 */
+.d-portrait.noimg{
+flex-direction:column;gap:13px;
+background:linear-gradient(168deg,rgba(28,27,24,.028),rgba(28,27,24,.075));
+}
+.d-portrait.noimg::before,.d-portrait.noimg::after{
+content:"";width:36px;height:1px;background:var(--accent);opacity:.7;
+}
+.d-portrait.noimg .ni-word{
+font-size:17px;font-weight:400;
+letter-spacing:.44em;text-indent:.44em;
+color:var(--ink-soft);white-space:nowrap;
+}
+html[data-theme="dark"] .d-portrait.noimg{
+background:linear-gradient(168deg,rgba(232,230,225,.05),rgba(232,230,225,.1));
+}
+html[data-theme="dark"] .d-portrait.noimg .ni-word{color:rgba(232,230,225,.75);}
+/* 肖像クレジット（詳細パネル、肖像の直下） */
+.d-credit{
+max-width:460px;margin:-14px auto 24px;
+text-align:center;font-size:10.5px;line-height:1.8;
+letter-spacing:.08em;color:var(--ink-faint);
+}
+.d-credit a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--line);}
+.d-credit a:hover{color:var(--accent);border-bottom-color:var(--accent);}
 .d-name{
 font-family:var(--serif);font-weight:400;
 font-size:clamp(28px,5vw,38px);letter-spacing:.22em;text-indent:.22em;
@@ -570,7 +595,7 @@ gtag('config', 'G-QQ4435VBMK');
 </header>
 
 <section class="intro">
-<p>美術の歴史は、教科書の中では「ルネサンス」「印象派」といった時代や会派の名前で区切られて語られることが多い。けれども実際に作品を作っていたのは、一人ひとりの人間である。この名簿は、その一人ひとりに戻って美術史を眺め直すためのページだ。古代エジプトのイムホテプ（紀元前2800年頃）から現代に生きる作家まで、世界各地の画家・彫刻家など2,353人を収録し、生没年、出生地、会派、作品傾向、パトロン、家族関係などを並べている。</p>
+<p>美術の歴史は、教科書の中では「ルネサンス」「印象派」といった時代や会派の名前で区切られて語られることが多い。けれども実際に作品を作っていたのは、一人ひとりの人間である。この名簿は、その一人ひとりに戻って美術史を眺め直すためのページだ。古代エジプトのイムホテプ（紀元前2800年頃）から現代に生きる作家まで、世界各地の画家・彫刻家など2,134人を収録し、生没年、出生地、会派、作品傾向、パトロン、家族関係などを並べている。</p>
 <p>歴史上の人物は、誰も一人では存在しません。美術家ならなおのことです。注文を出すパトロン、同じ工房やサロンで刺激し合う友人、作風を受け継ぐ師弟、支え合う家族。その繋がりが見えたとき、歴史は点の集まりから一本の流れに変わります。このサイトは、歴史上の人物を一人ずつ紹介する名鑑ではなく、人物同士の繋がりを辿るための名鑑です。このページでも、パトロンから統治者名簿へ、友人からこの名簿の別の作家へと、リンクで繋がりをたどれるようにしています。</p>
 <p>並び方は、美術館の展示室を意識している。作品を主役にし、説明は静かに添える。まずは気になる名前や会派から入り、年代スライダーで「その年に生きていたのは誰か」を確かめ、出生地の地図で制作の舞台を思い浮かべる。気になる人物から出発して、繋がりをたどる散歩を楽しんでください。下の検索と年代の操作が、そのまま展示室への入口になっている。</p>
 <p>名鑑の楽しみ方をまとめた解説記事「<a href="guide-art.html">美術家名鑑の楽しみ方</a>」も用意しています。若い頃と晩年の代表作の見比べ方や、パトロンと友人のつながりの辿り方を案内しています。</p>
@@ -615,7 +640,7 @@ gtag('config', 'G-QQ4435VBMK');
 
 <section class="reading">
 <h2>この名簿が集めたもの</h2>
-<p>収録しているのは、絵画や彫刻を中心とする美術家2,353人である。古代の建築や彫刻に関わった人物から、近現代の画家、存命の作家までが含まれ、生年で並べ替えると紀元前2800年頃から2026年までが一続きに連なる。すべての人に共通して用意しているのは、名前（日本語名と英語名）、生没年と出生地・没地、会派、肖像画像への参照、そして日本語版Wikipediaへのリンクである。肖像や作品画像がある人は2,185人、代表作の情報がある人は1,336人で、残りの人については画像や作品データが公開資料で確認できなかったため、無理に補わず、その旨が分かる形で表示している。</p>
+<p>収録しているのは、絵画や彫刻を中心とする美術家2,134人である。古代の建築や彫刻に関わった人物から、近現代の画家、存命の作家までが含まれ、生年で並べ替えると紀元前2800年頃から2026年までが一続きに連なる。すべての人に共通して用意しているのは、名前（日本語名と英語名）、生没年と出生地・没地、会派、肖像画像への参照、そして日本語版Wikipediaへのリンクである。肖像や作品画像がある人は2,041人、代表作の情報がある人は1,309人で、残りの人については画像や作品データが公開資料で確認できなかったため、無理に補わず、その旨が分かる形で表示している。</p>
 <p>会派の欄には、データ上で325種類の呼称が現れる。バロック（93人）、写実主義（71人）、象徴主義（70人）、印象派（69人）、表現主義（66人）などが多いが、これは「その会派が歴史上最も重要だった」という順位ではない。公開資料に会派が明記され、日本語版Wikipediaなどに記事がある人物が集まりやすいという、収集方法による偏りを含んだ数字として読んでほしい。会派は時代のラベルであると同時に、後世の研究者が整理のために付けた名前でもある。一人の作家が複数の会派にまたがることも珍しくなく、この名簿でも複数の会派が併記される場合がある。</p>
 <h2>データの出典と、「不明」をそのまま出す方針</h2>
 <p>この名簿のデータは、Wikidataや日本語版Wikipediaをはじめとする公開資料に基づいて収集・整理したものである。生年月日が「何世紀頃」という粗さでしか伝わっていない古代・中世の人物については、その精度をそのまま表示し、正確な日付であるかのように見せないようにしている。分からない項目は推測で埋めず、「不明」と正直に表示するのがこのサイト全体の方針である。たとえば死因や家族関係は、著名な人物でも記録が残っていないことが多く、空欄を物語で補うことはしていない。</p>
@@ -630,7 +655,7 @@ gtag('config', 'G-QQ4435VBMK');
 <p>最後に限界を挙げておく。この名簿は公開資料に基づくため、資料の多い地域・時代・言語圏の人物に偏りがある。日本語版Wikipediaに記事がない優れた作家や、近年再評価が進んでいる作家は、まだ収録できていない場合がある。生没年についても、古代・中世の人物では伝承や推定に基づく年が含まれ、研究によって見解が分かれることがある。気になる人物については、詳細画面からWikipediaの記事へ進み、出典を確認しながら読むことをおすすめする。この名簿は、美術史を暗記するための一覧ではなく、興味を持った一人の作家について調べ始めるための、静かな入口として作られている。</p>
 </section>
 
-<section class="ai-summary"><h2>このツールについて</h2><p>世界各地の画家・彫刻家など美術家2,353人を収録した名簿です。名前・会派・出生地で検索でき、年代スライダーで「その年に生きていた美術家」を絞り込めます。地図のピンは各人の出生地で、一覧と同じ絞り込みに連動します。詳細では生没年・出生地・会派・作品傾向・パトロン・家族・死因のほか、代表作を「若い頃」と「晩年」（存命の人は「近作」）の2点、制作年とともに表示します。パトロンが統治者名簿に載っている場合は統治者ページへ、友人がこの名簿に載っている場合はその人の詳細へ、それぞれリンクします。処理はブラウザ内で完結し、入力データを外部送信しません。</p></section>
+<section class="ai-summary"><h2>このツールについて</h2><p>世界各地の画家・彫刻家など美術家2,134人を収録した名簿です。名前・会派・出生地で検索でき、年代スライダーで「その年に生きていた美術家」を絞り込めます。地図のピンは各人の出生地で、一覧と同じ絞り込みに連動します。詳細では生没年・出生地・会派・作品傾向・パトロン・家族・死因のほか、代表作を「若い頃」と「晩年」（存命の人は「近作」）の2点、制作年とともに表示します。パトロンが統治者名簿に載っている場合は統治者ページへ、友人がこの名簿に載っている場合はその人の詳細へ、それぞれリンクします。処理はブラウザ内で完結し、入力データを外部送信しません。</p></section>
 
 <footer>
 <p>著作権は andy に帰属します。無断転載を禁止します（リンクは自由です）。埋め込みリンクは動作を保証できないため禁止です。プログラムの複製・転用も禁止します。｜© 2026 andy（わんこ堂）</p>
@@ -785,7 +810,14 @@ const inner = w.img
 ? '<img src="' + esc(w.img) + '" alt="' + esc(w.title) + '" loading="lazy" decoding="async">'
 : '<div class="w-title">' + esc(w.title) + '</div>';
 const credit = (w.img && (w.credit || w.license))
-? '<div class="w-credit">' + esc([w.credit, w.license].filter(Boolean).join("／")) + '</div>' : "";
+? '<div class="w-credit">'
++ (w.credit ? esc(w.credit) : '')
++ (w.credit && w.license ? '／' : '')
++ (w.license
+? (w.lurl ? '<a href="' + esc(w.lurl) + '" target="_blank" rel="noopener" style="color:inherit">' + esc(w.license) + '</a>' : esc(w.license))
+: '')
++ (w.cpage ? '／出典：<a href="' + esc(w.cpage) + '" target="_blank" rel="noopener" style="color:inherit">Wikimedia Commons</a>' : '')
++ '</div>' : "";
 const noimg = (!w.img)
 ? '<div class="w-noimg">パブリックドメインの画像が確認できていないため、画像は掲載していません。</div>' : "";
 return '<div class="work-block"><div class="w-label">' + esc(label) + '</div>'
@@ -831,7 +863,17 @@ $("#detail").innerHTML =
 + '<div class="d-head">'
 + (a.img
 ? '<img class="d-portrait" src="' + esc(a.img) + '" alt="' + esc(a.name) + 'の肖像">'
-: '<div class="d-portrait">' + esc(a.name.charAt(0)) + '</div>')
+: '<div class="d-portrait noimg" role="img" aria-label="肖像なし"><span class="ni-word">NO IMAGE</span></div>')
++ (a.img && a.imgCredit
+? '<div class="d-credit">画像：'
++ (a.imgCredit.artist ? esc(a.imgCredit.artist) + '／' : '')
++ (a.imgCredit.license
+? (a.imgCredit.licenseUrl
+? '<a href="' + esc(a.imgCredit.licenseUrl) + '" target="_blank" rel="noopener">' + esc(a.imgCredit.license) + '</a>'
+: esc(a.imgCredit.license)) + '／'
+: '')
++ '出典：<a href="' + esc(a.imgCredit.page) + '" target="_blank" rel="noopener">Wikimedia Commons</a></div>'
+: '')
 + '<div class="d-name">' + esc(a.name) + '</div>'
 + (a.nameEn ? '<div class="d-en">' + esc(a.nameEn) + '</div>' : '')
 + '<div class="d-life">' + esc(fmtDate(a.birth) || "生年不明") + " – " + (living ? "存命" : esc(fmtDate(a.death) || "没年不明")) + '</div>'
