@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<script>try{var _t=localStorage.getItem("ido_theme_v1");if(_t==="andy"||_t==="kuma")document.documentElement.dataset.theme=_t;}catch(e){}</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>歴史系ツール集（カード背景画像・試作）</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="icon" type="image/png" sizes="512x512" href="favicon.png">
+<link rel="apple-touch-icon" href="favicon.png">
+<meta name="description" content="年代を選ぶと、その時代に世界中で国を治めていた皇帝・王・大統領・首相などを世界地図の上に表示する「世界の歴代の統治者」など、歴史まわりのツールを集めた無料ページです。">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="歴史系ツール集">
+<meta property="og:title" content="歴史系ツール集">
+<meta property="og:description" content="年代を選ぶと、その時代に世界中で国を治めていた皇帝・王・大統領・首相などを世界地図の上に表示する「世界の歴代の統治者」など、歴史まわりのツールを集めた無料ページです。">
+<meta property="og:url" content="https://wankodo.github.io/history/">
+<meta property="og:image" content="https://wankodo.github.io/history/ogp-top.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://wankodo.github.io/history/ogp-top.png">
+<style>
+:root{
+  --navy:#12283f; --navy2:#0b1a2c; --amber:#f2a007; --amber-d:#c77f02;
+  --bg:#f4f2ec; --card:#ffffff; --ink:#1d2733; --mut:#68707c;
+  --line:#ddd6c8; --red:#b03a2e; --green:#1e7d46; --soft:#fdf6e0;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP",sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.6}
+header{background:linear-gradient(135deg,var(--navy2),var(--navy));color:#fff;padding:22px 16px 18px;border-bottom:4px solid var(--amber)}
+header .wrap{max-width:980px;margin:0 auto}
+header h1{margin:0;font-size:24px;letter-spacing:.04em}
+header h1 .accent{color:var(--amber)}
+header p{margin:6px 0 0;font-size:13px;color:#cfd9e4}
+.wrap{max-width:980px;margin:0 auto;padding:0 12px}
+.note{font-size:12.5px;color:var(--mut)}
+.sitebar{background:var(--navy2);border-bottom:2px solid var(--amber)}
+.sitebar .sb-in{max-width:980px;margin:0 auto;padding:7px 12px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.sitebar a{color:#fff;text-decoration:none;font-size:13px}
+.sitebar a:hover{color:var(--amber)}
+.sitebar .sb-name{font-weight:700;letter-spacing:.03em;color:#fff;font-size:13px}
+.searchbox{margin:18px 0 6px}
+.searchbox input{
+  width:100%;padding:16px 18px;font-size:18px;border:2px solid var(--navy);border-radius:12px;background:#fff;color:var(--ink);
+  box-shadow:0 2px 8px rgba(18,40,63,.10);
+}
+.searchbox input:focus{outline:3px solid var(--amber);outline-offset:0;border-color:var(--amber-d)}
+.search-field{position:relative}
+.suggest{
+  position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:30;
+  background:#fff;border:2px solid var(--navy);border-radius:12px;
+  box-shadow:0 8px 24px rgba(18,40,63,.18);
+  max-height:320px;overflow-y:auto;padding:4px;
+}
+.suggest[hidden]{display:none}
+.sug-item{
+  display:flex;align-items:center;gap:8px;min-height:44px;
+  padding:11px 10px;border-radius:8px;text-decoration:none;color:var(--ink);font-size:15px;
+}
+.sug-item:hover,.sug-item:active{background:var(--soft)}
+.sug-item .sug-name{flex:1;line-height:1.4}
+.sug-none{padding:14px 10px;color:var(--mut);font-size:14px;text-align:center}
+.searchinfo{font-size:13px;color:var(--mut);margin:8px 2px 0;min-height:1.4em}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 20px}
+@media(max-width:640px){.cards{grid-template-columns:1fr}}
+.tool-card{
+  display:block;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;
+  box-shadow:0 1px 3px rgba(18,40,63,.06);text-decoration:none;color:var(--ink);
+}
+.tool-card:hover{border-color:var(--amber);box-shadow:0 2px 10px rgba(18,40,63,.13)}
+.tool-card .tc-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tool-card h2{margin:0;font-size:17px;color:var(--navy)}
+.tool-card .tc-cat{font-size:12px;color:var(--mut);margin-top:2px}
+.tool-card p{margin:8px 0 0;font-size:13.5px}
+.badge{display:inline-block;font-size:11.5px;font-weight:700;border-radius:999px;padding:1px 9px;line-height:1.7}
+.badge-money{background:var(--amber);color:#231a00}
+.badge-mob{background:var(--navy);color:#fff}
+.badge-uranai{background:#6d28d9;color:#fff}
+.badge-ins{background:#0f766e;color:#fff}
+.badge-hist{background:#92400e;color:#fff}
+.noresult{
+  display:none;background:var(--card);border:1px solid var(--line);border-radius:10px;
+  padding:22px 16px;margin:14px 0 20px;text-align:center;color:var(--mut);font-size:14.5px;
+}
+footer{margin:26px 0 0;background:var(--navy2);color:#cfd9e4}
+footer .wrap{max-width:980px;margin:0 auto;padding:18px 12px}
+footer .note{color:#9fb0c1}
+footer .credit{margin:8px 0 0;font-size:13px;color:#fff}
+
+/* ===== 試作：カード背景画像 ===== */
+.tool-card{position:relative;overflow:hidden;isolation:isolate;min-height:148px}
+.tool-card.has-bg::before{
+  content:"";position:absolute;inset:0;z-index:-1;
+  background-image:linear-gradient(100deg,var(--card) 24%,color-mix(in srgb,var(--card) 60%,transparent) 60%,color-mix(in srgb,var(--card) 28%,transparent) 100%),var(--bgimg,none);
+  background-size:cover;background-position:center;background-repeat:no-repeat;
+}
+.bg-rulers{--bgimg:url("ogp.png")}
+.bg-guiderulers{--bgimg:url("ogp-top.png")}
+.bg-guideart{--bgimg:url("ogp-top.png")}
+.bg-guidekami{--bgimg:url("ogp-top.png")}
+.tool-card.bg-rulers::before,.tool-card.bg-guiderulers::before{
+  background-image:linear-gradient(100deg,var(--card) 34%,color-mix(in srgb,var(--card) 74%,transparent) 66%,color-mix(in srgb,var(--card) 48%,transparent) 100%),linear-gradient(color-mix(in srgb,var(--card) 34%,transparent),color-mix(in srgb,var(--card) 34%,transparent)),var(--bgimg,none);
+  background-position:center,center,center 32%;
+}
+.tool-card.bg-guideart::before{
+  background-image:linear-gradient(rgba(160,60,49,.15),rgba(160,60,49,.15)),linear-gradient(100deg,var(--card) 34%,color-mix(in srgb,var(--card) 74%,transparent) 66%,color-mix(in srgb,var(--card) 48%,transparent) 100%),linear-gradient(color-mix(in srgb,var(--card) 34%,transparent),color-mix(in srgb,var(--card) 34%,transparent)),url("ogp-top.png");
+  background-position:center,center,center,center 15%;
+}
+.tool-card.bg-guidekami::before{
+  background-image:linear-gradient(rgba(154,125,67,.18),rgba(154,125,67,.18)),linear-gradient(100deg,var(--card) 34%,color-mix(in srgb,var(--card) 74%,transparent) 66%,color-mix(in srgb,var(--card) 48%,transparent) 100%),linear-gradient(color-mix(in srgb,var(--card) 34%,transparent),color-mix(in srgb,var(--card) 34%,transparent)),url("ogp-top.png");
+  background-position:center,center,center,center 85%;
+}
+.bg-art{--bgimg:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20800%20450%27%3E%3Crect%20width%3D%27800%27%20height%3D%27450%27%20fill%3D%27%23f6f1e7%27%2F%3E%3Ccircle%20cx%3D%27640%27%20cy%3D%27120%27%20r%3D%27150%27%20fill%3D%27%23a03c31%27%20opacity%3D%270.20%27%2F%3E%3Ccircle%20cx%3D%27690%27%20cy%3D%27330%27%20r%3D%2790%27%20fill%3D%27%23a03c31%27%20opacity%3D%270.12%27%2F%3E%3Crect%20x%3D%2726%27%20y%3D%2726%27%20width%3D%27748%27%20height%3D%27398%27%20fill%3D%27none%27%20stroke%3D%27%23a03c31%27%20stroke-width%3D%275%27%20opacity%3D%270.55%27%2F%3E%3Crect%20x%3D%2746%27%20y%3D%2746%27%20width%3D%27708%27%20height%3D%27358%27%20fill%3D%27none%27%20stroke%3D%27%23a03c31%27%20stroke-width%3D%272%27%20opacity%3D%270.55%27%2F%3E%3C%2Fsvg%3E")}
+.bg-religion{--bgimg:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20800%20450%27%3E%3Cdefs%3E%3ClinearGradient%20id%3D%27g%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%271%27%20y2%3D%271%27%3E%3Cstop%20offset%3D%270%27%20stop-color%3D%27%23f3ecd9%27%2F%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%23c9c4b8%27%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%27800%27%20height%3D%27450%27%20fill%3D%27url%28%23g%29%27%2F%3E%3Ccircle%20cx%3D%27640%27%20cy%3D%27225%27%20r%3D%27130%27%20fill%3D%27none%27%20stroke%3D%27%239a7d43%27%20stroke-width%3D%2717%27%20stroke-dasharray%3D%27760%2057%27%20transform%3D%27rotate%2838%20640%20225%29%27%20opacity%3D%270.65%27%2F%3E%3Ccircle%20cx%3D%27640%27%20cy%3D%27225%27%20r%3D%2796%27%20fill%3D%27none%27%20stroke%3D%27%239a7d43%27%20stroke-width%3D%273%27%20opacity%3D%270.5%27%2F%3E%3C%2Fsvg%3E")}
+.bg-genealogy{--bgimg:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20800%20450%27%3E%3Crect%20width%3D%27800%27%20height%3D%27450%27%20fill%3D%27%23eef0ea%27%2F%3E%3Cellipse%20cx%3D%27620%27%20cy%3D%27105%27%20rx%3D%2726%27%20ry%3D%2772%27%20fill%3D%27%2327436e%27%20opacity%3D%270.20%27%20transform%3D%27rotate%280%20620%20225%29%27%2F%3E%3Cellipse%20cx%3D%27620%27%20cy%3D%27105%27%20rx%3D%2726%27%20ry%3D%2772%27%20fill%3D%27%2327436e%27%20opacity%3D%270.20%27%20transform%3D%27rotate%2822%20620%20225%29%27%2F%3E%3Cellipse%20cx%3D%27620%27%20cy%3D%27105%27%20rx%3D%2726%27%20ry%3D%2772%27%20fill%3D%27%2327436e%27%20opacity%3D%270.20%27%20transform%3D%27rotate%2845%20620%20225%29%27%2F%3E%3Cellipse%20cx%3D%27620%27%20cy%3D%27105%27%20rx%3D%2726%27%20ry%3D%2772%27%20fill%3D%27%2327436e%27%20opacity%3D%270.20%27%20transform%3D%27rotate%2867%20620%20225%29%27%2F%3E%3Cellipse%20cx%3D%27620%27%20cy%3D%27105%27%20rx%3D%2726%27%20ry%3D%2772%27%20fill%3D%27%2327436e%27%20opacity%3D%270.20%27%20transform%3D%27rotate%2890%20620%20225%29%27%2F%3E%3Cellipse%20cx%3D%27620%27%20cy%3D%27105%27%20rx%3D%2726%27%20ry%3D%2772%27%20fill%3D%27%2327436e%27%20opacity%3D%270.20%27%20transform%3D%27rotate%28112%20620%20225%29%27%2F%3E%3Cellipse%20cx%3D%27620%27%20cy%3D%27105%27%20rx%3D%2726%27%20ry%3D%2772%27%20fill%3D%27%2327436e%27%20opacity%3D%270.20%27%20transform%3D%27rotate%28135%20620%20225%29%27%2F%3E%3Cellipse%20cx%3D%27620%27%20cy%3D%27105%27%20rx%3D%2726%27%20ry%3D%2772%27%20fill%3D%27%2327436e%27%20opacity%3D%270.20%27%20transform%3D%27rotate%28157%20620%20225%29%27%2F%3E%3Cellipse%20cx%3D%27620%27%20cy%3D%27105%27%20rx%3D%2726%27%20ry%3D%2772%27%20fill%3D%27%2327436e%27%20opacity%3D%270.20%27%20transform%3D%27rotate%28180%20620%20225%29%27%2F%3E%3Cellipse%20cx%3D%27620%27%20cy%3D%27105%27%20rx%3D%2726%27%20ry%3D%2772%27%20fill%3D%27%2327436e%27%20opacity%3D%270.20%27%20transform%3D%27rotate%28202%20620%20225%29%27%2F%3E%3Cellipse%20cx%3D%27620%27%20cy%3D%27105%27%20rx%3D%2726%27%20ry%3D%2772%27%20fill%3D%27%2327436e%27%20opacity%3D%270.20%27%20transform%3D%27rotate%28225%20620%20225%29%27%2F%3E%3Cellipse%20cx%3D%27620%27%20cy%3D%27105%27%20rx%3D%2726%27%20ry%3D%2772%27%20fill%3D%27%2327436e%27%20opacity%3D%270.20%27%20transform%3D%27rotate%28247%20620%20225%29%27%2F%3E%3Cellipse%20cx%3D%27620%27%20cy%3D%27105%27%20rx%3D%2726%27%20ry%3D%2772%27%20fill%3D%27%2327436e%27%20opacity%3D%270.20%27%20transform%3D%27rotate%28270%20620%20225%29%27%2F%3E%3Cellipse%20cx%3D%27620%27%20cy%3D%27105%27%20rx%3D%2726%27%20ry%3D%2772%27%20fill%3D%27%2327436e%27%20opacity%3D%270.20%27%20transform%3D%27rotate%28292%20620%20225%29%27%2F%3E%3Cellipse%20cx%3D%27620%27%20cy%3D%27105%27%20rx%3D%2726%27%20ry%3D%2772%27%20fill%3D%27%2327436e%27%20opacity%3D%270.20%27%20transform%3D%27rotate%28315%20620%20225%29%27%2F%3E%3Cellipse%20cx%3D%27620%27%20cy%3D%27105%27%20rx%3D%2726%27%20ry%3D%2772%27%20fill%3D%27%2327436e%27%20opacity%3D%270.20%27%20transform%3D%27rotate%28337%20620%20225%29%27%2F%3E%3Ccircle%20cx%3D%27620%27%20cy%3D%27225%27%20r%3D%2734%27%20fill%3D%27%2327436e%27%20opacity%3D%270.25%27%2F%3E%3Ccircle%20cx%3D%27150%27%20cy%3D%27360%27%20r%3D%2752%27%20fill%3D%27none%27%20stroke%3D%27%23b8860b%27%20stroke-width%3D%274%27%20opacity%3D%270.35%27%2F%3E%3Ccircle%20cx%3D%27150%27%20cy%3D%27360%27%20r%3D%2740%27%20fill%3D%27none%27%20stroke%3D%27%23b8860b%27%20stroke-width%3D%272%27%20opacity%3D%270.35%27%2F%3E%3C%2Fsvg%3E")}
+.proto-note{max-width:980px;margin:10px auto 0;padding:0 12px}
+.proto-note p{background:#fff7d6;border:1px solid #e3cf7a;border-radius:8px;padding:8px 12px;font-size:13px;margin:0}
+html[data-theme="andy"] .proto-note p{background:#0a1e30;color:#d8f1f6;border-color:rgba(110,205,230,.4)}
+</style>
+<style id="hud-theme-style">
+/* ===== DEF/HUD テーマ切替（共通） ===== */
+.ido-theme-switch{position:relative;z-index:1;display:flex;gap:4px;padding:4px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.07);flex:none}
+.ido-theme-switch button{border:0;border-radius:999px;padding:6px 13px;background:transparent;box-shadow:none;color:#cfe2f3;font:inherit;font-size:12.5px;font-weight:800;line-height:1.25;cursor:pointer}
+.ido-theme-switch button[aria-pressed="true"]{background:linear-gradient(180deg,#ffc44d,var(--amber));color:#14273c}
+html[data-theme="andy"] .ido-theme-switch button[aria-pressed="true"]{background:linear-gradient(180deg,#8ff2ff,#46d9ec);color:#03222e;box-shadow:0 0 16px rgba(70,217,236,.55)}
+:root[data-theme="andy"]{color-scheme:dark;--navy:#1d4568;--navy2:#02070d;--amber:#46d9ec;--amber-d:#8ff2ff;--bg:#04090f;--card:#081623;--ink:#d8f1f6;--mut:#a9c9d9;--line:rgba(110,205,230,.32);--red:#ff6b61;--green:#3ddc97;--soft:rgba(70,217,236,.10);--good:#3ddc97;--bad:#ff6b61;--sat:#7cc7ff;--sun:#ff6b61}
+html[data-theme="andy"]{background:#04090f}
+html[data-theme="andy"] body{background:radial-gradient(900px 480px at 85% -120px,rgba(70,217,236,.13),rgba(70,217,236,0) 60%),repeating-linear-gradient(0deg,rgba(140,230,255,.022) 0 1px,transparent 1px 4px),linear-gradient(rgba(110,205,230,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(110,205,230,.045) 1px,transparent 1px),linear-gradient(180deg,#030a12,#04090f);background-size:auto,auto,52px 52px,52px 52px,auto}
+html[data-theme="andy"] a{color:#ffcf4d}
+html[data-theme="andy"] .sitebar a{color:#fff}
+/* 濃色文字（--navy）を担う見出し・数値類は明色に固定 */
+html[data-theme="andy"] :is(.card h2,.card h3,.tool-card h2,.today .word,.today.word,.result .word,.sumcard .val,.sumcard.white.val,.count,.date-line,.plan .pname,.plan.pname,.pname .pn,.prod .pname,.prod h4,.vs h3,.total3 h3,.bar-row .b-lab,.bar-row .bar-head .cat,.penline .amt,.bd-fixed,.stone .sname,.plabel,details summary,.adv-row .a-lab,.cal-title,.compat .ctext,.detail-rk,.detail-word,.dir-cell .d-dir,.dir-cell .d-star,.dnav .dlabel,.fortune-name,.grade,.kv dt,.lp-line .lp b,.person h3,.pos-name,.rank .bt,.read-head .pname,.result-word,.rname,.star-row .s-lab,.star-row .s-name,.sumline b){color:#d8f1f6}
+/* 白・淡色の面は背景と文字色をセットでダークパネル化 */
+html[data-theme="andy"] :is(.suggest,.chip,.plan,.rank li,.dir-cell,.hexbox.sub,.result .action,.checks label,.badges span,.rank-num,.prod .cond,.prod .nodatabox,.chips button,.tabs button,.cal-nav button,.btn-ghost,.btn.ghost,.presets button,.lp-line .lp,button.dbtn,.plan.dim){background:#0a1e30;color:#d8f1f6;border-color:rgba(110,205,230,.32)}
+html[data-theme="andy"] .btn-del{background:#0a1e30;border-color:rgba(110,205,230,.32)}
+html[data-theme="andy"] .sumcard.white{background:#0a1e30;color:#d8f1f6}
+html[data-theme="andy"] .seg button{background:#0a1e30;color:#d8f1f6;border-color:rgba(110,205,230,.32)}
+html[data-theme="andy"] .seg button.active{background:#1d4568;color:#fff}
+html[data-theme="andy"] :is(th,table.anchors th){background:#0d2a42;color:#d8f1f6}
+html[data-theme="andy"] table.cal td{background:#0a1e30;color:#d8f1f6}
+html[data-theme="andy"] table.cal td.empty{background:#060f18;color:#a9c9d9}
+html[data-theme="andy"] tr.total td{background:rgba(70,217,236,.12)}
+html[data-theme="andy"] :is(.bar-track,.bar-row .b-track){background:rgba(110,205,230,.15)}
+html[data-theme="andy"] :is(.warn,.sumcard.alert,.chip.unknown){background:rgba(255,82,82,.13)}
+html[data-theme="andy"] :is(.total3 .plan.win,.vs .side.win){background:rgba(61,220,151,.12)}
+html[data-theme="andy"] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),html[data-theme="andy"] select,html[data-theme="andy"] textarea{background-color:#0a1a29;color:#d8f1f6;border-color:rgba(110,205,230,.42)}
+/* アンバー地に白文字だったバッジ類は濃色文字に */
+html[data-theme="andy"] :is(.badge,.best-b,.birthday-banner,.rank-num.top,.chip.active,button.draw,.mini.kyo,.mini.kichi){color:#03222e}
+html[data-theme="andy"] .rank-num.top{background:var(--amber)}
+/* サイコロの目は白いままにする */
+html[data-theme="andy"] .die{background:#eef3f8;color:#1d2733}
+/* 色付きバッジ変種は白文字に戻す／淡色バッジ変種はダーク化する */
+html[data-theme="andy"] :is(.badge.badge-ins,.badge.badge-uranai,.badge.badge-mob,.badge.badge-hist,.badge.na,.badge.agency){color:#fff}
+html[data-theme="andy"] .badge.mid{background:#6b6557;color:#fff}
+html[data-theme="andy"] .badge.t1{background:rgba(255,82,82,.16);color:#ff9d94;border-color:rgba(255,82,82,.4)}
+html[data-theme="andy"] .badge.t2{background:#0d2a42;color:#d8f1f6;border-color:rgba(110,205,230,.32)}
+html[data-theme="andy"] .badge.t3{background:rgba(61,220,151,.14);color:#3ddc97;border-color:rgba(61,220,151,.4)}
+html[data-theme="andy"] .badges span.best-b{background:var(--amber);color:#03222e}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://wankodo.github.io/history/#website",
+      "url": "https://wankodo.github.io/history/",
+      "name": "歴史系ツール集",
+      "inLanguage": "ja"
+    },
+    {
+      "@type": "WebApplication",
+      "@id": "https://wankodo.github.io/history/#app",
+      "url": "https://wankodo.github.io/history/",
+      "name": "歴史系ツール集",
+      "description": "年代を選ぶと、その時代に世界中で国を治めていた皇帝・王・大統領・首相などを世界地図の上に表示する「世界の歴代の統治者」など、歴史まわりのツールを集めた無料ページです。",
+      "applicationCategory": "EducationApplication",
+      "operatingSystem": "Webブラウザ",
+      "inLanguage": "ja",
+      "isFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "JPY"
+      },
+      "isPartOf": {
+        "@id": "https://wankodo.github.io/history/#website"
+      }
+    }
+  ]
+}
+</script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QQ4435VBMK"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-QQ4435VBMK');
+</script>
+<style>
+/* プライバシーポリシー（共通・移動サイトと同一文面/同一流儀） */
+.pp-footer{text-align:center;margin:1rem 0 0;}
+.pp-link{background:none;border:0;padding:10px 14px;min-height:44px;color:inherit;opacity:.75;font-size:13px;text-decoration:underline;cursor:pointer;}
+.pp-overlay{position:fixed;inset:0;z-index:10001;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(8,18,30,.55);}
+.pp-overlay.open{display:flex;}
+.pp-dialog{width:100%;max-width:640px;max-height:min(86dvh,760px);display:flex;flex-direction:column;overflow:hidden;background:#fff;border:1px solid #d7dee6;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.25);color:#1c2b3a;text-align:left;}
+.pp-scroll{overflow-y:auto;padding:22px 22px 8px;-webkit-overflow-scrolling:touch;}
+.pp-actions{border-top:1px solid #d7dee6;padding:12px 22px 14px;}
+.pp-btn-row{display:flex;gap:10px;}
+.pp-close-btn{flex:1;min-height:48px;border:0;border-radius:9px;cursor:pointer;background:#16324f;color:#fff;font-size:15px;font-weight:700;}
+.privacy-policy h2{font-size:16px;margin:0 0 6px;}
+.privacy-policy p{font-size:13px;color:#42566b;line-height:1.8;}
+</style>
+</head>
+<body>
+<div class="sitebar"><div class="sb-in"><span class="sb-name">歴史系ツール集</span><div class="ido-theme-switch" role="group" aria-label="表示モード切替"><button type="button" data-ido-theme="kuma" aria-pressed="true">DEF</button><button type="button" data-ido-theme="andy" aria-pressed="false">HUD</button></div></div></div>
+<header>
+  <div class="wrap">
+    <h1>歴史系 <span class="accent">ツール集</span></h1>
+    <p>年代を選ぶと、その時代に世界中で国を治めていた皇帝・王・大統領・首相などを世界地図の上に顔写真つきで表示する「世界の歴代の統治者」など、歴史まわりの「その時代、誰が治めていた？」に答えるツールを集めました。どれも無料・登録なしで使えます。</p>
+  </div>
+</header>
+<div class="proto-note"><p>【試作ページ】トップの各カードに、そのツールの特色を表す画像（OGP／家紋モチーフ等）を背景に当てる実験中です。本番のトップページはまだ変更していません。</p></div>
+
+<div class="wrap">
+  <div class="searchbox">
+    <div class="search-field">
+      <input type="search" id="searchBox" placeholder="ツールを検索（例：世界の王、医療保険、タロット）" autocomplete="off">
+      <div class="suggest" id="suggest" hidden></div>
+    </div>
+    <p class="searchinfo" id="searchInfo"></p>
+    <p class="searchinfo">ここに表示されている以外のツールもあります。詳細は検索ボックスから</p>
+  </div>
+
+  <div class="cards" id="cards"></div>
+  <div class="noresult" id="noResult">見つかりませんでした。別の言葉で試してみてください。</div>
+</div>
+
+<section class="ai-summary" style="max-width:760px;margin:22px auto;padding:0 16px;font-size:13px;line-height:1.8;opacity:.78"><h2 style="font-size:14px;margin:0 0 6px">このツールについて</h2><p style="margin:0">年代を選ぶと、その時代に世界中で国を治めていた皇帝・王・大統領・首相などを世界地図の上に表示する「世界の歴代の統治者」など、歴史まわりのツールを集めた無料ページです。 いずれのツールも無料・登録不要で、処理はブラウザ内で完結し、入力データを外部送信しません。</p></section>
+<p style="text-align:center;font-size:0.85em;margin:1.5rem 0 0;">姉妹プロジェクト：<a href="https://wankodo.github.io/ai-connector-recipes/">AI Agent Connector Recipes &amp; Field Notes</a>（AIエージェント向けの連携レシピと試行錯誤の記録）</p>
+<footer>
+  <div class="wrap">
+    <p class="note">本サイトは非公式の個人ツールです。在位期間・国境などの歴史情報は、Wikipediaなどの公開資料に基づく概略です。年代や境界には諸説があり、学術的な正確さを保証するものではありません。</p>
+    <p class="credit">著作権は andy に帰属します。無断転載を禁止します（リンクは自由です）。埋め込みリンクは動作を保証できないため禁止です。プログラムの複製・転用も禁止します。｜© 2026 andy（わんこ堂）</p>
+    <p class="credit">制作：andy（わんこ堂）× 熊八 🐾（Muse Spark）</p>
+  </div>
+  <p class="pp-footer"><button type="button" class="pp-link" data-pp-open>プライバシーポリシー</button></p>
+</footer>
+
+<script>
+var MOB = "https://wankodo.github.io/mobility-simulator/";
+var MONEY = "https://wankodo.github.io/money-tools/";
+var URN = "https://wankodo.github.io/uranai/";
+var INS = "https://wankodo.github.io/insurance/";
+var TOOLS = [
+  { site: "ins", name: "医療保険比較", cat: "医療保険", url: INS + "medical.html",
+    desc: "年齢・性別で医療保険・がん保険19商品の月額保険料を比較します。",
+    keywords: "医療保険 がん保険 保険料 比較" },
+  { site: "ins", name: "自動車保険比較", cat: "自動車保険", url: INS + "car.html",
+    desc: "各社公式の保険料モデルケースを条件で絞り込んで比較します。",
+    keywords: "自動車保険 任意保険 保険料 モデルケース" },
+  { site: "ins", name: "任意継続 vs 国保", cat: "健康保険", url: INS + "continuation.html",
+    desc: "退職後の任意継続と国民健康保険の保険料を比較します。",
+    keywords: "任意継続 国民健康保険 国保 退職" },
+  { site: "ins", name: "社会保険料計算", cat: "社会保険", url: INS + "social.html",
+    desc: "給与と賞与から社会保険料の本人・会社負担を計算します。",
+    keywords: "社会保険料 健康保険 厚生年金 雇用保険" },
+  { site: "ins", name: "フリーランスの社会保険料計算", cat: "社会保険", url: INS + "freelance.html",
+    desc: "フリーランス・個人事業主向けに、国民年金と国民健康保険の保険料をあわせて計算します。",
+    keywords: "フリーランス 個人事業主 国民年金 国民健康保険 国保 社会保険料 計算" },
+  { site: "uranai", name: "タロット占い", cat: "タロット", url: URN + "tarot.html",
+    desc: "今日の1枚引き、3枚引き（過去・現在・未来）とケルト十字（10枚引き）が楽しめます。",
+    keywords: "タロット 占い ワンオラクル 今日の運勢 カード 大アルカナ 正位置 逆位置 ケルト十字 3枚 スリーカード 過去 現在 未来" },
+  { site: "uranai", name: "おみくじ", cat: "神社", url: URN + "omikuji.html",
+    desc: "大吉から凶までの運勢と、今日のひとことが出ます。毎日の運試しに。",
+    keywords: "おみくじ 神社 運勢 大吉 吉 凶 くじ 初詣 お参り 運試し" },
+  { site: "uranai", name: "生年月日占い総合", cat: "誕生日", url: URN + "birthday-matome.html",
+    desc: "生年月日を入れるだけで、数秘術・四柱推命・算命学・九星気学・六星占術・宿曜・マヤ暦・ホロスコープ・星座占いなど14の占いの結果を一覧で表示します。",
+    keywords: "生年月日 占い まとめて 一覧 総合 数秘術 四柱推命 算命学 九星気学 六星占術 宿曜 マヤ暦 ホロスコープ 星座 干支 命卦 風水 誕生石 相性 誕生日" },
+  { site: "uranai", name: "星座占い", cat: "星占い", url: URN + "zodiac.html",
+    desc: "12星座の今日の運勢と、ラッキーアイテム・ラッキーカラーを表示します。",
+    keywords: "星座 星占い 12星座 今日の運勢 ランキング ホロスコープ ラッキーアイテム ラッキーカラー" },
+  { site: "uranai", name: "六曜カレンダー", cat: "暦", url: URN + "rokuyo.html",
+    desc: "今月のカレンダーに六曜（先勝・友引・先負・仏滅・大安・赤口）を表示します。日取りの参考に。",
+    keywords: "六曜 大安 仏滅 友引 先勝 先負 赤口 カレンダー 暦 日取り 結婚式 葬式" },
+  { site: "uranai", name: "易占い", cat: "易", url: URN + "eki.html",
+    desc: "コインを投げて卦を立て、64卦から今日へのメッセージを読みます。",
+    keywords: "易 易経 卦" },
+  { site: "uranai", name: "月齢占い", cat: "月", url: URN + "moon.html",
+    desc: "今日の月齢と月の満ち欠けを表示し、月からの運勢メッセージを伝えます。",
+    keywords: "月齢 満月 新月 月 ムーン" },
+  { site: "uranai", name: "ルーン占い", cat: "ルーン", url: URN + "rune.html",
+    desc: "ルーン文字を1枚引いて、北欧の神話からのメッセージを受け取ります。",
+    keywords: "ルーン 北欧" },
+  { site: "uranai", name: "血液型占い", cat: "血液型", url: URN + "blood.html",
+    desc: "血液型ごとに今日の運勢をランキング形式で表示します。",
+    keywords: "血液型 A型 B型 O型 AB型" },
+  { site: "uranai", name: "夢占い", cat: "夢", url: URN + "dream.html",
+    desc: "見た夢に出てきたキーワードから、夢の意味を検索できます。",
+    keywords: "夢 意味 キーワード 夢診断" },
+  { site: "uranai", name: "姓名判断", cat: "姓名", url: URN + "seimei.html",
+    desc: "名前の画数から五格と吉凶を診断します。",
+    keywords: "姓名判断 画数 五格 名前占い" },
+  { site: "uranai", name: "携帯番号占い", cat: "番号", url: URN + "phone.html",
+    desc: "携帯番号の下4桁の合計から運勢を診断します。",
+    keywords: "携帯番号 番号占い 数字" },
+  { site: "uranai", name: "トランプ占い", cat: "トランプ", url: URN + "playingcards.html",
+    desc: "52枚のトランプから今日の1枚を引きます。",
+    keywords: "トランプ カード占い" },
+  { site: "uranai", name: "ワンオラクル", cat: "オラクル", url: URN + "oracle.html",
+    desc: "今日の1枚のオラクルカードを引きます。",
+    keywords: "オラクル メッセージ カード" },
+  { site: "uranai", name: "サイコロ占い", cat: "サイコロ", url: URN + "dice.html",
+    desc: "サイコロ3個の合計で今日の運勢を占います。",
+    keywords: "サイコロ ダイス" },
+  { site: "uranai", name: "エンジェルナンバー", cat: "数字", url: URN + "angel.html",
+    desc: "今日のエンジェルナンバーと、気になる数字の意味を表示します。",
+    keywords: "エンジェルナンバー 数字 ゾロ目" },
+  { site: "uranai", name: "水晶占い", cat: "水晶", url: URN + "crystal.html",
+    desc: "水晶玉に映る今日の情景とメッセージを占います。",
+    keywords: "水晶 クリスタル" },
+  { site: "uranai", name: "花占い", cat: "花", url: URN + "hana.html",
+    desc: "花びらを1枚ずつちぎって占う、昔ながらの花占いです。",
+    keywords: "花占い 好き嫌い" },
+  { site: "uranai", name: "ペンデュラム占い", cat: "ペンデュラム", url: URN + "pendulum.html",
+    desc: "振り子に二択の質問を問いかける占いです。",
+    keywords: "ペンデュラム ダウジング 二択" },
+  { site: "money", name: "帳簿ツール（確定申告補助）", cat: "税金・申告", url: MONEY + "bookkeeping.html",
+    desc: "収入と支出を入れるだけで、複式簿記の帳簿と、確定申告への転記ガイドが作れます。",
+    keywords: "確定申告 青色申告 白色申告 帳簿 簿記 複式簿記 経費 売上 仕訳 決算書 収支内訳書 個人事業主 フリーランス 税金 所得税 会計" },
+  { site: "money", name: "奨学金返済シミュレーター", cat: "教育・ローン", url: MONEY + "scholarship.html",
+    desc: "借りる前に、毎月の返還額・返還総額・利息・完済時の年齢が分かります。返済中の見直しにも使えます。",
+    keywords: "奨学金 学費 学生 借金 返済 JASSO 日本学生支援機構 ローン 利息 大学 専門学校 進学 返還" },
+  { site: "money", name: "見積書・請求書・領収書ツール", cat: "書類作成", url: MONEY + "invoice.html",
+    desc: "見積書・請求書・領収書を作って、そのままPDFで保存できます。源泉徴収と消費税は自動計算です。",
+    keywords: "見積書 請求書 領収書 PDF 源泉徴収 消費税 インボイス 作成 フリーランス 個人事業主" },
+  { site: "money", name: "帳簿ツール（法人用・法人税申告補助）", cat: "税金・申告", url: MONEY + "bookkeeping-corp.html",
+    desc: "入出金を入力するだけで、法人の複式簿記の帳簿と、法人税申告書（別表）への転記ガイドが作れます。",
+    keywords: "法人税 申告 別表 帳簿 簿記 複式簿記 法人 決算 仕訳 会社 経費" },
+  { site: "money", name: "携帯料金比較", cat: "暮らし", url: MONEY + "mobile.html",
+    desc: "データ使用量と「やりたいこと」のチェックで、各社の携帯料金プランを通常月額（税込）で比較します。",
+    keywords: "携帯 スマホ 料金 プラン 比較 格安SIM 月額 乗り換え" },
+  { site: "money", name: "インターネット料金比較", cat: "暮らし", url: MONEY + "internet.html",
+    desc: "住居タイプと「お家でやりたいこと」のチェックで、自宅のインターネット料金を比較します。セット割の参考額も表示します。",
+    keywords: "インターネット 光回線 プロバイダ 料金 比較 自宅 回線 セット割" },
+  { site: "money", name: "ガス代 比較・試算", cat: "暮らし", url: MONEY + "gas.html",
+    desc: "月のガス使用量を入れるだけで、大手都市ガス会社の月額を安い順に比較。LPガスの目安試算つきです。",
+    keywords: "ガス代 都市ガス LPガス プロパンガス 料金 比較 使用量 光熱費" },
+  { site: "money", name: "電気代 比較・試算", cat: "暮らし", url: MONEY + "denki.html",
+    desc: "契約アンペアと月の使用量を入れるだけで、大手電力会社の従量電灯プランの月額を安い順に比較します。",
+    keywords: "電気代 電力会社 従量電灯 料金 比較 使用量 アンペア 光熱費" },
+  { site: "money", name: "水道代 比較・試算", cat: "暮らし", url: MONEY + "suido.html",
+    desc: "口径と月の使用量を入れるだけで、全国20都市の水道代（下水道使用料込み）を安い順に比較します。",
+    keywords: "水道代 水道料金 下水道 料金 比較 使用量 光熱費" },
+  { site: "mob", name: "タイムズカー料金シミュレーター", cat: "車", url: MOB + "timescar.html",
+    desc: "カーシェアの利用料金を、利用時間と走行距離から試算します。",
+    keywords: "カーシェア シェアカー タイムズ レンタカー 車 料金 ナイトパック 距離料金" },
+  { site: "mob", name: "高速道路料金シミュレーター", cat: "車", url: MOB + "highway.html",
+    desc: "高速道路の料金を、IC間・車種・ETC割引から計算します。",
+    keywords: "高速 高速道路 ETC ドライブ インターチェンジ IC 有料道路 深夜割引 休日割引 NEXCO ネクスコ" },
+  { site: "mob", name: "電車・新幹線料金シミュレーター", cat: "電車", url: MOB + "train.html",
+    desc: "電車と新幹線の運賃・特急料金を、路線と駅から調べます。",
+    keywords: "電車 鉄道 新幹線 運賃 特急 JR 私鉄 地下鉄 乗換 料金 切符" },
+  { site: "mob", name: "ガソリン代計算", cat: "車", url: MOB + "gasoline.html",
+    desc: "走る距離と燃費から、ガソリン代を計算します。",
+    keywords: "ガソリン 燃費 給油 燃料費 車 ドライブ 通勤 レギュラー ハイオク 軽油" },
+  { site: "mob", name: "EV電気代計算", cat: "車", url: MOB + "ev.html",
+    desc: "電気自動車の充電にかかる電気代を計算します。",
+    keywords: "EV 電気自動車 充電 電気代 車 電費" },
+  { site: "mob", name: "駐車場料金計算", cat: "車", url: MOB + "parking.html",
+    desc: "駐車場の料金体系から、停めた時間分の料金を計算します。",
+    keywords: "駐車場 パーキング コインパーキング 車 料金 最大料金 月極" },
+  { site: "mob", name: "タクシー料金計算", cat: "車", url: MOB + "taxi.html",
+    desc: "距離と時間から、タクシー運賃の目安を計算します。",
+    keywords: "タクシー 運賃 初乗り 深夜 迎車 料金 距離" },
+  { site: "mob", name: "定期代お得度チェック", cat: "電車", url: MOB + "pass.html",
+    desc: "定期券を買うのと都度払いの、どちらが得かを比べます。",
+    keywords: "定期 定期券 通勤 通学 電車 お得 回数券 運賃" },
+  { site: "mob", name: "マイカー維持費 vs カーシェア比較", cat: "車", url: MOB + "owncar.html",
+    desc: "マイカーの年間維持費と、カーシェアの料金を比較します。",
+    keywords: "マイカー 維持費 車検 自動車税 保険 カーシェア 比較 車 所有" },
+  { site: "money", name: "引っ越し費用の目安", cat: "暮らし", url: MONEY + "moving.html",
+    desc: "荷物量と移動距離から、引っ越し費用の目安を出します。",
+    keywords: "引っ越し 引越し 見積もり 単身 家族 荷物 転居" },
+  { site: "mob", name: "レンタカー料金比較", cat: "車", url: MOB + "rental.html",
+    desc: "レンタカー各社の料金を、車種クラスと割引から比べます。",
+    keywords: "レンタカー レンタル 車 旅行 割引 料金 比較 トヨタ ニッポン オリックス タイムズ" },
+  { site: "mob", name: "免許更新の予約空き集約", cat: "車", url: MOB + "menkyo.html",
+    desc: "東京の運転免許更新の予約空きを、全17会場ぶん1つの表にまとめて確認できます。",
+    keywords: "免許更新 予約 空き 運転免許 警視庁 試験場 更新センター 空き状況" }
+,
+  { site: "hist", name: "世界の歴代の統治者", cat: "世界の統治者", url: "rulers.html", bg: "rulers",
+    desc: "年代を選ぶと、その時代に世界中で国を治めていた皇帝・王・大統領・首相などを、世界地図の上に顔写真つきで表示します。当時の国境の色分けつき。",
+    keywords: "王 皇帝 天皇 歴史 世界史 歴代 国王 女王 ファラオ スルタン シャー 大統領 首相 総書記 統治者 地図 年表 王朝 君主" },
+  { site: "hist", name: "美術家名簿", cat: "美術家", url: "art.html", bg: "art",
+    desc: "世界各地の画家・彫刻家など美術家2,353人の名簿です。名前・会派・出生地で検索でき、生没年や代表作（若い頃と晩年／近作）を表示します。出生地の地図つき。",
+    keywords: "美術家 画家 彫刻家 芸術家 絵画 会派 代表作 美術史 歴史 人物 名簿" },
+  { site: "hist", name: "宗教家名簿", cat: "宗教家", url: "religion.html", bg: "religion",
+    desc: "世界の宗教家4,935人の名簿です。宗教・宗派・階位や布教の足跡、生没年などを表示します。出生地の地図つき。",
+    keywords: "宗教家 宗教 宗派 教祖 聖人 僧侶 神父 牧師 仏教 キリスト教 歴史 人物 名簿" },
+  { site: "hist", name: "家系図", cat: "家系図", url: "genealogy.html", bg: "genealogy",
+    desc: "源氏・平家など日本の氏族と、古事記・ギリシア神話の神々の家系図です。拡大縮小・移動しながら系図をたどれ、名前検索でその人の場所をハイライトします。",
+    keywords: "家系図 系図 源氏 平家 氏族 豪族 神話 古事記 ギリシア神話 歴史 人物" },
+  { site: "hist", name: "美術家名鑑の楽しみ方", cat: "解説記事", url: "guide-art.html", bg: "guideart",
+    desc: "美術家名鑑の解説記事です。若い頃と晩年の代表作の見比べ、会派と作品傾向、パトロンと友人のつながりの辿り方を案内します。",
+    keywords: "美術家名鑑 楽しみ方 解説 ガイド 画家 代表作 パトロン" },
+  { site: "hist", name: "神々の系図の歩き方", cat: "解説記事", url: "guide-kami.html", bg: "guidekami",
+    desc: "家系図（古事記の神々）の解説記事です。別天津神・神世七代から天孫降臨まで、系図の見方と関係線の工夫を案内します。",
+    keywords: "神々 系図 歩き方 解説 ガイド 古事記 神話 家系図" },
+  { site: "hist", name: "統治者名鑑の読み方・見どころ", cat: "解説記事", url: "guide-rulers.html", bg: "guiderulers",
+    desc: "統治者名鑑の解説記事です。名前・年代・地図の三つの入り口と、死因・最期や親族を辿る楽しみ方を案内します。",
+    keywords: "統治者名鑑 読み方 見どころ 解説 ガイド 王 皇帝" }
+];
+
+var SITEOGP = {
+  mob: "https://wankodo.github.io/mobility-simulator/ogp.png",
+  money: "https://wankodo.github.io/money-tools/ogp.png",
+  uranai: "https://wankodo.github.io/uranai/ogp.png",
+  ins: "https://wankodo.github.io/insurance/ogp.png"
+};
+var cardsEl = document.getElementById("cards");
+var infoEl = document.getElementById("searchInfo");
+var noResultEl = document.getElementById("noResult");
+var boxEl = document.getElementById("searchBox");
+var sugEl = document.getElementById("suggest");
+var fieldEl = document.querySelector(".search-field");
+
+function badgeHtml(site){
+  if (site === "mob") return '<span class="badge badge-mob">移動</span>';
+  if (site === "uranai") return '<span class="badge badge-uranai">占い</span>';
+  if (site === "ins") return '<span class="badge badge-ins">保険</span>';
+  if (site === "hist") return '<span class="badge badge-hist">歴史</span>';
+  return '<span class="badge badge-money">お金</span>';
+}
+
+function matchTools(q){
+  var tokens = q.split(/[\s　]+/).filter(function(s){ return s; }).map(function(s){ return s.toLowerCase(); });
+  if (!tokens.length) return TOOLS.slice();
+  return TOOLS.filter(function(t){
+    var hay = (t.name + " " + t.desc + " " + t.keywords + " " + t.cat).toLowerCase();
+    return tokens.every(function(tok){ return hay.indexOf(tok) >= 0; });
+  });
+}
+
+function render(list){
+  cardsEl.innerHTML = "";
+  list.forEach(function(t){
+    var a = document.createElement("a");
+    a.className = "tool-card";
+    if (t.bg) { a.classList.add("has-bg", "bg-" + t.bg); }
+    else if (SITEOGP[t.site]) { a.classList.add("has-bg"); a.style.setProperty("--bgimg", "url('" + SITEOGP[t.site] + "')"); }
+    a.href = t.url;
+    var badge = badgeHtml(t.site);
+    a.innerHTML = '<div class="tc-head"><h2></h2>' + badge + '</div>'
+      + '<div class="tc-cat"></div><p></p>';
+    a.querySelector("h2").textContent = t.name;
+    a.querySelector(".tc-cat").textContent = t.cat;
+    a.querySelector("p").textContent = t.desc;
+    cardsEl.appendChild(a);
+  });
+  noResultEl.style.display = list.length ? "none" : "block";
+}
+
+function doSearch(){
+  var q = boxEl.value.trim();
+  if (!q) {
+    render(TOOLS.filter(function(t){ return t.site === "hist"; }));
+    infoEl.textContent = "";
+    return;
+  }
+  var hits = matchTools(q);
+  render(hits);
+  infoEl.textContent = hits.length
+    ? "「" + q + "」で " + hits.length + " 件見つかりました（移動・お金・保険・占い系のツールも含めて検索しています）"
+    : "";
+}
+
+function renderSuggest(){
+  var list = matchTools(boxEl.value.trim());
+  sugEl.innerHTML = "";
+  if (!list.length) {
+    var d = document.createElement("div");
+    d.className = "sug-none";
+    d.textContent = "見つかりませんでした。別の言葉で試してみてください。";
+    sugEl.appendChild(d);
+    return;
+  }
+  list.forEach(function(t){
+    var a = document.createElement("a");
+    a.className = "sug-item";
+    a.href = t.url;
+    a.innerHTML = '<span class="sug-name"></span>' + badgeHtml(t.site);
+    a.querySelector(".sug-name").textContent = t.name;
+    sugEl.appendChild(a);
+  });
+}
+
+function openSuggest(){
+  renderSuggest();
+  sugEl.hidden = false;
+}
+
+function closeSuggest(){
+  sugEl.hidden = true;
+}
+
+boxEl.addEventListener("input", function(){
+  doSearch();
+  openSuggest();
+});
+boxEl.addEventListener("focus", openSuggest);
+boxEl.addEventListener("click", openSuggest);
+boxEl.addEventListener("keydown", function(e){
+  if (e.key === "Escape") {
+    e.preventDefault();
+    closeSuggest();
+  }
+});
+document.addEventListener("mousedown", function(e){
+  if (!fieldEl.contains(e.target)) closeSuggest();
+});
+document.addEventListener("touchstart", function(e){
+  if (!fieldEl.contains(e.target)) closeSuggest();
+}, { passive: true });
+
+doSearch();
+</script>
+<script>
+(function(){
+  var btns=document.querySelectorAll("[data-ido-theme]");
+  function sync(){var cur=document.documentElement.dataset.theme||"kuma";btns.forEach(function(b){b.setAttribute("aria-pressed",String(b.dataset.idoTheme===cur));});}
+  btns.forEach(function(b){b.addEventListener("click",function(){document.documentElement.dataset.theme=b.dataset.idoTheme;try{localStorage.setItem("ido_theme_v1",b.dataset.idoTheme);}catch(e){}sync();});});
+  sync();
+})();
+</script>
+<script src="mogura.js"></script>
+<script src="kumagames.js"></script>
+<div class="pp-overlay" data-pp-overlay>
+  <div class="pp-dialog privacy-policy" role="dialog" aria-modal="true" aria-labelledby="ppTitle">
+    <div class="pp-scroll">
+      <h2 id="ppTitle">プライバシーポリシー</h2>
+      <p>当サイト「歴史系ツール集」は、個人を特定する情報を収集しません。</p>
+      <p><strong>入力データについて：</strong>ツールに入力した内容は、お使いの端末のブラウザの中だけで処理され、サーバーへ送信されることはありません。ツールによっては、入力内容や設定を、お使いのブラウザの localStorage にのみ保存する場合があります。</p>
+      <p><strong>広告について：</strong>当サイトは、第三者配信の広告サービス（Google AdSense）を利用する場合があります。広告配信事業者は、ユーザーの興味に応じた広告を表示するため Cookie を使用することがあります。パーソナライズ広告は、Google の「広告設定」から無効にできます。</p>
+      <p><strong>アクセス解析について：</strong>当サイトは、アクセス解析ツール「Google アナリティクス」を使用しています。Google アナリティクスは Cookie を使用してサイトの利用状況を収集しますが、個人を特定する情報は含まれません。</p>
+      <p><strong>免責事項：</strong>計算結果や占い結果は目安・娯楽であり、実際の料金や判断は各事業者・専門家の公式情報をご確認ください。当サイトの利用によって生じた損害について、運営者は責任を負いません。</p>
+      <p><strong>お問い合わせ：</strong>当サイトは個人運営のツールサイトです。</p>
+      <p>制定日：2026年11月15日</p>
+    </div>
+    <div class="pp-actions">
+      <div class="pp-btn-row">
+        <button type="button" class="pp-close-btn" data-pp-close>閉じる</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="policy-snippet.js"></script>
+</body>
+</html>
