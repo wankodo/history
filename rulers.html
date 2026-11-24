@@ -260,6 +260,7 @@ var state = { year: 1500, region: "world", snapYear: null, selected: null };
   var sel = document.getElementById("eraSel");
   var html = "";
   for (var y = -3100; y <= -50; y += 50) html += '<option value="' + y + '">紀元前' + (-y) + '年</option>';
+  html += '<option value="1">1年</option>';
   for (var y2 = 50; y2 <= 2000; y2 += 50) html += '<option value="' + y2 + '">' + y2 + '年</option>';
   html += '<option value="2026">現代</option>';
   sel.innerHTML = html;
