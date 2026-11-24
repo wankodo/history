@@ -4,15 +4,15 @@
 <script>try{var _t=localStorage.getItem("ido_theme_v1");if(_t==="andy"||_t==="kuma")document.documentElement.dataset.theme=_t;}catch(e){}</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>世界の歴代の王｜その時代、世界を治めていた王や皇帝を地図で見る</title>
+<title>世界の歴代の統治者｜その時代、世界を治めていた王・皇帝・大統領・首相を地図で見る</title>
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link rel="icon" type="image/png" sizes="512x512" href="favicon.png">
 <link rel="apple-touch-icon" href="favicon.png">
-<meta name="description" content="年代を選ぶと、その時代に世界中で在位していた王や皇帝を、世界地図の上に顔写真つきで表示します。当時の国境の色分け、地域ごとの拡大表示つき。">
+<meta name="description" content="年代を選ぶと、その時代に世界中で国を治めていた王・皇帝・大統領・首相などを、世界地図の上に顔写真つきで表示します。当時の国境の色分け、地域ごとの拡大表示つき。">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="歴史系ツール集">
-<meta property="og:title" content="世界の歴代の王">
-<meta property="og:description" content="年代を選ぶと、その時代に世界中で在位していた王や皇帝を、世界地図の上に顔写真つきで表示します。当時の国境の色分けつき。">
+<meta property="og:title" content="世界の歴代の統治者">
+<meta property="og:description" content="年代を選ぶと、その時代に世界中で国を治めていた王・皇帝・大統領・首相などを、世界地図の上に顔写真つきで表示します。当時の国境の色分けつき。">
 <meta property="og:url" content="https://wankodo.github.io/history/rulers.html">
 <meta property="og:image" content="https://wankodo.github.io/history/ogp.png">
 <meta property="og:image:width" content="1200">
@@ -121,8 +121,8 @@ html[data-theme="andy"] .badges span.best-b{background:var(--amber);color:#03222
   "@context": "https://schema.org",
   "@type": "WebApplication",
   "url": "https://wankodo.github.io/history/rulers.html",
-  "name": "世界の歴代の王",
-  "description": "年代を選ぶと、その時代に世界中で在位していた王や皇帝を、世界地図の上に顔写真つきで表示します。当時の国境の色分け、地域ごとの拡大表示つき。",
+  "name": "世界の歴代の統治者",
+  "description": "年代を選ぶと、その時代に世界中で国を治めていた王・皇帝・大統領・首相などを、世界地図の上に顔写真つきで表示します。当時の国境の色分け、地域ごとの拡大表示つき。",
   "applicationCategory": "EducationApplication",
   "operatingSystem": "Webブラウザ",
   "inLanguage": "ja",
@@ -149,12 +149,12 @@ gtag('config', 'G-QQ4435VBMK');
 </script>
 </head>
 <body>
-<div class="sitebar"><div class="sb-in"><a class="sb-name" href="index.html">歴史系ツール集</a><span class="sb-tool">世界の歴代の王</span><div class="ido-theme-switch" role="group" aria-label="表示モード切替"><button type="button" data-ido-theme="kuma" aria-pressed="true">DEF</button><button type="button" data-ido-theme="andy" aria-pressed="false">HUD</button></div></div></div>
+<div class="sitebar"><div class="sb-in"><a class="sb-name" href="index.html">歴史系ツール集</a><span class="sb-tool">世界の歴代の統治者</span><div class="ido-theme-switch" role="group" aria-label="表示モード切替"><button type="button" data-ido-theme="kuma" aria-pressed="true">DEF</button><button type="button" data-ido-theme="andy" aria-pressed="false">HUD</button></div></div></div>
 
 <header>
   <div class="wrap">
-    <h1>世界の <span class="accent">歴代の王</span></h1>
-    <p>年代を選ぶと、その時代に世界中で在位していた王や皇帝を、世界地図の上に顔写真つきで表示します。当時の国境の色分けと、地域ごとの拡大表示つきです。</p>
+    <h1>世界の <span class="accent">歴代の統治者</span></h1>
+    <p>年代を選ぶと、その時代に世界中で国を治めていた王・皇帝・大統領・首相などを、世界地図の上に顔写真つきで表示します。当時の国境の色分けと、地域ごとの拡大表示つきです。</p>
   </div>
 </header>
 
@@ -202,23 +202,23 @@ gtag('config', 'G-QQ4435VBMK');
   </div>
 
   <div class="card">
-    <h2 id="mapTitle">1500年ごろの世界の王</h2>
+    <h2 id="mapTitle">1500年ごろの世界の統治者</h2>
     <div class="mapbox"><canvas id="mapCanvas"></canvas></div>
     <p class="note" id="snapNote" style="margin:8px 0 0">国境データを読み込んでいます…</p>
   </div>
 
   <div class="card" id="detailCard">
-    <h2>王の詳細</h2>
+    <h2>統治者の詳細</h2>
     <div id="detailBody"><p class="note">地図のピン、または下の一覧をタップすると、ここに詳細を表示します。</p></div>
   </div>
 
   <div class="card">
-    <h2 id="listTitle">この年の王一覧</h2>
+    <h2 id="listTitle">この年の統治者一覧</h2>
     <div class="ruler-list" id="rulerList"></div>
-    <p class="note" id="listEmpty" style="display:none">この年に在位中の王は、収録データにありません。</p>
+    <p class="note" id="listEmpty" style="display:none">この年に在位中の統治者は、収録データにありません。</p>
   </div>
 
-  <section class="ai-summary" style="max-width:760px;margin:22px auto;padding:0 4px;font-size:13px;line-height:1.8;opacity:.78"><h2 style="font-size:14px;margin:0 0 6px">このツールについて</h2><p style="margin:0">紀元前3100年ごろから現代まで、世界各地の王・皇帝・ファラオ・スルタンなど約1,400人を収録。年代を選ぶと、その年に在位していた君主を世界地図の上に顔写真つきで表示し、あわせて当時の国境（近くの年のスナップショット）を色分けで重ねます。地域ボタンで東アジア・ヨーロッパなどに拡大できます。処理はブラウザ内で完結し、入力データを外部送信しません。</p></section>
+  <section class="ai-summary" style="max-width:760px;margin:22px auto;padding:0 4px;font-size:13px;line-height:1.8;opacity:.78"><h2 style="font-size:14px;margin:0 0 6px">このツールについて</h2><p style="margin:0">紀元前3100年ごろから現代まで、世界各地の王・皇帝・ファラオ・スルタン・大統領・首相・総書記など約1,740人を収録。年代を選ぶと、その年に在位・在職していた統治者を世界地図の上に顔写真つきで表示し、あわせて当時の国境（近くの年のスナップショット）を色分けで重ねます。地域ボタンで東アジア・ヨーロッパなどに拡大できます。処理はブラウザ内で完結し、入力データを外部送信しません。</p></section>
 
   <footer>
     <div class="card">
@@ -449,8 +449,9 @@ function selectRuler(r){
     '<div class="detail"><div class="dface">' + face + '</div><div class="dinfo">' +
     '<div class="dname">' + esc(r.name) + '<span class="den">' + esc(r.nameEn) + '</span></div>' +
     '<div class="drow"><b>肩書き：</b>' + esc(r.title) + '</div>' +
+    '<div class="drow"><b>分類：</b>' + esc(r.kind || '王族') + '</div>' +
     '<div class="drow"><b>国・王朝：</b>' + esc(r.polity) + '</div>' +
-    '<div class="drow"><b>在位：</b>' + esc(reignText(r)) + '</div>' +
+    '<div class="drow"><b>在位・在職：</b>' + esc(reignText(r)) + '</div>' +
     (r.note ? '<p class="dnote">' + esc(r.note) + '</p>' : '') +
     '</div></div>';
   document.querySelectorAll(".ruler-item").forEach(function(it){
@@ -493,7 +494,7 @@ function loadBorders(y){
     if (state.snapYear === y){ borderData = j; draw(); }
   }).catch(function(){
     if (state.snapYear === y){
-      noteEl.textContent = "国境データを読み込めませんでした（陸地と王のピンのみ表示しています）。国境は" + fmtYear(y) + "時点のデータ（おおよそ）を使う予定でした。";
+      noteEl.textContent = "国境データを読み込めませんでした（陸地と統治者のピンのみ表示しています）。国境は" + fmtYear(y) + "時点のデータ（おおよそ）を使う予定でした。";
     }
   });
 }
@@ -506,8 +507,8 @@ function applyYear(y){
   document.getElementById("yearInput").value = y;
   document.getElementById("eraSel").value = String(y);
   var list = currentRulers();
-  document.getElementById("mapTitle").textContent = fmtYear(y) + "ごろの世界の王（" + list.length + "人）";
-  document.getElementById("listTitle").textContent = fmtYear(y) + "に在位中の王一覧";
+  document.getElementById("mapTitle").textContent = fmtYear(y) + "ごろの世界の統治者（" + list.length + "人）";
+  document.getElementById("listTitle").textContent = fmtYear(y) + "に在位中の統治者一覧";
   renderList();
   loadBorders(snapFor(y));
   draw();
