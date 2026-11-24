@@ -15142,16 +15142,18 @@ function selectPerson(id){ selectedId = id; render(); renderDetail(byId[id]); if
 /* ========= 凡例 ========= */
 function buildLegend(){
   var items = [
-    '<span class="lg"><span class="sw line"></span>親子</span>',
-    '<span class="lg"><span class="sw dbl"></span>配偶者（二重線）</span>',
-    '<span class="lg"><span class="sw frame"></span>グループ枠（ラベルで折り畳み）</span>',
-    '<span class="lg"><span class="sw chipsw"></span>チップ（別の系図・グループへ）</span>'
+    '<li><span class="sw line"></span>親子</li>',
+    '<li><span class="sw dbl"></span>配偶者（二重線）</li>',
+    '<li><span class="sw frame"></span>グループ枠（ラベルで折り畳み）</li>',
+    '<li><span class="sw chipsw"></span>チップ（別の系図・グループへ）</li>'
   ];
   var seen = {};
-  (clan.relations || []).forEach(function(r){ var st = relStyleOf(r); var key = st.cls + "|" + (r.sourceAlt || ""); if (!seen[key]){ seen[key] = 1; items.push('<span class="lg"><span class="sw" style="border-top:3px dashed ' + st.color + '"></span>' + esc(r.label || "関係") + (r.sourceAlt ? "（" + esc(r.sourceAlt) + "）" : "") + "</span>"); } });
+  (clan.relations || []).forEach(function(r){ var st = relStyleOf(r); var key = st.cls + "|" + (r.sourceAlt || ""); if (!seen[key]){ seen[key] = 1; items.push('<li><span class="sw" style="border-top:3px dashed ' + st.color + '"></span>' + esc(r.label || "関係") + (r.sourceAlt ? "（" + esc(r.sourceAlt) + "）" : "") + "</li>"); } });
   var lg = document.getElementById("legend");
-  lg.innerHTML = items.join("");
+  lg.innerHTML = '<button type="button" class="lg-title" id="lgToggle">凡例</button><ul>' + items.join("") + "</ul>";
   lg.hidden = false;
+  lg.classList.toggle("closed", window.matchMedia("(max-width: 820px)").matches);
+  document.getElementById("lgToggle").addEventListener("click", function(){ lg.classList.toggle("closed"); });
 }
 
 /* ========= 検索（通常版と同じ正規化） ========= */
