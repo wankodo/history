@@ -414,6 +414,7 @@ function selectRuler(r){
     (r.children ? '<div class="drow"><b>子：</b>' + esc(r.children) + '</div>' : '') +
     (r.deathplace ? '<div class="drow"><b>没地：</b>' + esc(r.deathplace) + '</div>' : '') +
     (r.fate ? '<div class="drow"><b>死因・最期：</b>' + esc(r.fate) + '</div>' : '') +
+    (r.wiki ? '<div class="drow"><b>Wikipedia：</b><a href="' + esc(r.wiki) + '" target="_blank" rel="noopener">Wikipediaで見る</a></div>' : '') +
     (r.note ? '<p class="dnote">' + esc(r.note) + '</p>' : '') +
     '</div></div>';
   document.querySelectorAll(".ruler-item").forEach(function(it){
