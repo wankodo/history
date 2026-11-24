@@ -72,6 +72,8 @@ label.flabel{display:block;font-size:12.5px;color:var(--mut);margin:10px 0 3px}
 .detail .drow b{color:var(--navy)}
 .detail .dnote{font-size:13.5px;margin:8px 0 0}
 @media(max-width:520px){.detail{flex-direction:column;align-items:center;text-align:left}.detail .dinfo{align-self:stretch}}
+.yr-row input[type="search"]{padding:10px;border:1.5px solid var(--line);border-radius:8px;font-size:15px;background:#fff;color:var(--ink)}
+.search-results{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px;max-height:340px;overflow:auto}
 .ruler-list{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 @media(max-width:640px){.ruler-list{grid-template-columns:1fr}}
 .ruler-item{text-align:left;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:9px 11px;cursor:pointer;font:inherit;color:var(--ink);width:100%}
@@ -216,6 +218,17 @@ gtag('config', 'G-QQ4435VBMK');
   </div>
 
   <div class="card">
+    <h2>名前・国名で検索</h2>
+    <label class="flabel">統治者の名前・英語名、国や王朝の名前、家系の名前で検索できます（年代は問いません。全データから探します）</label>
+    <div class="yr-row">
+      <input type="search" id="searchInput" placeholder="例：織田信長、フランス、ハプスブルク家" aria-label="統治者・国名で検索" style="flex:1;min-width:200px">
+      <button type="button" class="btn" id="searchClear" style="display:none">クリア</button>
+    </div>
+    <div class="search-results" id="searchResults" style="display:none"></div>
+    <p class="note" id="searchNote" style="display:none;margin:8px 0 0"></p>
+  </div>
+
+  <div class="card">
     <h2 id="mapTitle">1500年ごろの世界の統治者</h2>
     <div class="mapbox"><div id="map"></div></div>
     <p class="note" id="snapNote" style="margin:8px 0 0">国境データを読み込んでいます…</p>
@@ -232,7 +245,7 @@ gtag('config', 'G-QQ4435VBMK');
     <p class="note" id="listEmpty" style="display:none">この年に在位中の統治者は、収録データにありません。</p>
   </div>
 
-  <section class="ai-summary" style="max-width:760px;margin:22px auto;padding:0 4px;font-size:13px;line-height:1.8;opacity:.78"><h2 style="font-size:14px;margin:0 0 6px">このツールについて</h2><p style="margin:0">紀元前3100年ごろから現代まで、世界各地の皇帝・王・ファラオ・スルタン・大統領・首相・総書記など約4,290人を収録。年代を選ぶと、その年に在位・在職していた統治者を世界地図の上に顔写真つきで表示し、あわせて当時の国境（近くの年のスナップショット）を色分けで重ねます。地図は自由に拡大・縮小・移動でき、地域ボタンで東アジア・ヨーロッパなどへ一気に移動できます。処理はブラウザ内で完結し、入力データを外部送信しません。</p></section>
+  <section class="ai-summary" style="max-width:760px;margin:22px auto;padding:0 4px;font-size:13px;line-height:1.8;opacity:.78"><h2 style="font-size:14px;margin:0 0 6px">このツールについて</h2><p style="margin:0">紀元前3100年ごろから現代まで、世界各地の皇帝・王・ファラオ・スルタン・大統領・首相・総書記など約4,290人を収録。年代を選ぶと、その年に在位・在職していた統治者を世界地図の上に顔写真つきで表示し、あわせて当時の国境（近くの年のスナップショット）を色分けで重ねます。統治者の名前・英語名、国や王朝の名前、家系の名前からは、年代を問わず全データから検索もできます。詳細には家系（ハプスブルク家・皇室など、資料で確認できた人）も表示します。地図は自由に拡大・縮小・移動でき、地域ボタンで東アジア・ヨーロッパなどへ一気に移動できます。処理はブラウザ内で完結し、入力データを外部送信しません。</p></section>
 
   <footer>
     <div class="card">
@@ -389,6 +402,7 @@ function selectRuler(r){
     '<div class="drow"><b>肩書き：</b>' + esc(r.title) + (r.tc ? '（' + esc(r.tc) + '）' : '') + '</div>' +
     '<div class="drow"><b>分類：</b>' + esc(r.kind || '王族') + '</div>' +
     '<div class="drow"><b>国・王朝：</b>' + esc(r.polity) + '</div>' +
+    (r.house ? '<div class="drow"><b>家系：</b>' + esc(r.house) + '</div>' : '') +
     '<div class="drow"><b>在位・在職：</b>' + esc(reignText(r)) + '</div>' +
     (r.note ? '<p class="dnote">' + esc(r.note) + '</p>' : '') +
     '</div></div>';
@@ -465,6 +479,51 @@ document.querySelectorAll("#regionSeg button").forEach(function(b){
     state.region = b.dataset.region;
     if (map) map.flyToBounds(REGION_BOUNDS[state.region], { duration: 0.8 });
   });
+});
+function normStr(s){ return String(s == null ? "" : s).toLowerCase().replace(/\s+/g, ""); }
+function jumpToRuler(r){
+  applyYear(Math.max(-3200, Math.min(2026, r.start)));
+  selectRuler(r);
+  if (map) map.flyTo([r.lat, r.lng], Math.max(map.getZoom(), 3), { duration: 0.8 });
+  document.getElementById("detailCard").scrollIntoView({ behavior: "smooth", block: "center" });
+}
+function doSearch(){
+  var input = document.getElementById("searchInput");
+  var q = normStr(input.value);
+  var box = document.getElementById("searchResults");
+  var note = document.getElementById("searchNote");
+  document.getElementById("searchClear").style.display = q ? "" : "none";
+  if (!q){ box.style.display = "none"; box.innerHTML = ""; note.style.display = "none"; return; }
+  var hits = RULERS.filter(function(r){
+    return normStr(r.name).indexOf(q) >= 0 || normStr(r.nameEn).indexOf(q) >= 0 ||
+           normStr(r.polity).indexOf(q) >= 0 || normStr(r.house).indexOf(q) >= 0;
+  });
+  hits.sort(function(a, b){ return (a.start - b.start) || a.name.localeCompare(b.name, "ja"); });
+  box.innerHTML = "";
+  note.style.display = "block";
+  if (!hits.length){
+    box.style.display = "none";
+    note.textContent = "「" + input.value + "」に一致する統治者は、収録データにありません。";
+    return;
+  }
+  note.textContent = hits.length + "件見つかりました" + (hits.length > 40 ? "（年代順に最初の40件を表示）" : "") + "。タップすると、その人の時代へ移動して詳細を表示します。";
+  box.style.display = "grid";
+  hits.slice(0, 40).forEach(function(r){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "ruler-item";
+    b.innerHTML = '<span class="ri-name"></span><br><span class="ri-sub"></span>';
+    b.querySelector(".ri-name").textContent = r.name;
+    b.querySelector(".ri-sub").textContent = r.polity + "（" + reignText(r) + "）" + (r.house ? "｜" + r.house : "");
+    b.addEventListener("click", function(){ jumpToRuler(r); });
+    box.appendChild(b);
+  });
+}
+document.getElementById("searchInput").addEventListener("input", doSearch);
+document.getElementById("searchClear").addEventListener("click", function(){
+  document.getElementById("searchInput").value = "";
+  doSearch();
+  document.getElementById("searchInput").focus();
 });
 new MutationObserver(function(){ applyMapTheme(); }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 fetch("land.geojson").then(function(res){ return res.json(); }).then(function(j){
