@@ -29,6 +29,13 @@ header, .card, button, input, aside, .zoomctl button, .hint{
   transition:background-color .8s ease, background .8s ease, color .6s ease, border-color .8s ease;
 }
 /* ===== ヘッダー ===== */
+/* ---------- サイトバー（他ページ共通部品をこのページの色に合わせたもの） ---------- */
+.sitebar{background:var(--header-bg);border-bottom:1px solid var(--panel-line);}
+.sitebar .sb-in{max-width:1180px;margin:0 auto;padding:7px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.sitebar a{color:var(--ink);text-decoration:none;font-size:13px;letter-spacing:.14em;transition:color .8s ease;padding:6px 2px;}
+.sitebar a:hover{color:var(--accent);}
+.sitebar .sb-name{font-family:var(--serif);font-weight:600;}
+.sitebar .sb-tool{color:var(--mut);font-size:12px;letter-spacing:.2em;}
 header{
   background:var(--header-bg); border-bottom:1px solid var(--panel-line);
   padding:10px 16px 12px; position:relative; z-index:30;
@@ -218,6 +225,7 @@ footer{
 </style>
 </head>
 <body>
+<div class="sitebar"><div class="sb-in"><a class="sb-name" href="index.html">歴史系ツール集</a><span class="sb-tool">家系図</span></div></div>
 <header>
   <div class="hd-row">
     <div class="brand">
