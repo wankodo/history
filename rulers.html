@@ -219,7 +219,7 @@ gtag('config', 'G-QQ4435VBMK');
 
   <div class="card">
     <h2>名前・国名で検索</h2>
-    <label class="flabel">統治者の名前・英語名、国や王朝の名前、家系、宗教、生年月日でも検索できます（年代は問いません。全データから探します）</label>
+    <label class="flabel">統治者の名前・英語名、国や王朝の名前、家系、宗教、生年月日、配偶者の名前でも検索できます（年代は問いません。全データから探します）</label>
     <div class="yr-row">
       <input type="search" id="searchInput" placeholder="例：織田信長、フランス、ハプスブルク家、仏教、2月13日" aria-label="統治者・国名で検索" style="flex:1;min-width:200px">
       <button type="button" class="btn" id="searchClear" style="display:none">クリア</button>
@@ -518,7 +518,7 @@ function doSearch(){
   var hits = RULERS.filter(function(r){
     return normStr(r.name).indexOf(q) >= 0 || normStr(r.nameEn).indexOf(q) >= 0 ||
            normStr(r.polity).indexOf(q) >= 0 || normStr(r.house).indexOf(q) >= 0 ||
-           normStr(r.religion).indexOf(q) >= 0 ||
+           normStr(r.religion).indexOf(q) >= 0 || normStr(r.spouses).indexOf(q) >= 0 ||
            birthKeys(r.birth).some(function(k){ return normStr(k).indexOf(q) >= 0; });
   });
   hits.sort(function(a, b){ return (a.start - b.start) || a.name.localeCompare(b.name, "ja"); });
@@ -537,7 +537,12 @@ function doSearch(){
     b.className = "ruler-item";
     b.innerHTML = '<span class="ri-name"></span><br><span class="ri-sub"></span>';
     b.querySelector(".ri-name").textContent = r.name;
-    b.querySelector(".ri-sub").textContent = r.polity + "（" + reignText(r) + "）" + (r.house ? "｜" + r.house : "") + (r.religion ? "｜" + r.religion : "") + (r.birth ? "｜生：" + fmtBirth(r.birth) : "");
+    var spHit = "";
+    if (r.spouses) {
+      var segs = String(r.spouses).split("、");
+      for (var si = 0; si < segs.length; si++) { if (normStr(segs[si]).indexOf(q) >= 0) { spHit = segs[si]; break; } }
+    }
+    b.querySelector(".ri-sub").textContent = r.polity + "（" + reignText(r) + "）" + (r.house ? "｜" + r.house : "") + (r.religion ? "｜" + r.religion : "") + (r.birth ? "｜生：" + fmtBirth(r.birth) : "") + (spHit ? "｜配偶者：" + spHit : "");
     b.addEventListener("click", function(){ jumpToRuler(r); });
     box.appendChild(b);
   });
