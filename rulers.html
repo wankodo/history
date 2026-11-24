@@ -506,9 +506,9 @@ function doSearch(){
     note.textContent = "「" + input.value + "」に一致する統治者は、収録データにありません。";
     return;
   }
-  note.textContent = hits.length + "件見つかりました" + (hits.length > 40 ? "（年代順に最初の40件を表示）" : "") + "。タップすると、その人の時代へ移動して詳細を表示します。";
+  note.textContent = hits.length + "件見つかりました。タップすると、その人の時代へ移動して詳細を表示します。";
   box.style.display = "grid";
-  hits.slice(0, 40).forEach(function(r){
+  hits.forEach(function(r){
     var b = document.createElement("button");
     b.type = "button";
     b.className = "ruler-item";
