@@ -181,23 +181,7 @@ gtag('config', 'G-QQ4435VBMK');
     <label class="flabel">年代（プリセット）</label>
     <div class="yr-row">
       <select id="eraSel" aria-label="年代プリセット">
-        <option value="-1000">紀元前1000年</option>
-        <option value="-500">紀元前500年</option>
-        <option value="-100">紀元前100年</option>
-        <option value="1">1年</option>
-        <option value="500">500年</option>
-        <option value="800">800年</option>
-        <option value="1000">1000年</option>
-        <option value="1200">1200年</option>
-        <option value="1400">1400年</option>
         <option value="1500" selected>1500年</option>
-        <option value="1600">1600年</option>
-        <option value="1700">1700年</option>
-        <option value="1800">1800年</option>
-        <option value="1850">1850年</option>
-        <option value="1900">1900年</option>
-        <option value="1950">1950年</option>
-        <option value="2026">現代</option>
       </select>
     </div>
     <label class="flabel">任意の年（紀元前は -500 のようにマイナスで入力）</label>
@@ -272,6 +256,15 @@ var REGION_BOUNDS = {
   oceania:  [[-50, 90], [6, 180]]
 };
 var state = { year: 1500, region: "world", snapYear: null, selected: null };
+(function(){
+  var sel = document.getElementById("eraSel");
+  var html = "";
+  for (var y = -3100; y <= -50; y += 50) html += '<option value="' + y + '">紀元前' + (-y) + '年</option>';
+  for (var y2 = 50; y2 <= 2000; y2 += 50) html += '<option value="' + y2 + '">' + y2 + '年</option>';
+  html += '<option value="2026">現代</option>';
+  sel.innerHTML = html;
+  sel.value = "1500";
+})();
 var landData = null, borderData = null;
 var borderCache = {};
 var map = null, landLayer = null, borderLayer = null, markerLayer = null;
