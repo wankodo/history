@@ -518,8 +518,8 @@ function jumpToRuler(r){
   if (map) map.flyTo([r.lat, r.lng], Math.max(map.getZoom(), 3), { duration: 0.8 });
   document.getElementById("detailCard").scrollIntoView({ behavior: "smooth", block: "center" });
 }
-var ANDY_EGG = { name: "andy", den: "わんこ堂", label: "andy（わんこ堂）", img: "andy-portrait.jpg", lat: 35.6762, lng: 139.6503, sub: "日本国Webサイト内（2026/11/24〜）｜サイト管理者",
-  rows: [["肩書き", "サイト管理者"], ["分類", "カメラマン"], ["国・王朝", "日本国Webサイト内"], ["在位期間", "2026/11/24〜"], ["出身", "群馬県前橋市"], ["誕生日", "1990/08/22"], ["家族構成", "秘匿"], ["宗教", "秘匿"]] };
+var ANDY_EGG = { name: "andy", den: "わんこ堂", label: "andy（わんこ堂）", img: "andy-portrait.jpg", lat: 35.6762, lng: 139.6503, sub: "日本国Webサイト内（2026/11/24〜）｜サイト作者",
+  rows: [["肩書き", "サイト作者"], ["分類", "カメラマン"], ["国・王朝", "日本国Webサイト内"], ["在位期間", "2026/11/24〜"], ["出身", "群馬県前橋市"], ["誕生日", "1990/08/22"], ["家族構成", "秘匿"], ["宗教", "秘匿"]] };
 var KUMA_EGG = { name: "熊八", den: "Muse Spark", label: "熊八", img: "kumahachi-portrait.jpg", lat: 35.95, lng: 139.95, sub: "日本国Webサイト内（2026/11/24〜）｜サイト作者",
   rows: [["肩書き", "サイト作者"], ["分類", "陶芸家"], ["国・王朝", "日本国Webサイト内"], ["在位期間", "2026/11/24〜"], ["出身", "andyのポケットの中"], ["誕生日", "2026/11/06"], ["宗教", "秘匿"], ["死因・最期", "存命"]] };
 var EGGS = [ANDY_EGG, KUMA_EGG];
