@@ -219,9 +219,9 @@ gtag('config', 'G-QQ4435VBMK');
 
   <div class="card">
     <h2>名前・国名で検索</h2>
-    <label class="flabel">統治者の名前・英語名、国や王朝の名前、家系の名前で検索できます（年代は問いません。全データから探します）</label>
+    <label class="flabel">統治者の名前・英語名、国や王朝の名前、家系、宗教、生年月日でも検索できます（年代は問いません。全データから探します）</label>
     <div class="yr-row">
-      <input type="search" id="searchInput" placeholder="例：織田信長、フランス、ハプスブルク家" aria-label="統治者・国名で検索" style="flex:1;min-width:200px">
+      <input type="search" id="searchInput" placeholder="例：織田信長、フランス、ハプスブルク家、仏教、2月13日" aria-label="統治者・国名で検索" style="flex:1;min-width:200px">
       <button type="button" class="btn" id="searchClear" style="display:none">クリア</button>
     </div>
     <div class="search-results" id="searchResults" style="display:none"></div>
@@ -481,6 +481,27 @@ document.querySelectorAll("#regionSeg button").forEach(function(b){
   });
 });
 function normStr(s){ return String(s == null ? "" : s).toLowerCase().replace(/\s+/g, ""); }
+function fmtBirth(b){
+  if (!b) return "";
+  var s = String(b);
+  var disputed = s.indexOf("（諸説あり）") >= 0;
+  s = s.replace(/（諸説あり）/g, "");
+  var m = /^(-?\d+)(?:-(\d{2}))?(?:-(\d{2}))?$/.exec(s);
+  if (!m) return String(b);
+  var y = parseInt(m[1], 10);
+  var out = y < 0 ? "紀元前" + (-y) + "年" : y + "年";
+  if (m[2]) out += parseInt(m[2], 10) + "月";
+  if (m[3]) out += parseInt(m[3], 10) + "日";
+  return out + (disputed ? "（諸説あり）" : "");
+}
+function birthKeys(b){
+  if (!b) return [];
+  var s = String(b).replace(/（諸説あり）/g, "");
+  var keys = [s, fmtBirth(b)];
+  var m = /^(-?\d+)(?:-(\d{2}))?(?:-(\d{2}))?$/.exec(s);
+  if (m && m[2] && m[3]) keys.push(parseInt(m[2], 10) + "月" + parseInt(m[3], 10) + "日");
+  return keys;
+}
 function jumpToRuler(r){
   applyYear(Math.max(-3200, Math.min(2026, r.start)));
   selectRuler(r);
@@ -496,7 +517,9 @@ function doSearch(){
   if (!q){ box.style.display = "none"; box.innerHTML = ""; note.style.display = "none"; return; }
   var hits = RULERS.filter(function(r){
     return normStr(r.name).indexOf(q) >= 0 || normStr(r.nameEn).indexOf(q) >= 0 ||
-           normStr(r.polity).indexOf(q) >= 0 || normStr(r.house).indexOf(q) >= 0;
+           normStr(r.polity).indexOf(q) >= 0 || normStr(r.house).indexOf(q) >= 0 ||
+           normStr(r.religion).indexOf(q) >= 0 ||
+           birthKeys(r.birth).some(function(k){ return normStr(k).indexOf(q) >= 0; });
   });
   hits.sort(function(a, b){ return (a.start - b.start) || a.name.localeCompare(b.name, "ja"); });
   box.innerHTML = "";
@@ -514,7 +537,7 @@ function doSearch(){
     b.className = "ruler-item";
     b.innerHTML = '<span class="ri-name"></span><br><span class="ri-sub"></span>';
     b.querySelector(".ri-name").textContent = r.name;
-    b.querySelector(".ri-sub").textContent = r.polity + "（" + reignText(r) + "）" + (r.house ? "｜" + r.house : "");
+    b.querySelector(".ri-sub").textContent = r.polity + "（" + reignText(r) + "）" + (r.house ? "｜" + r.house : "") + (r.religion ? "｜" + r.religion : "") + (r.birth ? "｜生：" + fmtBirth(r.birth) : "");
     b.addEventListener("click", function(){ jumpToRuler(r); });
     box.appendChild(b);
   });
