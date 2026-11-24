@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>家系図 | 歴史人物名鑑（試作）</title>
+<meta name="description" content="日本の氏族・大名家の家系図を、地図のように拡大縮小しながらたどれるページ（試作）。">
+<style>
+:root{
+  --bg:linear-gradient(180deg,#fbf9f3,#efe8d8);
+  --ink:#22304d; --mut:#6d7484;
+  --accent:#27436e; --accent-soft:rgba(39,67,110,.10);
+  --panel:rgba(255,255,255,.88); --panel-line:rgba(39,67,110,.32);
+  --node-bg:#fffdf6; --node-line:#33507e; --node-text:#22304d;
+  --edge:rgba(39,67,110,.5);
+  --highlight:#a37f36; --header-bg:rgba(250,248,242,.92);
+  --crest-color:#27436e;
+  --serif:"Hiragino Mincho ProN","Hiragino Mincho Pro","YuMincho","Yu Mincho","Noto Serif JP","MS PMincho",serif;
+  --sans:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic UI","Yu Gothic",Meiryo,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:var(--sans); color:var(--ink); background:var(--bg); background-color:#f4efe2;
+  min-height:100vh; min-height:100dvh; display:flex; flex-direction:column; overflow-x:hidden;
+  transition:background-color .8s ease, color .6s ease;
+}
+header, .card, button, input, aside, .zoomctl button, .hint{
+  transition:background-color .8s ease, background .8s ease, color .6s ease, border-color .8s ease;
+}
+/* ===== ヘッダー ===== */
+header{
+  background:var(--header-bg); border-bottom:1px solid var(--panel-line);
+  padding:10px 16px 12px; position:relative; z-index:30;
+  backdrop-filter:blur(6px);
+}
+.hd-row{display:flex; flex-wrap:wrap; align-items:center; gap:10px 18px; max-width:1400px; margin:0 auto}
+.brand{display:flex; align-items:center; gap:10px; min-width:0}
+.brand .crest{width:34px; height:34px; color:var(--accent); flex:none; transition:color .8s ease}
+.brand .crest svg{width:100%; height:100%; display:block}
+h1{font-family:var(--serif); font-size:24px; letter-spacing:.28em; margin:0; font-weight:600; white-space:nowrap}
+.clan-desc{margin:2px 0 0; font-size:11.5px; color:var(--mut); letter-spacing:.04em}
+.clan-tabs{display:flex; gap:6px; flex-wrap:wrap}
+.clan-label{
+  font-family:var(--serif); font-size:13px; letter-spacing:.18em; color:var(--mut);
+  align-self:center; flex:none; margin-right:2px;
+}
+.clan-tabs button{
+  font-family:var(--serif); font-size:15px; font-weight:600; letter-spacing:.14em;
+  background:var(--panel); color:var(--ink); border:1.5px solid var(--accent);
+  padding:8px 20px; border-radius:999px; cursor:pointer;
+}
+.clan-tabs button.on{background:var(--accent); color:#fff; border-color:var(--accent)}
+html[data-clan="heike"] .clan-tabs button.on{color:#1c0a05}
+.search{position:relative; margin-left:auto}
+.search input{
+  width:min(300px,72vw); padding:9px 13px; font-size:14px; font-family:var(--sans);
+  background:var(--panel); color:var(--ink); border:1px solid var(--panel-line); border-radius:8px; outline:none;
+}
+.search input::placeholder{color:var(--mut)}
+#candidates{
+  position:absolute; top:calc(100% + 6px); right:0; width:min(320px,84vw); max-height:320px; overflow:auto;
+  background:var(--panel); border:1px solid var(--panel-line); border-radius:10px; padding:5px; display:none; z-index:50;
+  box-shadow:0 14px 34px rgba(0,0,0,.25);
+}
+#candidates button{
+  display:flex; justify-content:space-between; align-items:baseline; gap:10px; width:100%;
+  background:transparent; border:0; border-radius:7px; padding:8px 10px; cursor:pointer; color:var(--ink); text-align:left;
+}
+#candidates button:hover{background:var(--accent-soft)}
+#candidates .cn{font-family:var(--serif); font-size:14.5px}
+#candidates .cm{font-size:11px; color:var(--mut); white-space:nowrap}
+/* ===== レイアウト ===== */
+main{flex:1; display:flex; gap:0; max-width:1400px; width:100%; margin:0 auto; min-height:0}
+#stage{
+  position:relative; flex:1; min-width:0; height:calc(100vh - 190px); height:calc(100dvh - 190px); min-height:480px; overflow:hidden;
+}
+#watermark{
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  pointer-events:none; z-index:0; transition:color .8s ease, opacity .8s ease;
+}
+#watermark svg{width:min(58vh,480px); height:auto; display:block}
+#canvas{position:absolute; inset:0; width:100%; height:100%; z-index:1; touch-action:none; cursor:grab}
+#canvas:active{cursor:grabbing}
+.zoomctl{position:absolute; left:calc(14px + env(safe-area-inset-left, 0px)); bottom:calc(14px + env(safe-area-inset-bottom, 0px)); z-index:5; display:flex; gap:6px}
+.zoomctl button{
+  min-width:42px; height:38px; padding:0 12px; font-size:16px; cursor:pointer;
+  background:var(--panel); color:var(--ink); border:1px solid var(--panel-line); border-radius:9px;
+}
+.hint{
+  position:absolute; right:calc(14px + env(safe-area-inset-right, 0px)); bottom:calc(14px + env(safe-area-inset-bottom, 0px)); z-index:5; font-size:11px; color:var(--mut);
+  background:var(--panel); border:1px solid var(--panel-line); border-radius:999px; padding:5px 12px;
+}
+/* ===== 系図SVG ===== */
+#edges path{stroke:var(--edge); fill:none; stroke-width:1.3; transition:stroke .8s ease}
+#edges path.spouse{stroke-width:1.1}
+.gen-label{font-family:var(--serif); font-size:12px; letter-spacing:.22em; fill:var(--mut); text-anchor:end; transition:fill .8s ease}
+.node{cursor:pointer}
+.node rect.card{fill:var(--node-bg); stroke:var(--node-line); stroke-width:1.2; transition:fill .8s ease, stroke .8s ease}
+.node.sel rect.card{stroke:var(--highlight); stroke-width:2.4}
+.node text{pointer-events:none}
+.node .nm{font-family:var(--serif); font-size:14px; font-weight:600; fill:var(--node-text); transition:fill .8s ease}
+.node .yr{font-size:10.5px; fill:var(--mut); transition:fill .8s ease}
+.node .avc{fill:var(--accent-soft); stroke:var(--accent); stroke-width:1; transition:fill .8s ease, stroke .8s ease}
+.node .avt{font-family:var(--serif); font-size:12px; fill:var(--accent); text-anchor:middle; transition:fill .8s ease}
+.hl-ring{fill:none; stroke:var(--highlight); stroke-width:2.6; pointer-events:none; animation:hlpulse 1.05s ease-in-out infinite}
+@keyframes hlpulse{0%,100%{opacity:1}50%{opacity:.3}}
+/* ===== 詳細パネル ===== */
+aside{
+  width:330px; flex:none; border-left:1px solid var(--panel-line); background:var(--panel);
+  padding:18px 18px 24px; overflow:auto; max-height:calc(100vh - 190px); max-height:calc(100dvh - 190px);
+}
+aside h2{font-family:var(--serif); font-size:21px; letter-spacing:.1em; margin:0 0 2px}
+aside .ttl{font-size:12px; color:var(--accent); letter-spacing:.12em; margin:0 0 10px}
+aside .avatar{
+  width:74px; height:74px; border-radius:50%; margin:4px 0 12px;
+  border:1.5px solid var(--accent); background:var(--accent-soft); color:var(--accent);
+  display:flex; align-items:center; justify-content:center; overflow:hidden;
+  font-family:var(--serif); font-size:30px;
+}
+aside .avatar img{width:100%; height:100%; object-fit:cover}
+.drow{display:flex; gap:10px; padding:7.5px 0; border-bottom:1px solid var(--panel-line); font-size:13.5px; line-height:1.55}
+.drow b{flex:none; width:70px; font-family:var(--serif); font-weight:600; color:var(--mut); letter-spacing:.06em}
+.drow .v{min-width:0}
+.drow a{color:var(--accent)}
+.rel{
+  background:none; border:0; padding:0; font:inherit; color:var(--accent); cursor:pointer;
+  text-decoration:underline; text-underline-offset:3px; text-decoration-color:var(--panel-line);
+}
+.intro-crest{width:64px; height:64px; color:var(--accent); margin:2px 0 10px; transition:color .8s ease}
+.intro-crest svg{width:100%; height:100%; display:block}
+aside p.note{font-size:13px; line-height:1.8; color:var(--ink)}
+aside p.sub{font-size:12px; color:var(--mut); line-height:1.7}
+/* ===== フッター ===== */
+footer{
+  border-top:1px solid var(--panel-line); padding:12px 16px calc(16px + env(safe-area-inset-bottom, 0px)); text-align:center;
+  font-size:11px; color:var(--mut); line-height:1.8; background:var(--header-bg);
+}
+@media (max-width:820px){
+  header{padding:8px 12px 10px}
+  .hd-row{gap:8px 10px}
+  .brand .crest{width:28px; height:28px}
+  h1{font-size:20px}
+  .clan-desc{display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
+  .clan-tabs{order:1; flex:1 1 100%; flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; padding-bottom:2px}
+  .clan-tabs::-webkit-scrollbar{display:none}
+  .clan-tabs button{flex:none}
+  .search{order:2; flex:1 1 100%; margin-left:0}
+  .search input{width:100%}
+  #candidates{left:0; right:0; width:auto}
+  main{flex-direction:column}
+  #stage{height:62vh; height:62dvh; min-height:420px; flex:none}
+  aside{width:auto; border-left:0; border-top:1px solid var(--panel-line); max-height:none}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="hd-row">
+    <div class="brand">
+      <span class="crest" id="brandCrest"></span>
+      <div>
+        <h1>家系図</h1>
+        <p class="clan-desc" id="clanDesc"></p>
+      </div>
+    </div>
+    <nav class="clan-tabs" id="clanTabs" aria-label="家系の選択"><span class="clan-label">家系</span></nav>
+    <div class="search">
+      <input id="searchInput" type="text" placeholder="名前で検索（例：義経、清盛）" autocomplete="off">
+      <div id="candidates"></div>
+    </div>
+  </div>
+</header>
+<main>
+  <section id="stage">
+    <div id="watermark"></div>
+    <svg id="canvas" aria-label="家系図キャンバス">
+      <g id="viewport">
+        <g id="edges"></g>
+        <g id="genlabels"></g>
+        <g id="nodes"></g>
+      </g>
+    </svg>
+    <div class="zoomctl">
+      <button id="zin" type="button" title="拡大">＋</button>
+      <button id="zout" type="button" title="縮小">−</button>
+      <button id="zfit" type="button" title="全体表示">全体</button>
+    </div>
+    <div class="hint">ドラッグで移動／ホイール・ピンチで拡大縮小</div>
+  </section>
+  <aside id="detail"></aside>
+</main>
+<footer>
+  当サイトの内容の無断転載・埋め込みリンク・プログラムの複製転用を禁止します（リンクは自由です）。© 2026 andy（わんこ堂）<br>
+  制作：andy（わんこ堂）× 熊八 🐾（Muse Spark）
+</footer>
+<script>
+"use strict";
+/* ========= 家紋（簡略SVG・雰囲気優先） ========= */
+function crestSVG(type){
+  if (type === "agehacho"){
+    var wing = "M47 42 C32 15 7 11 8.5 29.5 C9.8 44 30 50.5 46 52.5 C31 53 16.5 58.5 19.5 68.5 C21.8 77.5 33.5 77.5 40.5 72 C36.5 80.5 32 87 27.5 93 C36 90 44.5 82 47 71 Z";
+    return '<svg viewBox="0 0 100 100" fill="currentColor" aria-hidden="true">'
+      + '<path d="' + wing + '"/>'
+      + '<g transform="translate(100,0) scale(-1,1)"><path d="' + wing + '"/></g>'
+      + '<ellipse cx="50" cy="55" rx="3.4" ry="17"/>'
+      + '<path d="M47.5 40 C44 28.5 37.5 21 28.5 16.8" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>'
+      + '<path d="M52.5 40 C56 28.5 62.5 21 71.5 16.8" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>'
+      + '<circle cx="27.5" cy="16" r="2.7"/><circle cx="72.5" cy="16" r="2.7"/></svg>';
+  }
+  /* 笹竜胆：3枚の笹の葉＋竜胆の花 */
+  var leaf = '<path d="M50 82 C45 60 45 39 50 13 C55 39 55 60 50 82 Z" fill="currentColor" fill-opacity=".16"/><path d="M50 79 L50 17"/>';
+  var petal = '<path d="M50 91 C46.6 84.5 46.6 79.5 50 75.5 C53.4 79.5 53.4 84.5 50 91 Z" fill="currentColor" stroke="none"/>';
+  var petals = "";
+  [-56,-28,0,28,56].forEach(function(a){ petals += '<g transform="rotate(' + a + ' 50 87)">' + petal + '</g>'; });
+  return '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true">'
+    + '<g transform="rotate(-32 50 82)">' + leaf + '</g>'
+    + '<g transform="rotate(32 50 82)">' + leaf + '</g>'
+    + leaf + petals + '</svg>';
+}
+/* ========= データ（ダミー） ========= */
+var CLANS = [
+{
+  id:"genji", name:"源氏", full:"河内源氏",
+  desc:"清和源氏の一流・河内源氏。頼信を祖とし、頼朝が鎌倉幕府を開いた。",
+  theme:{ crest:"sasarindo",
+    bg:"linear-gradient(180deg,#fbf9f3,#efe8d8)", bgc:"#f4efe2",
+    ink:"#22304d", mut:"#6d7484", accent:"#27436e", accentSoft:"rgba(39,67,110,.10)",
+    panel:"rgba(255,255,255,.88)", panelLine:"rgba(39,67,110,.32)",
+    nodeBg:"#fffdf6", nodeLine:"#33507e", nodeText:"#22304d",
+    edge:"rgba(39,67,110,.5)", highlight:"#a37f36",
+    headerBg:"rgba(250,248,242,.92)", crestColor:"#27436e", crestOpacity:.07 },
+  members:[
+    {id:"yorinobu", name:"源頼信", birth:"968年", death:"1048年", byear:968, dyear:1048, title:"鎮守府将軍・河内源氏の祖", father:null, mother:null, spouses:[], birthplace:"", fate:"", img:null, wiki:"https://ja.wikipedia.org/wiki/源頼信", note:"前九年の役に先立つ東国平定で源氏の東国基盤を築いた。"},
+    {id:"yoriyoshi", name:"源頼義", birth:"988年", death:"1075年", byear:988, dyear:1075, title:"鎮守府将軍", father:"yorinobu", mother:null, spouses:[], birthplace:"", fate:"病死", img:null, wiki:"https://ja.wikipedia.org/wiki/源頼義", note:"前九年の役で安倍氏を討ち、奥州に源氏の地歩を固めた。"},
+    {id:"yoshiie", name:"源義家", birth:"1039年", death:"1106年", byear:1039, dyear:1106, title:"八幡太郎", father:"yoriyoshi", mother:null, spouses:[], birthplace:"", fate:"病死", img:null, wiki:"https://ja.wikipedia.org/wiki/源義家", note:"後三年の役で知られる武将。東国武士の棟梁として崇拝された。"},
+    {id:"yoshitsuna", name:"源義綱", birth:"1044年頃", death:"", byear:1044, dyear:null, title:"", father:"yoriyoshi", mother:null, spouses:[], birthplace:"", fate:"", img:null, wiki:"https://ja.wikipedia.org/wiki/源義綱", note:"義家の弟。のち甥の義忠と対立した。"},
+    {id:"yoshimitsu", name:"源義光", birth:"1045年", death:"1127年", byear:1045, dyear:1127, title:"新羅三郎", father:"yoriyoshi", mother:null, spouses:[], birthplace:"", fate:"", img:null, wiki:"https://ja.wikipedia.org/wiki/源義光", note:"甲斐源氏・佐竹氏など多くの氏族の祖。"},
+    {id:"yoshitada", name:"源義忠", birth:"1070年", death:"1109年", byear:1070, dyear:1109, title:"", father:"yoshiie", mother:null, spouses:[], birthplace:"", fate:"郎党に襲われ死去（暗殺）", img:null, wiki:"https://ja.wikipedia.org/wiki/源義忠", note:"義家の嫡男。"},
+    {id:"yoshichika", name:"源義親", birth:"", death:"1108年", byear:null, dyear:1108, title:"", father:"yoshiie", mother:null, spouses:[], birthplace:"", fate:"対馬で戦死とも", img:null, wiki:"https://ja.wikipedia.org/wiki/源義親", note:"九州で勢力を伸ばしたが討たれた。"},
+    {id:"yoshikuni", name:"源義国", birth:"1091年", death:"1155年", byear:1091, dyear:1155, title:"", father:"yoshiie", mother:null, spouses:[], birthplace:"", fate:"", img:null, wiki:"https://ja.wikipedia.org/wiki/源義国", note:"足利氏・新田氏の祖。"},
+    {id:"tameyoshi", name:"源為義", birth:"1096年", death:"1156年", byear:1096, dyear:1156, title:"陸奥守", father:"yoshitada", mother:null, spouses:[], birthplace:"", fate:"保元の乱の後、斬首", img:null, wiki:"https://ja.wikipedia.org/wiki/源為義", note:"保元の乱で崇徳上皇方につき敗れた。"},
+    {id:"yoshitomo", name:"源義朝", birth:"1123年", death:"1160年", byear:1123, dyear:1160, title:"左馬頭", father:"tameyoshi", mother:null, spouses:[], birthplace:"", fate:"平治の乱の後、尾張国で暗殺", img:null, wiki:"https://ja.wikipedia.org/wiki/源義朝", note:"保元の乱の勝者となったが、平治の乱で清盛に敗れた。"},
+    {id:"yoshikata", name:"源義賢", birth:"1127年頃", death:"1162年", byear:1127, dyear:1162, title:"", father:"tameyoshi", mother:null, spouses:[], birthplace:"", fate:"大蔵合戦で戦死", img:null, wiki:"https://ja.wikipedia.org/wiki/源義賢", note:"木曽義仲の父。上野・信濃に勢力を持った。"},
+    {id:"tametomo", name:"源為朝", birth:"1139年", death:"1170年", byear:1139, dyear:1170, title:"鎮西八郎", father:"tameyoshi", mother:null, spouses:[], birthplace:"", fate:"伊豆大島で自害", img:null, wiki:"https://ja.wikipedia.org/wiki/源為朝", note:"強弓で知られる豪傑。保元の乱で活躍した。"},
+    {id:"yukiie", name:"源行家", birth:"", death:"1186年", byear:null, dyear:1186, title:"", father:"tameyoshi", mother:null, spouses:[], birthplace:"", fate:"河内国で討死", img:null, wiki:"https://ja.wikipedia.org/wiki/源行家", note:"以仁王の令旨を諸国の源氏に伝えた。"},
+    {id:"yoritomo", name:"源頼朝", birth:"1147年", death:"1199年", byear:1147, dyear:1199, title:"征夷大将軍", father:"yoshitomo", mother:null, spouses:["masako"], birthplace:"尾張国熱田", fate:"落馬の後、病死とも", img:null, wiki:"https://ja.wikipedia.org/wiki/源頼朝", note:"鎌倉幕府初代将軍。武家政権を確立した。"},
+    {id:"masako", name:"北条政子", birth:"1157年", death:"1225年", byear:1157, dyear:1225, title:"尼将軍", father:null, mother:null, spouses:["yoritomo"], birthplace:"伊豆国", fate:"", img:null, wiki:"https://ja.wikipedia.org/wiki/北条政子", note:"頼朝の正室。承久の乱では御家人を鼓舞した。"},
+    {id:"noriyori", name:"源範頼", birth:"1150年", death:"1193年", byear:1150, dyear:1193, title:"", father:"yoshitomo", mother:null, spouses:[], birthplace:"", fate:"嫌疑を受け自害とも", img:null, wiki:"https://ja.wikipedia.org/wiki/源範頼", note:"一ノ谷の戦いなどで活躍した頼朝の弟。"},
+    {id:"zenjo", name:"源全成", birth:"1153年", death:"1203年", byear:1153, dyear:1203, title:"阿野全成", father:"yoshitomo", mother:null, spouses:[], birthplace:"", fate:"嫌疑により誅殺", img:null, wiki:"https://ja.wikipedia.org/wiki/源全成", note:"義朝の七男。僧となっていたが頼朝に迎えられた。"},
+    {id:"gien", name:"源義円", birth:"1155年", death:"1181年", byear:1155, dyear:1181, title:"", father:"yoshitomo", mother:null, spouses:[], birthplace:"", fate:"墨俣川の戦いで戦死", img:null, wiki:"https://ja.wikipedia.org/wiki/源義円", note:"義経の兄。墨俣川で平家軍に敗れ戦死。"},
+    {id:"yoshitsune", name:"源義経", birth:"1159年", death:"1189年", byear:1159, dyear:1189, title:"判官", father:"yoshitomo", mother:null, spouses:["静御前"], birthplace:"山城国（京都）", fate:"衣川館で自害", img:null, wiki:"https://ja.wikipedia.org/wiki/源義経", note:"平家を壇ノ浦に滅ぼした天才的武将。兄・頼朝と対立し奥州で没した。"},
+    {id:"kiso", name:"木曽義仲", birth:"1154年", death:"1184年", byear:1154, dyear:1184, title:"旭将軍", father:"yoshikata", mother:null, spouses:[], birthplace:"信濃国", fate:"粟津の戦いで戦死", img:null, wiki:"https://ja.wikipedia.org/wiki/源義仲", note:"倶利伽羅峠の戦いで平家を破り入京した。頼朝軍に討たれた。"},
+    {id:"ohime", name:"大姫", birth:"1178年", death:"1197年", byear:1178, dyear:1197, title:"", father:"yoritomo", mother:"masako", spouses:[], birthplace:"鎌倉", fate:"病死", img:null, wiki:"https://ja.wikipedia.org/wiki/大姫", note:"頼朝と政子の長女。"},
+    {id:"yoriie", name:"源頼家", birth:"1182年", death:"1204年", byear:1182, dyear:1204, title:"征夷大将軍（第2代）", father:"yoritomo", mother:"masako", spouses:[], birthplace:"鎌倉", fate:"修善寺で暗殺", img:null, wiki:"https://ja.wikipedia.org/wiki/源頼家", note:"鎌倉幕府第2代将軍。北条氏に幽閉され暗殺された。"},
+    {id:"sanetomo", name:"源実朝", birth:"1192年", death:"1219年", byear:1192, dyear:1219, title:"征夷大将軍（第3代）", father:"yoritomo", mother:"masako", spouses:[], birthplace:"鎌倉", fate:"鶴岡八幡宮で公暁に暗殺", img:null, wiki:"https://ja.wikipedia.org/wiki/源実朝", note:"第3代将軍。歌人としても知られ『金槐和歌集』を残した。"}
+  ]
+},
+{
+  id:"heike", name:"平家", full:"伊勢平氏",
+  desc:"桓武平氏の一流・伊勢平氏。清盛が武家の棟梁として太政大臣に上り、壇ノ浦に滅んだ。",
+  theme:{ crest:"agehacho",
+    bg:"linear-gradient(180deg,#2c0a11,#150409)", bgc:"#1c0509",
+    ink:"#f2e7d3", mut:"#b39d8d", accent:"#c9a45c", accentSoft:"rgba(201,164,92,.13)",
+    panel:"rgba(43,14,19,.88)", panelLine:"rgba(201,164,92,.32)",
+    nodeBg:"rgba(58,18,25,.94)", nodeLine:"rgba(201,164,92,.55)", nodeText:"#f2e7d3",
+    edge:"rgba(201,164,92,.5)", highlight:"#e6c987",
+    headerBg:"rgba(24,5,9,.9)", crestColor:"#c9a45c", crestOpacity:.08 },
+  members:[
+    {id:"tadamori", name:"平忠盛", birth:"1096年", death:"1153年", byear:1096, dyear:1153, title:"備前守", father:null, mother:null, spouses:[], birthplace:"", fate:"病死", img:null, wiki:"https://ja.wikipedia.org/wiki/平忠盛", note:"伊勢平氏の勢力を宮廷に伸ばした清盛の父。"},
+    {id:"kiyomori", name:"平清盛", birth:"1118年", death:"1181年", byear:1118, dyear:1181, title:"太政大臣", father:"tadamori", mother:null, spouses:["tokiko"], birthplace:"", fate:"熱病", img:null, wiki:"https://ja.wikipedia.org/wiki/平清盛", note:"武士で初めて太政大臣となった。福原遷都・日宋貿易を進めた。"},
+    {id:"tokiko", name:"平時子", birth:"1126年", death:"1185年", byear:1126, dyear:1185, title:"二位尼", father:null, mother:null, spouses:["kiyomori"], birthplace:"", fate:"壇ノ浦で入水", img:null, wiki:"https://ja.wikipedia.org/wiki/平時子", note:"清盛の継室。安徳帝を抱いて壇ノ浦に入水した。"},
+    {id:"tadanori", name:"平忠度", birth:"1144年", death:"1184年", byear:1144, dyear:1184, title:"薩摩守", father:"tadamori", mother:null, spouses:[], birthplace:"", fate:"一ノ谷の戦いで戦死", img:null, wiki:"https://ja.wikipedia.org/wiki/平忠度", note:"清盛の異母弟。歌人としても知られる。"},
+    {id:"shigemori", name:"平重盛", birth:"1138年", death:"1179年", byear:1138, dyear:1179, title:"内大臣", father:"kiyomori", mother:null, spouses:[], birthplace:"", fate:"病死", img:null, wiki:"https://ja.wikipedia.org/wiki/平重盛", note:"清盛の嫡男。穏やかな人柄で「小松殿」と呼ばれた。"},
+    {id:"munemori", name:"平宗盛", birth:"1147年", death:"1185年", byear:1147, dyear:1185, title:"内大臣", father:"kiyomori", mother:"tokiko", spouses:[], birthplace:"", fate:"近江国で斬首", img:null, wiki:"https://ja.wikipedia.org/wiki/平宗盛", note:"清盛の三男。平家の棟梁を継いだが壇ノ浦で捕らえられた。"},
+    {id:"tomomori", name:"平知盛", birth:"1152年", death:"1185年", byear:1152, dyear:1185, title:"参議", father:"kiyomori", mother:"tokiko", spouses:[], birthplace:"", fate:"壇ノ浦で入水", img:null, wiki:"https://ja.wikipedia.org/wiki/平知盛", note:"平家の名将。「見るべき程の事は見つ」と言い残し入水した。"},
+    {id:"shigehira", name:"平重衡", birth:"1157年", death:"1185年", byear:1157, dyear:1185, title:"参議", father:"kiyomori", mother:"tokiko", spouses:[], birthplace:"", fate:"斬首", img:null, wiki:"https://ja.wikipedia.org/wiki/平重衡", note:"東大寺・興福寺を焼いた南都焼討の実行者とされる。"},
+    {id:"tokuko", name:"平徳子", birth:"1155年", death:"1214年", byear:1155, dyear:1214, title:"建礼門院", father:"kiyomori", mother:"tokiko", spouses:["高倉天皇"], birthplace:"", fate:"病死（出家後）", img:null, wiki:"https://ja.wikipedia.org/wiki/建礼門院", note:"高倉天皇の中宮、安徳帝の母。壇ノ浦を生き延び大原で余生を送った。"},
+    {id:"koremori", name:"平維盛", birth:"1158年", death:"1184年", byear:1158, dyear:1184, title:"参議", father:"shigemori", mother:null, spouses:[], birthplace:"", fate:"那智の海で入水", img:null, wiki:"https://ja.wikipedia.org/wiki/平維盛", note:"重盛の嫡男。美貌の公達として知られる。"},
+    {id:"kiyotsune", name:"平清経", birth:"1163年", death:"1183年", byear:1163, dyear:1183, title:"", father:"shigemori", mother:null, spouses:[], birthplace:"", fate:"豊前国柳浦で入水", img:null, wiki:"https://ja.wikipedia.org/wiki/平清経", note:"重盛の次男。都落ちの途上で入水した。"},
+    {id:"antoku", name:"安徳天皇", birth:"1178年", death:"1185年", byear:1178, dyear:1185, title:"第81代天皇", father:null, mother:"tokuko", spouses:[], birthplace:"山城国（京都）", fate:"壇ノ浦で入水", img:null, wiki:"https://ja.wikipedia.org/wiki/安徳天皇", note:"清盛の外孫。8歳で壇ノ浦に没した。"}
+  ]
+}
+];
+</script>
+<script>
+"use strict";
+/* ========= 系図レイアウト＆描画 ========= */
+var SVGNS = "http://www.w3.org/2000/svg";
+var NW = 138, NH = 52, SPG = 34, HGAP = 26, VGAP = 66, ROWH = NH + VGAP;
+var clan = null, byId = {}, units = {}, kidsOf = {}, genOfMap = {}, pos = {}, contentBox = null;
+var view = {x:40, y:26, k:1};
+var userMoved = false; /* 手動でパン・ズームしたら true（resize時の再フィットを止める） */
+var selectedId = null, animId = null, hlTimer = null;
+var canvas = document.getElementById("canvas"), viewport = document.getElementById("viewport"), stage = document.getElementById("stage");
+
+function el(tag, attrs){ var e = document.createElementNS(SVGNS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); return e; }
+function isSpouseOnly(m){ if (byId[m.father] || byId[m.mother]) return false; return (m.spouses || []).some(function(s){ return !!byId[s]; }); }
+function leadIdOf(m){ if (!isSpouseOnly(m)) return m.id; for (var i = 0; i < m.spouses.length; i++){ if (byId[m.spouses[i]]) return m.spouses[i]; } return m.id; }
+
+var THEME_MAP = {bg:"--bg", ink:"--ink", mut:"--mut", accent:"--accent", accentSoft:"--accent-soft", panel:"--panel", panelLine:"--panel-line", nodeBg:"--node-bg", nodeLine:"--node-line", nodeText:"--node-text", edge:"--edge", highlight:"--highlight", headerBg:"--header-bg", crestColor:"--crest-color"};
+function applyTheme(t){
+  var root = document.documentElement.style;
+  for (var k in THEME_MAP) root.setProperty(THEME_MAP[k], t[k]);
+  document.body.style.backgroundColor = t.bgc;
+  var wm = document.getElementById("watermark");
+  wm.style.color = t.crestColor; wm.style.opacity = t.crestOpacity; wm.innerHTML = crestSVG(t.crest);
+  document.getElementById("brandCrest").innerHTML = crestSVG(t.crest);
+  document.documentElement.dataset.clan = clan.id;
+}
+
+function buildLayout(){
+  byId = {}; units = {}; kidsOf = {}; genOfMap = {}; pos = {};
+  clan.members.forEach(function(m){ byId[m.id] = m; });
+  clan.members.forEach(function(m){
+    if (isSpouseOnly(m)) return;
+    var partners = (m.spouses || []).filter(function(s){ return byId[s] && isSpouseOnly(byId[s]); }).map(function(s){ return byId[s]; });
+    units[m.id] = {lead:m, partners:partners, w:0, anchorX:0, cx:0};
+    kidsOf[m.id] = [];
+  });
+  clan.members.forEach(function(m){
+    if (isSpouseOnly(m)) return;
+    var seen = {};
+    [m.father, m.mother].forEach(function(p){
+      if (p && byId[p]){ var L = leadIdOf(byId[p]); if (L !== m.id && !seen[L]){ seen[L] = 1; kidsOf[L].push(m); } }
+    });
+  });
+  Object.keys(kidsOf).forEach(function(k){
+    kidsOf[k].sort(function(a, b){ return ((a.byear == null ? 9999 : a.byear) - (b.byear == null ? 9999 : b.byear)) || a.name.localeCompare(b.name, "ja"); });
+  });
+  function gen(id){
+    if (genOfMap[id] != null) return genOfMap[id];
+    genOfMap[id] = 0;
+    var m = byId[id], gs = [];
+    [m.father, m.mother].forEach(function(p){ if (p && byId[p]){ var L = leadIdOf(byId[p]); if (L !== id) gs.push(gen(L)); } });
+    genOfMap[id] = gs.length ? Math.max.apply(null, gs) + 1 : 0;
+    return genOfMap[id];
+  }
+  Object.keys(units).forEach(function(id){ gen(id); });
+  function ownW(u){ return NW + u.partners.length * (SPG + NW); }
+  function width(id){
+    var u = units[id], ks = kidsOf[id];
+    if (!ks.length){ u.w = ownW(u); return u.w; }
+    var kw = 0; ks.forEach(function(c, i){ kw += width(c.id) + (i ? HGAP : 0); });
+    u.w = Math.max(ownW(u), kw); return u.w;
+  }
+  function place(id, left){
+    var u = units[id], y = genOfMap[id] * ROWH, ow = ownW(u), lx = left + (u.w - ow) / 2;
+    pos[u.lead.id] = {x:lx, y:y};
+    u.partners.forEach(function(p, i){ pos[p.id] = {x: lx + NW + SPG + i * (NW + SPG), y:y}; });
+    u.anchorX = lx + ow / 2; u.cx = left + u.w / 2;
+    var ks = kidsOf[id];
+    if (ks.length){
+      var kw = 0; ks.forEach(function(c, i){ kw += units[c.id].w + (i ? HGAP : 0); });
+      var kx = u.cx - kw / 2;
+      ks.forEach(function(c){ place(c.id, kx); kx += units[c.id].w + HGAP; });
+    }
+  }
+  var roots = Object.keys(units).filter(function(id){ return genOfMap[id] === 0; });
+  roots.sort(function(a, b){ return ((byId[a].byear == null ? 9999 : byId[a].byear) - (byId[b].byear == null ? 9999 : byId[b].byear)); });
+  var totalW = 0; roots.forEach(function(id){ totalW += width(id); });
+  totalW += HGAP * Math.max(0, roots.length - 1);
+  var rx = 0; roots.forEach(function(id){ place(id, rx); rx += units[id].w + HGAP; });
+  var maxY = 0;
+  Object.keys(pos).forEach(function(id){ maxY = Math.max(maxY, pos[id].y + NH); });
+  contentBox = {minX:-92, minY:-14, maxX:totalW + 12, maxY:maxY + 18};
+}
+
+function render(){
+  var edges = document.getElementById("edges"), nodes = document.getElementById("nodes"), gl = document.getElementById("genlabels");
+  edges.innerHTML = ""; nodes.innerHTML = ""; gl.innerHTML = "";
+  var oldDefs = document.getElementById("avdefs"); if (oldDefs) oldDefs.remove();
+  var defs = el("defs", {id:"avdefs"});
+  var cp = el("clipPath", {id:"avclip", clipPathUnits:"userSpaceOnUse"});
+  cp.appendChild(el("circle", {cx:19, cy:NH/2, r:11.5}));
+  defs.appendChild(cp); canvas.insertBefore(defs, canvas.firstChild);
+  var gens = {};
+  Object.keys(units).forEach(function(id){ gens[genOfMap[id]] = 1; });
+  Object.keys(gens).forEach(function(g){
+    var t = el("text", {x:-16, y: Number(g) * ROWH + NH/2 + 4, "class":"gen-label"});
+    t.textContent = "第" + (Number(g) + 1) + "代";
+    gl.appendChild(t);
+  });
+  Object.keys(units).forEach(function(id){
+    var u = units[id], lp = pos[u.lead.id];
+    u.partners.forEach(function(p){
+      var pp = pos[p.id];
+      [-2.6, 2.6].forEach(function(off){
+        edges.appendChild(el("path", {d:"M " + (lp.x + NW) + " " + (lp.y + NH/2 + off) + " L " + pp.x + " " + (pp.y + NH/2 + off), "class":"spouse"}));
+      });
+    });
+    var ks = kidsOf[id];
+    if (ks.length){
+      var busY = lp.y + NH + VGAP/2;
+      var xs = ks.map(function(c){ return pos[c.id].x + NW/2; });
+      var lo = Math.min.apply(null, xs.concat([u.anchorX])), hi = Math.max.apply(null, xs.concat([u.anchorX]));
+      var d = "M " + u.anchorX + " " + (lp.y + NH) + " L " + u.anchorX + " " + busY
+            + " M " + lo + " " + busY + " L " + hi + " " + busY;
+      xs.forEach(function(x, i){ d += " M " + x + " " + busY + " L " + x + " " + pos[ks[i].id].y; });
+      edges.appendChild(el("path", {d:d}));
+    }
+  });
+  clan.members.forEach(function(m){
+    var p = pos[m.id]; if (!p) return;
+    var g = el("g", {"class":"node" + (m.id === selectedId ? " sel" : ""), transform:"translate(" + p.x + "," + p.y + ")", "data-id":m.id});
+    g.appendChild(el("rect", {"class":"card", x:0, y:0, width:NW, height:NH, rx:7}));
+    g.appendChild(el("circle", {"class":"avc", cx:19, cy:NH/2, r:11.5}));
+    if (m.img){
+      g.appendChild(el("image", {x:7.5, y:NH/2 - 11.5, width:23, height:23, href:m.img, "clip-path":"url(#avclip)", preserveAspectRatio:"xMidYMid slice"}));
+    } else {
+      var avt = el("text", {"class":"avt", x:19, y:NH/2 + 4.5}); avt.textContent = m.name.charAt(0); g.appendChild(avt);
+    }
+    var nm = el("text", {"class":"nm", x:38, y:23}); nm.textContent = m.name; g.appendChild(nm);
+    var yr = el("text", {"class":"yr", x:38, y:40});
+    yr.textContent = (m.byear == null ? "？" : m.byear) + " – " + (m.dyear == null ? (m.alive ? "存命" : "？") : m.dyear);
+    g.appendChild(yr);
+    g.addEventListener("click", function(){ selectPerson(m.id); });
+    nodes.appendChild(g);
+  });
+}
+
+/* ========= パン・ズーム ========= */
+function applyView(){ viewport.setAttribute("transform", "translate(" + view.x + "," + view.y + ") scale(" + view.k + ")"); }
+function clampK(k){ return Math.min(2.6, Math.max(0.12, k)); }
+function zoomAt(px, py, f){
+  var k2 = clampK(view.k * f); if (k2 === view.k) return;
+  view.x = px - (px - view.x) * (k2 / view.k);
+  view.y = py - (py - view.y) * (k2 / view.k);
+  view.k = k2; applyView();
+}
+canvas.addEventListener("wheel", function(e){
+  e.preventDefault();
+  userMoved = true;
+  var r = canvas.getBoundingClientRect();
+  zoomAt(e.clientX - r.left, e.clientY - r.top, Math.exp(-e.deltaY * 0.0016));
+}, {passive:false});
+var pointers = new Map(), pinch = null;
+function dist(a, b){ return Math.hypot(a.x - b.x, a.y - b.y); }
+canvas.addEventListener("pointerdown", function(e){
+  canvas.setPointerCapture(e.pointerId);
+  pointers.set(e.pointerId, {x:e.clientX, y:e.clientY});
+  cancelAnim();
+  if (pointers.size === 2){
+    var ps = Array.from(pointers.values());
+    pinch = {d:dist(ps[0], ps[1]), mx:(ps[0].x + ps[1].x)/2, my:(ps[0].y + ps[1].y)/2};
+  }
+});
+canvas.addEventListener("pointermove", function(e){
+  if (!pointers.has(e.pointerId)) return;
+  var prev = pointers.get(e.pointerId);
+  pointers.set(e.pointerId, {x:e.clientX, y:e.clientY});
+  if (pointers.size === 1){
+    userMoved = true;
+    view.x += e.clientX - prev.x; view.y += e.clientY - prev.y; applyView();
+  } else if (pointers.size === 2 && pinch){
+    userMoved = true;
+    var ps = Array.from(pointers.values()), r = canvas.getBoundingClientRect();
+    var mx = (ps[0].x + ps[1].x)/2 - r.left, my = (ps[0].y + ps[1].y)/2 - r.top;
+    view.x += mx - (pinch.mx - r.left); view.y += my - (pinch.my - r.top);
+    var nd = dist(ps[0], ps[1]);
+    if (pinch.d > 0) zoomAt(mx, my, nd / pinch.d); else applyView();
+    pinch = {d:nd, mx:(ps[0].x + ps[1].x)/2, my:(ps[0].y + ps[1].y)/2};
+  }
+});
+function endPointer(e){ pointers.delete(e.pointerId); if (pointers.size < 2) pinch = null; }
+canvas.addEventListener("pointerup", endPointer);
+canvas.addEventListener("pointercancel", endPointer);
+document.getElementById("zin").addEventListener("click", function(){ userMoved = true; zoomAt(stage.clientWidth/2, stage.clientHeight/2, 1.3); });
+document.getElementById("zout").addEventListener("click", function(){ userMoved = true; zoomAt(stage.clientWidth/2, stage.clientHeight/2, 1/1.3); });
+document.getElementById("zfit").addEventListener("click", function(){ userMoved = false; fitView(true); });
+
+function animateView(target, dur){
+  cancelAnim();
+  var from = {x:view.x, y:view.y, k:view.k}, t0 = performance.now();
+  function step(now){
+    var t = Math.min(1, (now - t0) / dur), e = t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2;
+    view = {x: from.x + (target.x - from.x) * e, y: from.y + (target.y - from.y) * e, k: from.k + (target.k - from.k) * e};
+    applyView();
+    if (t < 1) animId = requestAnimationFrame(step); else animId = null;
+  }
+  animId = requestAnimationFrame(step);
+}
+function cancelAnim(){ if (animId){ cancelAnimationFrame(animId); animId = null; } }
+function fitTarget(){
+  var b = contentBox, sw = stage.clientWidth, sh = stage.clientHeight;
+  var k = Math.min(clampK(Math.min(sw / (b.maxX - b.minX), sh / (b.maxY - b.minY))), 1.2);
+  return {k:k, x:(sw - (b.maxX - b.minX) * k)/2 - b.minX * k, y:(sh - (b.maxY - b.minY) * k)/2 - b.minY * k};
+}
+function fitView(anim){ var t = fitTarget(); if (anim) animateView(t, 700); else { view = t; applyView(); } }
+/* スマホは読み込み後にブラウザUIの表示状態が変わって stage の実寸が変わる。
+   手動操作していない時だけ、resize／回転に合わせて再フィットする */
+var resizeTimer = null;
+function refitOnResize(){
+  if (resizeTimer) clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(function(){ if (!userMoved && contentBox) fitView(false); }, 120);
+}
+window.addEventListener("resize", refitOnResize);
+window.addEventListener("orientationchange", refitOnResize);
+
+function showHighlight(id){
+  var old = document.querySelector(".hl-ring"); if (old) old.remove();
+  if (hlTimer) clearTimeout(hlTimer);
+  var p = pos[id]; if (!p) return;
+  var r = el("rect", {"class":"hl-ring", x:p.x - 7, y:p.y - 7, width:NW + 14, height:NH + 14, rx:11});
+  document.getElementById("nodes").appendChild(r);
+  hlTimer = setTimeout(function(){ r.remove(); }, 3400);
+}
+function focusPerson(id){
+  var p = pos[id]; if (!p) return;
+  userMoved = true; /* 検索ジャンプ後の再フィットで視点が飛ばないように */
+  var k = Math.max(view.k, 1.0);
+  animateView({k:k, x: stage.clientWidth/2 - (p.x + NW/2) * k, y: stage.clientHeight/2 - (p.y + NH/2) * k}, 850);
+  showHighlight(id);
+  selectPerson(id);
+}
+
+/* ========= 詳細パネル ========= */
+function esc(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"}[c]; }); }
+function relList(list){
+  if (!list || !list.length) return "不明";
+  return list.map(function(x){
+    if (byId[x]) return '<button type="button" class="rel" data-pid="' + x + '">' + esc(byId[x].name) + "</button>";
+    return esc(x);
+  }).join("、");
+}
+function parentHTML(id){ if (!id) return "不明"; if (byId[id]) return '<button type="button" class="rel" data-pid="' + id + '">' + esc(byId[id].name) + "</button>"; return esc(id); }
+function siblingsOf(m){ return clan.members.filter(function(o){ return o.id !== m.id && ((m.father && o.father === m.father) || (m.mother && o.mother === m.mother)); }).map(function(o){ return o.id; }); }
+function childrenOf(m){ return clan.members.filter(function(o){ return o.father === m.id || o.mother === m.id; }).map(function(o){ return o.id; }); }
+function renderDetail(m){
+  var d = document.getElementById("detail");
+  if (!m){
+    d.innerHTML = '<div class="intro-crest">' + crestSVG(clan.theme.crest) + "</div>"
+      + "<h2>" + esc(clan.full) + "</h2>"
+      + '<p class="note">' + esc(clan.desc) + "</p>"
+      + '<p class="sub">収録 ' + clan.members.length + "人（試作ダミーデータ）。系図の人物をタップ／クリックすると、肖像とプロフィールがここに表示されます。名前で検索すると、その人の場所へ移動してハイライトします。</p>";
+    return;
+  }
+  var age = (m.byear != null && m.dyear != null) ? (m.dyear - m.byear) + "歳" : "不明";
+  var death = m.death || "不明";
+  if (m.alive){ death = "存命"; age = "存命"; }
+  var rows = [
+    ["生年月日", m.birth || "不明"],
+    ["出生地", m.birthplace || "不明"],
+    ["家系", clan.full],
+    ["死亡日", death],
+    ["享年", age],
+    ["死因・最期", m.fate || "不明"],
+    ["配偶者", relList(m.spouses)],
+    ["父", parentHTML(m.father)],
+    ["母", parentHTML(m.mother)],
+    ["兄弟姉妹", relList(siblingsOf(m))],
+    ["子", relList(childrenOf(m))],
+    ["Wikipedia", m.wiki ? '<a href="' + esc(m.wiki) + '" target="_blank" rel="noopener">記事を開く</a>' : "不明"]
+  ];
+  var av = m.img ? '<img src="' + esc(m.img) + '" alt="">' : esc(m.name.charAt(0));
+  d.innerHTML = '<div class="avatar">' + av + "</div>"
+    + "<h2>" + esc(m.name) + "</h2>"
+    + (m.title ? '<p class="ttl">' + esc(m.title) + "</p>" : "")
+    + (m.note ? '<p class="sub" style="margin:0 0 6px">' + esc(m.note) + "</p>" : "")
+    + rows.map(function(r){ return '<div class="drow"><b>' + r[0] + '</b><span class="v">' + r[1] + "</span></div>"; }).join("");
+  d.querySelectorAll(".rel").forEach(function(b){ b.addEventListener("click", function(){ focusPerson(b.dataset.pid); }); });
+  d.scrollTop = 0;
+}
+function selectPerson(id){
+  selectedId = id;
+  document.querySelectorAll(".node").forEach(function(n){ n.classList.toggle("sel", n.dataset.id === id); });
+  renderDetail(byId[id]);
+  /* モバイルでは詳細パネルがキャンバスの下にあって気づきにくいので、見える位置までスクロールする */
+  if (window.matchMedia("(max-width: 820px)").matches){
+    var d = document.getElementById("detail");
+    requestAnimationFrame(function(){ d.scrollIntoView({behavior:"smooth", block:"start"}); });
+  }
+}
+
+/* ========= 家系切替・検索 ========= */
+function setClan(id){
+  clan = CLANS.find(function(c){ return c.id === id; });
+  selectedId = null;
+  userMoved = false;
+  applyTheme(clan.theme);
+  document.getElementById("clanDesc").textContent = clan.full + " ― " + clan.desc;
+  document.querySelectorAll("#clanTabs button").forEach(function(b){ b.classList.toggle("on", b.dataset.clan === id); });
+  buildLayout(); render(); renderDetail(null); fitView(false);
+}
+var tabs = document.getElementById("clanTabs");
+CLANS.forEach(function(c){
+  var b = document.createElement("button");
+  b.type = "button"; b.textContent = c.name; b.dataset.clan = c.id;
+  b.addEventListener("click", function(){ setClan(c.id); });
+  tabs.appendChild(b);
+});
+var sInput = document.getElementById("searchInput"), cand = document.getElementById("candidates");
+sInput.addEventListener("input", function(){
+  var q = sInput.value.trim();
+  if (!q){ cand.style.display = "none"; cand.innerHTML = ""; return; }
+  var hits = [];
+  CLANS.forEach(function(c){ c.members.forEach(function(m){ if (m.name.indexOf(q) >= 0) hits.push({clan:c, m:m}); }); });
+  cand.innerHTML = "";
+  if (!hits.length){
+    cand.innerHTML = '<div style="padding:9px 11px;font-size:12.5px;color:var(--mut)">一致する人物はいません</div>';
+    cand.style.display = "block"; return;
+  }
+  hits.slice(0, 14).forEach(function(h){
+    var b = document.createElement("button"); b.type = "button";
+    b.innerHTML = '<span class="cn"></span><span class="cm"></span>';
+    b.querySelector(".cn").textContent = h.m.name;
+    b.querySelector(".cm").textContent = h.clan.name + "｜" + (h.m.byear == null ? "？" : h.m.byear) + "–" + (h.m.dyear == null ? "" : h.m.dyear);
+    b.addEventListener("click", function(){
+      cand.style.display = "none"; sInput.value = h.m.name;
+      if (h.clan.id !== clan.id) setClan(h.clan.id);
+      focusPerson(h.m.id);
+    });
+    cand.appendChild(b);
+  });
+  cand.style.display = "block";
+});
+document.addEventListener("click", function(e){ if (!e.target.closest(".search")) cand.style.display = "none"; });
+sInput.addEventListener("keydown", function(e){ if (e.key === "Enter"){ var f = cand.querySelector("button"); if (f) f.click(); } });
+
+setClan("genji");
+</script>
+</body>
+</html>
