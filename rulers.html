@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<script>try{var _t=localStorage.getItem("ido_theme_v1");if(_t==="andy"||_t==="kuma")document.documentElement.dataset.theme=_t;}catch(e){}</script>
+<script>try{if(localStorage.getItem("rulers_color")==="aka")document.documentElement.dataset.color="aka";}catch(e){}</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>世界の歴代の統治者｜その時代、世界を治めていた皇帝・王・大統領・首相を地図で見る</title>
@@ -102,45 +102,31 @@ a{color:#dcbf85}
 .sitebar .sb-name{font-family:var(--serif);font-weight:600;letter-spacing:.06em}
 .sitebar .sb-tool{color:#9c937c;font-size:13px;letter-spacing:.05em}
 </style>
-<style id="hud-theme-style">
-/* ===== DEF/HUD テーマ切替（共通） ===== */
-.ido-theme-switch{position:relative;z-index:1;display:flex;gap:4px;padding:4px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.07);flex:none}
-.ido-theme-switch button{border:0;border-radius:999px;padding:6px 13px;background:transparent;box-shadow:none;color:#cfe2f3;font:inherit;font-size:12.5px;font-weight:800;line-height:1.25;cursor:pointer}
-.ido-theme-switch button[aria-pressed="true"]{background:linear-gradient(180deg,#ffc44d,var(--amber));color:#14273c}
-html[data-theme="andy"] .ido-theme-switch button[aria-pressed="true"]{background:linear-gradient(180deg,#8ff2ff,#46d9ec);color:#03222e;box-shadow:0 0 16px rgba(70,217,236,.55)}
-:root[data-theme="andy"]{color-scheme:dark;--navy:#1d4568;--navy2:#02070d;--amber:#46d9ec;--amber-d:#8ff2ff;--bg:#04090f;--card:#081623;--ink:#d8f1f6;--mut:#a9c9d9;--line:rgba(110,205,230,.32);--red:#ff6b61;--green:#3ddc97;--soft:rgba(70,217,236,.10);--good:#3ddc97;--bad:#ff6b61;--sat:#7cc7ff;--sun:#ff6b61}
-html[data-theme="andy"]{background:#04090f}
-html[data-theme="andy"] body{background:radial-gradient(900px 480px at 85% -120px,rgba(70,217,236,.13),rgba(70,217,236,0) 60%),repeating-linear-gradient(0deg,rgba(140,230,255,.022) 0 1px,transparent 1px 4px),linear-gradient(rgba(110,205,230,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(110,205,230,.045) 1px,transparent 1px),linear-gradient(180deg,#030a12,#04090f);background-size:auto,auto,52px 52px,52px 52px,auto}
-html[data-theme="andy"] a{color:#ffcf4d}
-html[data-theme="andy"] .sitebar a{color:#fff}
-/* 濃色文字（--navy）を担う見出し・数値類は明色に固定 */
-html[data-theme="andy"] :is(.card h2,.card h3,.tool-card h2,.today .word,.today.word,.result .word,.sumcard .val,.sumcard.white.val,.count,.date-line,.plan .pname,.plan.pname,.pname .pn,.prod .pname,.prod h4,.vs h3,.total3 h3,.bar-row .b-lab,.bar-row .bar-head .cat,.penline .amt,.bd-fixed,.stone .sname,.plabel,details summary,.adv-row .a-lab,.cal-title,.compat .ctext,.detail-rk,.detail-word,.dir-cell .d-dir,.dir-cell .d-star,.dnav .dlabel,.fortune-name,.grade,.kv dt,.lp-line .lp b,.person h3,.pos-name,.rank .bt,.read-head .pname,.result-word,.rname,.star-row .s-lab,.star-row .s-name,.sumline b,.detail .dname,.detail .drow b){color:#d8f1f6}
-/* 白・淡色の面は背景と文字色をセットでダークパネル化 */
-html[data-theme="andy"] :is(.suggest,.chip,.plan,.rank li,.dir-cell,.hexbox.sub,.result .action,.checks label,.badges span,.rank-num,.prod .cond,.prod .nodatabox,.chips button,.tabs button,.cal-nav button,.btn-ghost,.btn.ghost,.presets button,.lp-line .lp,button.dbtn,.plan.dim,.ruler-item){background:#0a1e30;color:#d8f1f6;border-color:rgba(110,205,230,.32)}
-html[data-theme="andy"] .btn-del{background:#0a1e30;border-color:rgba(110,205,230,.32)}
-html[data-theme="andy"] .sumcard.white{background:#0a1e30;color:#d8f1f6}
-html[data-theme="andy"] .seg button{background:#0a1e30;color:#d8f1f6;border-color:rgba(110,205,230,.32)}
-html[data-theme="andy"] .seg button.active{background:#1d4568;color:#fff}
-html[data-theme="andy"] :is(th,table.anchors th){background:#0d2a42;color:#d8f1f6}
-html[data-theme="andy"] table.cal td{background:#0a1e30;color:#d8f1f6}
-html[data-theme="andy"] table.cal td.empty{background:#060f18;color:#a9c9d9}
-html[data-theme="andy"] tr.total td{background:rgba(70,217,236,.12)}
-html[data-theme="andy"] :is(.bar-track,.bar-row .b-track){background:rgba(110,205,230,.15)}
-html[data-theme="andy"] :is(.warn,.sumcard.alert,.chip.unknown){background:rgba(255,82,82,.13)}
-html[data-theme="andy"] :is(.total3 .plan.win,.vs .side.win){background:rgba(61,220,151,.12)}
-html[data-theme="andy"] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),html[data-theme="andy"] select,html[data-theme="andy"] textarea{background-color:#0a1a29;color:#d8f1f6;border-color:rgba(110,205,230,.42)}
-/* アンバー地に白文字だったバッジ類は濃色文字に */
-html[data-theme="andy"] :is(.badge,.best-b,.birthday-banner,.rank-num.top,.chip.active,button.draw,.mini.kyo,.mini.kichi){color:#03222e}
-html[data-theme="andy"] .rank-num.top{background:var(--amber)}
-/* サイコロの目は白いままにする */
-html[data-theme="andy"] .die{background:#eef3f8;color:#1d2733}
-/* 色付きバッジ変種は白文字に戻す／淡色バッジ変種はダーク化する */
-html[data-theme="andy"] :is(.badge.badge-ins,.badge.badge-uranai,.badge.badge-mob,.badge.badge-hist,.badge.na,.badge.agency){color:#fff}
-html[data-theme="andy"] .badge.mid{background:#6b6557;color:#fff}
-html[data-theme="andy"] .badge.t1{background:rgba(255,82,82,.16);color:#ff9d94;border-color:rgba(255,82,82,.4)}
-html[data-theme="andy"] .badge.t2{background:#0d2a42;color:#d8f1f6;border-color:rgba(110,205,230,.32)}
-html[data-theme="andy"] .badge.t3{background:rgba(61,220,151,.14);color:#3ddc97;border-color:rgba(61,220,151,.4)}
-html[data-theme="andy"] .badges span.best-b{background:var(--amber);color:#03222e}
+<style id="rulers-color-style">
+/* ===== 統治者ページ専用 配色切替（紺金／赤金） ===== */
+.rulers-color-switch{position:relative;z-index:1;display:flex;gap:4px;padding:4px;border:1px solid var(--gold-line);border-radius:999px;background:rgba(255,255,255,.04);flex:none}
+.rulers-color-switch button{border:0;border-radius:999px;padding:6px 13px;background:transparent;box-shadow:none;color:#cfc4a6;font:inherit;font-size:12.5px;font-weight:700;letter-spacing:.08em;line-height:1.25;cursor:pointer}
+.rulers-color-switch button:hover{color:var(--gold-bright)}
+.rulers-color-switch button[aria-pressed="true"]{background:linear-gradient(180deg,#dec084,#b98f3e);color:#171106}
+/* ===== 赤金：深い臙脂×シャンパンゴールド ===== */
+:root[data-color="aka"]{--navy:#3a0f16;--navy2:#12040a;--bg:#150609;--card:rgba(43,14,19,.88);--ink:#f2e7d3;--mut:#b39d8d}
+html[data-color="aka"] body{background:radial-gradient(1100px 520px at 50% -160px,rgba(201,164,92,.08),rgba(201,164,92,0) 60%),linear-gradient(180deg,#20090e,#110407)}
+html[data-color="aka"] header{background:linear-gradient(160deg,#320b13,#12040a 72%)}
+html[data-color="aka"] header p{color:#c2ab9c}
+html[data-color="aka"] .sitebar{background:#0d0306}
+html[data-color="aka"] .sitebar .sb-tool{color:#a68d7d}
+html[data-color="aka"] label.flabel{color:#cbb09e}
+html[data-color="aka"] .yr-row select,html[data-color="aka"] .yr-row input[type="number"],html[data-color="aka"] .yr-row input[type="search"]{background:#1e070c}
+html[data-color="aka"] .yr-row input[type="search"]::placeholder{color:#8a7163}
+html[data-color="aka"] .btn{background:linear-gradient(180deg,#47121d,#220810)}
+html[data-color="aka"] .btn:hover{background:linear-gradient(180deg,#dec084,#b98f3e);color:#171106}
+html[data-color="aka"] #map,html[data-color="aka"] .leaflet-container{background:#1c060a}
+html[data-color="aka"] .leaflet-bar a{background:rgba(28,7,11,.92)}
+html[data-color="aka"] .leaflet-bar a:hover{background:rgba(62,22,29,.95)}
+html[data-color="aka"] .leaflet-control-attribution{background:rgba(28,7,11,.75)!important;color:#97816d!important}
+html[data-color="aka"] .leaflet-control-attribution a{color:#bfae94!important}
+html[data-color="aka"] .detail .dface img{background:#1e070c}
+html[data-color="aka"] .credit{color:#97816d}
 </style>
 <script type="application/ld+json">
 {
@@ -175,7 +161,7 @@ gtag('config', 'G-QQ4435VBMK');
 </script>
 </head>
 <body>
-<div class="sitebar"><div class="sb-in"><a class="sb-name" href="index.html">歴史系ツール集</a><span class="sb-tool">世界の歴代の統治者</span><div class="ido-theme-switch" role="group" aria-label="表示モード切替"><button type="button" data-ido-theme="kuma" aria-pressed="true">DEF</button><button type="button" data-ido-theme="andy" aria-pressed="false">HUD</button></div></div></div>
+<div class="sitebar"><div class="sb-in"><a class="sb-name" href="index.html">歴史系ツール集</a><span class="sb-tool">世界の歴代の統治者</span><div class="rulers-color-switch" role="group" aria-label="配色切替"><button type="button" data-rulers-color="kon" aria-pressed="true">紺金</button><button type="button" data-rulers-color="aka" aria-pressed="false">赤金</button></div></div></div>
 
 <header>
   <div class="wrap">
@@ -308,8 +294,8 @@ function hashHue(name){
   return ((h % 360) + 360) % 360;
 }
 function palette(){
-  if (document.documentElement.dataset.theme === "andy"){
-    return { ocean: "#071626", land: "#132c46", landStroke: "rgba(140,200,230,.28)", label: "#eaf7ff", halo: "rgba(4,12,20,.8)", ring: "#8fd8ef", sel: "#ffd94d" };
+  if (document.documentElement.dataset.color === "aka"){
+    return { ocean: "#1c060a", land: "#463136", landStroke: "rgba(201,164,92,.30)", label: "#f5ead2", halo: "rgba(12,3,5,.85)", ring: "#c9a45c", sel: "#e6c987" };
   }
   return { ocean: "#081426", land: "#263449", landStroke: "rgba(201,164,92,.28)", label: "#f0e8d2", halo: "rgba(3,6,10,.85)", ring: "#c9a45c", sel: "#e6c987" };
 }
@@ -619,7 +605,7 @@ document.getElementById("searchClear").addEventListener("click", function(){
   doSearch();
   document.getElementById("searchInput").focus();
 });
-new MutationObserver(function(){ applyMapTheme(); }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+new MutationObserver(function(){ applyMapTheme(); }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-color"] });
 fetch("land.geojson").then(function(res){ return res.json(); }).then(function(j){
   landData = j;
   if (map && !landLayer){
@@ -632,9 +618,9 @@ applyYear(1500);
 </script>
 <script>
 (function(){
-  var btns=document.querySelectorAll("[data-ido-theme]");
-  function sync(){var cur=document.documentElement.dataset.theme||"kuma";btns.forEach(function(b){b.setAttribute("aria-pressed",String(b.dataset.idoTheme===cur));});}
-  btns.forEach(function(b){b.addEventListener("click",function(){document.documentElement.dataset.theme=b.dataset.idoTheme;try{localStorage.setItem("ido_theme_v1",b.dataset.idoTheme);}catch(e){}sync();});});
+  var btns=document.querySelectorAll("[data-rulers-color]");
+  function sync(){var cur=document.documentElement.dataset.color||"kon";btns.forEach(function(b){b.setAttribute("aria-pressed",String(b.dataset.rulersColor===cur));});}
+  btns.forEach(function(b){b.addEventListener("click",function(){var v=b.dataset.rulersColor;if(v==="aka"){document.documentElement.dataset.color="aka";}else{delete document.documentElement.dataset.color;}try{localStorage.setItem("rulers_color",v);}catch(e){}sync();});});
   sync();
 })();
 </script>
