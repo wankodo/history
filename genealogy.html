@@ -105,6 +105,22 @@ main{flex:1; display:flex; gap:0; max-width:1400px; width:100%; margin:0 auto; m
 .node .avt{font-family:var(--serif); font-size:12px; fill:var(--accent); text-anchor:middle; transition:fill .8s ease}
 .hl-ring{fill:none; stroke:var(--highlight); stroke-width:2.6; pointer-events:none; animation:hlpulse 1.05s ease-in-out infinite}
 @keyframes hlpulse{0%,100%{opacity:1}50%{opacity:.3}}
+/* ===== 関係線・凡例 ===== */
+#relations path{fill:none; stroke-width:1.2}
+.rel-label{
+  font-size:10px; pointer-events:none;
+  paint-order:stroke; stroke:var(--panel); stroke-width:3.5px; stroke-linejoin:round;
+}
+#legend{
+  position:absolute; left:calc(14px + env(safe-area-inset-left, 0px)); top:12px; z-index:6;
+  background:var(--panel); border:1px solid var(--panel-line); border-radius:10px;
+  padding:8px 12px 9px; font-size:11px; line-height:1.5; color:var(--ink); max-width:230px;
+}
+#legend .lg-title{font-family:var(--serif); font-size:11.5px; letter-spacing:.14em; color:var(--mut); cursor:pointer; background:none; border:0; padding:0; font-weight:600}
+#legend ul{list-style:none; margin:5px 0 0; padding:0}
+#legend li{display:flex; align-items:center; gap:8px; margin:2.5px 0}
+#legend svg{flex:none}
+#legend.closed ul{display:none}
 /* ===== 詳細パネル ===== */
 aside{
   width:330px; flex:none; border-left:1px solid var(--panel-line); background:var(--panel);
@@ -132,6 +148,21 @@ aside h2 .kana{font-size:12.5px; color:var(--mut); letter-spacing:.05em; font-we
 .intro-crest svg{width:100%; height:100%; display:block}
 aside p.note{font-size:13px; line-height:1.8; color:var(--ink)}
 aside p.sub{font-size:12px; color:var(--mut); line-height:1.7}
+aside h3{font-family:var(--serif); font-size:13.5px; letter-spacing:.12em; color:var(--mut); margin:16px 0 6px; font-weight:600}
+.drow .src, .relsec .src{color:var(--mut); font-size:11px}
+.relsec .ritem{padding:5px 0; border-bottom:1px solid var(--panel-line); font-size:13px; line-height:1.55}
+.relsec .tag{
+  display:inline-block; font-size:10px; letter-spacing:.06em; padding:0 6px; margin-left:6px;
+  border:1px solid var(--panel-line); border-radius:999px; color:var(--mut); vertical-align:1px; white-space:nowrap;
+}
+.altsec .aitem{
+  border-left:3px solid var(--mut); padding:5px 0 5px 10px; margin:7px 0;
+  font-size:12.5px; line-height:1.7;
+}
+.altsrc{
+  display:inline-block; font-size:10.5px; font-weight:700; letter-spacing:.05em; color:#fff;
+  padding:0 7px; border-radius:999px; margin-right:7px; vertical-align:1px; white-space:nowrap;
+}
 /* ===== フッター ===== */
 footer{
   border-top:1px solid var(--panel-line); padding:12px 16px calc(16px + env(safe-area-inset-bottom, 0px)); text-align:center;
@@ -178,6 +209,7 @@ footer{
     <svg id="canvas" aria-label="家系図キャンバス">
       <g id="viewport">
         <g id="edges"></g>
+        <g id="relations"></g>
         <g id="genlabels"></g>
         <g id="nodes"></g>
       </g>
@@ -187,6 +219,7 @@ footer{
       <button id="zout" type="button" title="縮小">−</button>
       <button id="zfit" type="button" title="全体表示">全体</button>
     </div>
+    <div id="legend" hidden></div>
     <div class="hint">ドラッグで移動／ホイール・ピンチで拡大縮小</div>
   </section>
   <aside id="detail"></aside>
@@ -195,6 +228,7488 @@ footer{
   当サイトの内容の無断転載・埋め込みリンク・プログラムの複製転用を禁止します（リンクは自由です）。© 2026 andy（わんこ堂）<br>
   制作：andy（わんこ堂）× 熊八 🐾（Muse Spark）
 </footer>
+<script>
+"use strict";
+/* ========= 実データ（build-genealogy.py が生成。手で編集しない） ========= */
+/*__GEN_DATA_START__*/
+var REAL_CLANS = [
+ {
+  "id": "kami",
+  "name": "神々",
+  "full": "古事記の神々",
+  "desc": "『古事記』の系譜による神々の家系図。別天津神・神世七代からイザナギ・イザナミの神生み、三貴子、天孫降臨を経て神武天皇へ至る幹と、出雲系の系譜を中心に収録。",
+  "theme": {
+   "crest": "kiku",
+   "bg": "linear-gradient(180deg,#fdfcf6,#f2ead6)",
+   "bgc": "#f7f2e2",
+   "ink": "#33301f",
+   "mut": "#7d7460",
+   "accent": "#96762a",
+   "accentSoft": "rgba(150,118,42,.12)",
+   "panel": "rgba(255,255,255,.9)",
+   "panelLine": "rgba(150,118,42,.42)",
+   "nodeBg": "#fffef8",
+   "nodeLine": "#a8873c",
+   "nodeText": "#33301f",
+   "edge": "rgba(150,118,42,.55)",
+   "highlight": "#c9a227",
+   "headerBg": "rgba(253,252,246,.92)",
+   "crestColor": "#a8873c",
+   "crestOpacity": 0.07
+  },
+  "members": [
+   {
+    "id": "amemiwoya",
+    "name": "アメミヲヤ",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "アメミヲヤ・ホツマツタエの創造神",
+    "father": null,
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ホツマツタエ",
+    "note": "『ホツマツタエ』に説かれる創造神。天地も宇宙も定まらなかった頃に唯一存在し、息を吹いて渦を起こし、万物を創ったとされる。ホツマツタエ本文はヲシテ文字のカタカナ表記で記されるため漢字表記は定まらず、「天御祖神」の漢字表記は秋田物部文書など他の古史古伝による。天之御中主神と国之常立神は、この神の分霊として地上に降ろされたと説かれる。",
+    "kana": "アメミヲヤ",
+    "alt": [],
+    "aliases": [
+     {
+      "name": "天御祖神",
+      "source": "古史古伝（秋田物部文書）"
+     },
+     {
+      "name": "アメノミヲヤ",
+      "source": "ホツマツタエ"
+     }
+    ],
+    "enshrined": []
+   },
+   {
+    "id": "amenominakanushi",
+    "name": "天之御中主神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "天之御中主神・宇宙の根源神",
+    "father": null,
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/天之御中主神",
+    "note": "天地開闢の最初に高天原に現れた神。造化三神の筆頭で、姿を現さない独神。",
+    "kana": "アメノミナカヌシ",
+    "alt": [
+     {
+      "source": "九鬼文書",
+      "text": "九鬼文書では「天御中主天皇」とされ、初めて天日嗣の皇位に登って天下万世を治めた天皇として描かれる（記紀の「姿を現さない独神」とは大きく異なる）。"
+     },
+     {
+      "source": "ホツマツタエ",
+      "text": "ホツマツタエでは、創造神アメミヲヤ（天御祖神）の分霊として地上に降りた最初の人類「ミナカヌシ」と説かれる。"
+     }
+    ],
+    "aliases": [],
+    "enshrined": [
+     {
+      "name": "千葉神社",
+      "note": "妙見信仰の社として祀る"
+     },
+     {
+      "name": "秩父神社",
+      "note": "妙見信仰の社として祀る"
+     },
+     {
+      "name": "四柱神社",
+      "note": "造化三神の一柱として"
+     }
+    ]
+   },
+   {
+    "id": "takamimusuhi",
+    "name": "高御産巣日神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "高御産巣日神・造化三神",
+    "father": null,
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/高御産巣日神",
+    "note": "造化三神の一柱。生成と命令の神で、天照大御神とともに高天原の政を司った。万幡豊秋津師比売命・思金神の父。",
+    "kana": "タカミムスヒ",
+    "alt": [
+     {
+      "source": "ホツマツタエ",
+      "text": "ホツマツタエでは、タカミムスビはヒタカミ国を治めた王の世襲名とされ、5代目タカミムスビ「トヨケ」の娘イサコがイサナミ（伊邪那美）となった。皇統を守る皇祖神とも位置づけられる。"
+     },
+     {
+      "source": "宮下文書",
+      "text": "宮下文書（神皇紀）では、天之御中世の第15代「高皇産霊命」とされ、物の形を画いて文字となし、これを石に彫ったと伝える。"
+     }
+    ],
+    "aliases": [
+     {
+      "name": "高皇産霊尊",
+      "source": "日本書紀"
+     },
+     {
+      "name": "高皇産霊神",
+      "source": "日本書紀"
+     },
+     {
+      "name": "高木神",
+      "source": "古事記"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "サムハラ神社",
+      "note": "造化三神の一柱として"
+     },
+     {
+      "name": "安達太良神社"
+     }
+    ]
+   },
+   {
+    "id": "kamimusuhi",
+    "name": "神産巣日神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "神産巣日神・造化三神",
+    "father": null,
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/神産巣日神",
+    "note": "造化三神の一柱。生成・蘇生の力を持つ。『日本書紀』では少名毘古那神の親とされる。",
+    "kana": "カムムスヒ",
+    "aliases": [
+     {
+      "name": "神皇産霊尊",
+      "source": "日本書紀"
+     },
+     {
+      "name": "神魂命",
+      "source": "新撰姓氏録"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "サムハラ神社",
+      "note": "造化三神の一柱として"
+     }
+    ]
+   },
+   {
+    "id": "umashiashikabihikoji",
+    "name": "宇摩志阿斯訶備比古遅神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "宇摩志阿斯訶備比古遅神・別天津神",
+    "father": null,
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/別天津神",
+    "note": "別天津神の一柱。葦の芽が萌え出る生命力を神格化した独神。『古事記』では、国土がまだ稚く油のように漂っていた頃、葦の芽のように萌え上がるものによって成ったとされる。",
+    "kana": "ウマシアシカビヒコジ",
+    "aliases": [
+     {
+      "name": "可美葦牙彦舅尊",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": []
+   },
+   {
+    "id": "amenotokotachi",
+    "name": "天之常立神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "天之常立神・別天津神",
+    "father": null,
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/別天津神",
+    "note": "別天津神の最後に現れた独神。天の永遠・不変を象徴する。『古事記』では宇摩志阿斯訶備比古遅神に次いで成り、同じく独神として身を隠した。",
+    "kana": "アメノトコタチ",
+    "aliases": [
+     {
+      "name": "天常立尊",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": []
+   },
+   {
+    "id": "kuninotokotachi",
+    "name": "国之常立神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "国之常立神・神世七代第一代",
+    "father": null,
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/国之常立神",
+    "note": "神世七代の第一代。国土の永遠を象徴する独神。『日本書紀』では、天地の中に生れた葦の芽のようなものが化して成った神とされる。",
+    "kana": "クニノトコタチ",
+    "alt": [
+     {
+      "source": "ホツマツタエ",
+      "text": "ホツマツタエでは、創造神アメミヲヤの分霊として降臨して国を作った、初代アマカミ（天皇）とされる。8人の子「トホカミエミタメ」が八方を治めた。"
+     },
+     {
+      "source": "宮下文書",
+      "text": "宮下文書では、夫婦神として地上の高天原（富士山麓の神都）に居住した天皇とされ、この神こそ豊受大神だと説明される（日本書紀の独神説とは異なる）。"
+     }
+    ],
+    "aliases": [
+     {
+      "name": "国常立尊",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "国常立神社",
+      "note": "奈良県橿原市・天香久山山頂"
+     },
+     {
+      "name": "玉置神社"
+     }
+    ]
+   },
+   {
+    "id": "amakagami",
+    "name": "天鏡尊",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "天鏡尊・日本書紀一書の系譜の神",
+    "father": null,
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/国之常立神",
+    "note": "『日本書紀』の一書（異伝）にのみ現れる系譜の神。国常立尊の子で、天萬尊の父とされる。本書（本文）の神世七代の並びには含まれない。読みは「あまのかがみ」とする読み下しもある。",
+    "kana": "アマカガミ",
+    "alt": [],
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "amayorozu",
+    "name": "天萬尊",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "天萬尊・日本書紀一書の系譜の神",
+    "father": null,
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/国之常立神",
+    "note": "『日本書紀』の一書（異伝）の系譜で、天鏡尊の子、沫蕩尊の父とされる。読みは読み下しで「あまよろす」ともされる。",
+    "kana": "アマヨロズ",
+    "alt": [],
+    "aliases": [
+     {
+      "name": "天万尊",
+      "source": "日本書紀（一書）"
+     }
+    ],
+    "enshrined": []
+   },
+   {
+    "id": "awanagi",
+    "name": "沫蕩尊",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "沫蕩尊・日本書紀一書の系譜の神、伊弉諾尊の父",
+    "father": null,
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/国之常立神",
+    "note": "『日本書紀』の一書（異伝）の系譜で、天萬尊の子、伊弉諾尊の父とされる。『日本書紀』本文の注では「沫蕩、此云阿和那伎（あわなき）」と読む。ホツマツタエではアワナギは根の国主とされ、イザナギの父系に重なる名として現れる。",
+    "kana": "アワナギ",
+    "alt": [],
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "toyokumono",
+    "name": "豊雲野神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "豊雲野神・神世七代第二代",
+    "father": "kuninotokotachi",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/神世七代",
+    "note": "神世七代の第二代。豊かな雲・国土の広がりを象徴する独神。系図では代ごとに繋げて表す。",
+    "kana": "トヨクモノ",
+    "aliases": [
+     {
+      "name": "豊雲野尊",
+      "source": "日本書紀"
+     },
+     {
+      "name": "豊斟渟尊",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": []
+   },
+   {
+    "id": "uhijini",
+    "name": "宇比地邇神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "宇比地邇神・神世七代第三代",
+    "father": "toyokumono",
+    "mother": null,
+    "spouses": [
+     "suhijini"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/神世七代",
+    "note": "神世七代第三代の男神。須比智邇神と対をなす。",
+    "kana": "ウヒヂニ",
+    "aliases": [
+     {
+      "name": "埿土煮尊",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": []
+   },
+   {
+    "id": "suhijini",
+    "name": "須比智邇神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "須比智邇神・神世七代第三代",
+    "father": "toyokumono",
+    "mother": null,
+    "spouses": [
+     "uhijini"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/神世七代",
+    "note": "神世七代第三代の女神。宇比地邇神と対をなす。泥と砂の神格化とされる。",
+    "kana": "スヒヂニ",
+    "aliases": [
+     {
+      "name": "沙土煮尊",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": []
+   },
+   {
+    "id": "tsunuguhi",
+    "name": "角杙神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "角杙神・神世七代第四代",
+    "father": "uhijini",
+    "mother": "suhijini",
+    "spouses": [
+     "ikuguhi"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/神世七代",
+    "note": "神世七代第四代の男神。活杙神と対をなす。",
+    "kana": "ツヌグヒ",
+    "aliases": [
+     {
+      "name": "角樴尊",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": []
+   },
+   {
+    "id": "ikuguhi",
+    "name": "活杙神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "活杙神・神世七代第四代",
+    "father": "uhijini",
+    "mother": "suhijini",
+    "spouses": [
+     "tsunuguhi"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/神世七代",
+    "note": "神世七代第四代の女神。角杙神と対をなす。",
+    "kana": "イクグヒ",
+    "aliases": [
+     {
+      "name": "活樴尊",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": []
+   },
+   {
+    "id": "ootonoji",
+    "name": "大戸之道神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "大戸之道神・神世七代第五代",
+    "father": "tsunuguhi",
+    "mother": "ikuguhi",
+    "spouses": [
+     "ootonobe"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/神世七代",
+    "note": "神世七代第五代の男神。大戸之辺神と対をなす。",
+    "kana": "オホトノヂ",
+    "aliases": [
+     {
+      "name": "意富斗能地神",
+      "source": "古事記"
+     },
+     {
+      "name": "大戸道尊",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": []
+   },
+   {
+    "id": "ootonobe",
+    "name": "大戸之辺神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "大戸之辺神・神世七代第五代",
+    "father": "tsunuguhi",
+    "mother": "ikuguhi",
+    "spouses": [
+     "ootonoji"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/神世七代",
+    "note": "神世七代第五代の女神。大戸之道神と対をなす。",
+    "kana": "オホトノベ",
+    "aliases": [
+     {
+      "name": "意富斗奴延神",
+      "source": "古事記"
+     }
+    ],
+    "enshrined": []
+   },
+   {
+    "id": "omodaru",
+    "name": "淤母陀琉神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "淤母陀琉神・神世七代第六代",
+    "father": "ootonoji",
+    "mother": "ootonobe",
+    "spouses": [
+     "ayakashikone"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/神世七代",
+    "note": "神世七代第六代の男神。阿夜訶志古泥神と対をなす。",
+    "kana": "オモダル",
+    "aliases": [
+     {
+      "name": "面足尊",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": []
+   },
+   {
+    "id": "ayakashikone",
+    "name": "阿夜訶志古泥神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "阿夜訶志古泥神・神世七代第六代",
+    "father": "ootonoji",
+    "mother": "ootonobe",
+    "spouses": [
+     "omodaru"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/神世七代",
+    "note": "神世七代第六代の女神。淤母陀琉神と対をなす。",
+    "kana": "アヤカシコネ",
+    "aliases": [
+     {
+      "name": "惶根尊",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": []
+   },
+   {
+    "id": "izanagi",
+    "name": "伊邪那岐",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "伊邪那岐神・国生みと神生みの父",
+    "father": "omodaru",
+    "mother": "ayakashikone",
+    "spouses": [
+     "izanami"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/イザナギ",
+    "note": "神世七代の最後・第七代。伊邪那美とともに国土と多くの神を生んだ。妻を追って黄泉国へ赴き、帰還後の禊で三貴子を生んだ。",
+    "kana": "イザナギ",
+    "alt": [
+     {
+      "source": "ホツマツタエ",
+      "text": "ホツマツタエでは、歴代アマカミ（天皇）の第7代とされる。斎名はタカヒト、根の国主アワナギの長男で、ヒタカミのトヨケの娘イサコ（イサナミ）と結ばれて中央政権を継いだ。"
+     }
+    ],
+    "aliases": [
+     {
+      "name": "伊弉諾神",
+      "source": "日本書紀"
+     },
+     {
+      "name": "伊弉諾尊",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "伊弉諾神宮",
+      "note": "主祭神。幽宮の地と伝わる"
+     },
+     {
+      "name": "おのころ島神社",
+      "note": "伊邪那美と共に主祭神"
+     },
+     {
+      "name": "多賀大社"
+     }
+    ]
+   },
+   {
+    "id": "izanami",
+    "name": "伊邪那美",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "伊邪那美神・国生みと神生みの母",
+    "father": "omodaru",
+    "mother": "ayakashikone",
+    "spouses": [
+     "izanagi"
+    ],
+    "birthplace": "",
+    "fate": "火の神カグツチを生んだ際の火傷で死去し、黄泉国の主となった",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/イザナミ",
+    "note": "神世七代の第七代。伊邪那岐と国生み・神生みを行い、カグツチ出産の火傷で没して黄泉国の主となった。",
+    "kana": "イザナミ",
+    "alt": [
+     {
+      "source": "ホツマツタエ",
+      "text": "ホツマツタエでは斎名をイサコといい、ヒタカミ国の5代目タカミムスビ・トヨケの娘とされる。根の国のタカヒト（イサナギ）と結ばれて中央政権を継承した。"
+     }
+    ],
+    "aliases": [
+     {
+      "name": "伊弉冉神",
+      "source": "日本書紀"
+     },
+     {
+      "name": "伊弉冊神",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "伊射奈美神社",
+      "note": "イザナミの名を冠する神社の一つ"
+     },
+     {
+      "name": "花窟神社",
+      "note": "御陵が伝わる"
+     },
+     {
+      "name": "揖夜神社"
+     }
+    ]
+   },
+   {
+    "id": "hiruko",
+    "name": "蛭子",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "蛭子神・イザナギ夫妻の第一子",
+    "father": "izanagi",
+    "mother": "izanami",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ヒルコ",
+    "note": "国生みの前に生まれた最初の子。不具の子として葦船に乗せて流された。のち恵比寿神と同一視される。",
+    "kana": "ヒルコ",
+    "aliases": [
+     {
+      "name": "蛭児",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "西宮神社",
+      "note": "恵比寿神（蛭子命）として"
+     },
+     {
+      "name": "和田神社"
+     }
+    ]
+   },
+   {
+    "id": "awashima",
+    "name": "淡島",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "淡島・国生みに数えない島",
+    "father": "izanagi",
+    "mother": "izanami",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/イザナギ",
+    "note": "ヒルコに次いで生まれたが、国生みの島には数えられない。",
+    "kana": "アワシマ",
+    "aliases": [
+     {
+      "name": "淡洲",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": []
+   },
+   {
+    "id": "oowatatsumi",
+    "name": "大綿津見神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "大綿津見神・海の主宰神",
+    "father": "izanagi",
+    "mother": "izanami",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ワタツミ",
+    "note": "神生みで生まれた海の神。豊玉比売・玉依比売の父。",
+    "kana": "オホワタツミ",
+    "aliases": [],
+    "enshrined": [
+     {
+      "name": "志賀海神社",
+      "note": "綿津見神の総本社"
+     },
+     {
+      "name": "穂高神社"
+     }
+    ]
+   },
+   {
+    "id": "hayakitsuhiko",
+    "name": "速秋津比古神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "速秋津比古神・水門の神",
+    "father": "izanagi",
+    "mother": "izanami",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/古事記",
+    "note": "河海の水門（港）を司る男神。速秋津比売神と対をなす。",
+    "kana": "ハヤアキツヒコ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "hayakitsuhime",
+    "name": "速秋津比売神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "速秋津比売神・水門の神",
+    "father": "izanagi",
+    "mother": "izanami",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/古事記",
+    "note": "河海の水門を司る女神。速秋津比古神と対をなす。",
+    "kana": "ハヤアキツヒメ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "shinatsuhiko",
+    "name": "級長津彦命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "級長津彦命・風の神",
+    "father": "izanagi",
+    "mother": "izanami",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/級長津彦命",
+    "note": "イザナギ・イザナミの神生みで生まれた風の男神。",
+    "kana": "シナツヒコ",
+    "aliases": [
+     {
+      "name": "志那都比古神",
+      "source": "常陸国風土記"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "龍田大社",
+      "note": "社伝・祝詞で天御柱命を志那都比古神とする"
+     },
+     {
+      "name": "伊勢神宮",
+      "note": "別宮の風日祈宮・風宮に祀られる"
+     }
+    ]
+   },
+   {
+    "id": "shinatobe",
+    "name": "級長戸辺命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "級長戸辺命・風の神",
+    "father": "izanagi",
+    "mother": "izanami",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/級長津彦命",
+    "note": "風の女神。級長津彦命と対をなす風神。",
+    "kana": "シナトベ",
+    "aliases": [],
+    "enshrined": [
+     {
+      "name": "龍田大社",
+      "note": "社伝・祝詞で国御柱命を志那都比売神とする"
+     },
+     {
+      "name": "伊勢神宮",
+      "note": "別宮の風日祈宮・風宮に祀られる"
+     }
+    ]
+   },
+   {
+    "id": "kukunochi",
+    "name": "久久能智神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "久久能智神・木の神",
+    "father": "izanagi",
+    "mother": "izanami",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/古事記",
+    "note": "神生みで生まれた樹木の神。",
+    "kana": "ククノチ",
+    "aliases": [],
+    "enshrined": [
+     {
+      "name": "樽前山神社",
+      "note": "大山津見神・鹿屋野比売神と共に"
+     }
+    ]
+   },
+   {
+    "id": "ooyamatsumi",
+    "name": "大山津見神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "大山津見神・山の主宰神",
+    "father": "izanagi",
+    "mother": "izanami",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/大山津見神",
+    "note": "神生みで生まれた山の神。木花之佐久夜毘売・石長比売・神大市比売・脚摩乳・手摩乳らの父。鹿屋野比売神は妹。",
+    "kana": "オホヤマツミ",
+    "aliases": [
+     {
+      "name": "大山祇神",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "大山祇神社",
+      "note": "総本社"
+     },
+     {
+      "name": "三嶋大社",
+      "note": "事代主神と共に祭神"
+     }
+    ]
+   },
+   {
+    "id": "kayanohime",
+    "name": "鹿屋野比売神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "鹿屋野比売神・野の神",
+    "father": "izanagi",
+    "mother": "izanami",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/カヤノヒメ",
+    "note": "野・草原の女神。大山津見神の妹。別名ヌヅチ。",
+    "kana": "カヤノヒメ",
+    "aliases": [
+     {
+      "name": "草野姫神",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "萱津神社",
+      "note": "漬物の神として"
+     },
+     {
+      "name": "樽前山神社",
+      "note": "大山津見神・久久能智神と共に"
+     }
+    ]
+   },
+   {
+    "id": "amenotrifune",
+    "name": "天鳥船神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "天鳥船神・船の神",
+    "father": "izanagi",
+    "mother": "izanami",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/天鳥船",
+    "note": "鳥のように速く進む船の神。別名トリノイワクスブネ。国譲りの使者が乗った船ともされる。",
+    "kana": "アメノトリフネ",
+    "aliases": [
+     {
+      "name": "鳥之石楠船神",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "石船神社",
+      "note": "主祭神"
+     },
+     {
+      "name": "神崎神社",
+      "note": "主祭神"
+     },
+     {
+      "name": "隅田川神社",
+      "note": "主祭神"
+     }
+    ]
+   },
+   {
+    "id": "kagutsuchi",
+    "name": "迦具土神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "迦具土神・火の神",
+    "father": "izanagi",
+    "mother": "izanami",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "生まれてすぐに、母を死なせたことを怒ったイザナギに十拳剣で斬られた",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/カグツチ",
+    "note": "神生み最後の神。出産の火でイザナミが死に、怒ったイザナギに斬られた。その血と遺体から多くの神が生まれた。",
+    "kana": "カグツチ",
+    "aliases": [
+     {
+      "name": "軻遇突智神",
+      "source": "日本書紀"
+     },
+     {
+      "name": "火産霊神",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "秋葉山本宮秋葉神社",
+      "note": "秋葉信仰の総本宮"
+     },
+     {
+      "name": "愛宕神社",
+      "note": "京都市右京区"
+     }
+    ]
+   },
+   {
+    "id": "kanayamabiko",
+    "name": "金山毘古神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "金山毘古神・鉱山の神",
+    "father": null,
+    "mother": "izanami",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/イザナミ",
+    "note": "死の床にあるイザナミの嘔吐物から生まれた金属・鉱山の男神。通常の親子関係による誕生ではない。",
+    "kana": "カナヤマヒコ",
+    "aliases": [
+     {
+      "name": "金山彦神",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": []
+   },
+   {
+    "id": "kanayamabime",
+    "name": "金山毘売神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "金山毘売神・鉱山の神",
+    "father": null,
+    "mother": "izanami",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/イザナミ",
+    "note": "イザナミの嘔吐物から生まれた金属・鉱山の女神。通常の親子関係による誕生ではない。",
+    "kana": "カナヤマヒメ",
+    "aliases": [
+     {
+      "name": "金山姫神",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": []
+   },
+   {
+    "id": "haniyasuhiko",
+    "name": "埴安彦神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "埴安彦神・土の神",
+    "father": null,
+    "mother": "izanami",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/イザナミ",
+    "note": "イザナミの糞から生まれた土の男神。通常の親子関係による誕生ではない。",
+    "kana": "ハニヤスヒコ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "haniyasuhime",
+    "name": "埴安姫神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "埴安姫神・土の神",
+    "father": null,
+    "mother": "izanami",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/イザナミ",
+    "note": "イザナミの糞から生まれた土の女神。通常の親子関係による誕生ではない。",
+    "kana": "ハニヤスヒメ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "mizuhanome",
+    "name": "罔象女神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "罔象女神・水の神",
+    "father": null,
+    "mother": "izanami",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/罔象女神",
+    "note": "イザナミの尿から生まれた水の女神。水利・灌漑の神として貴船神社などに祀られる。通常の親子関係による誕生ではない。",
+    "kana": "ミヅハノメ",
+    "aliases": [],
+    "enshrined": [
+     {
+      "name": "赤川神社",
+      "note": "主祭神"
+     },
+     {
+      "name": "丹生川上神社",
+      "note": "配祀"
+     }
+    ]
+   },
+   {
+    "id": "wakumusuhi",
+    "name": "和久産巣日神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "和久産巣日神・穀物の神",
+    "father": null,
+    "mother": "izanami",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/イザナミ",
+    "note": "イザナミの尿から生まれた神。穀物や養蚕に関わる神とされる。通常の親子関係による誕生ではない。",
+    "kana": "ワクムスヒ",
+    "aliases": [
+     {
+      "name": "稚産霊神",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": []
+   },
+   {
+    "id": "iwasaku",
+    "name": "石析神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "石析神・剣の血から生まれた神",
+    "father": "kagutsuchi",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/カグツチ",
+    "note": "イザナギがカグツチを斬った際、十拳剣に付いた血から誕生した。通常の親子関係による誕生ではない。",
+    "kana": "イワサク",
+    "aliases": [
+     {
+      "name": "磐裂神",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": []
+   },
+   {
+    "id": "nesaku",
+    "name": "根析神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "根析神・剣の血から生まれた神",
+    "father": "kagutsuchi",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/カグツチ",
+    "note": "イザナギがカグツチを斬った際、十拳剣に付いた血から誕生した。通常の親子関係による誕生ではない。",
+    "kana": "ネサク",
+    "aliases": [
+     {
+      "name": "根裂神",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": []
+   },
+   {
+    "id": "iwatutsunoo",
+    "name": "石筒之男神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "石筒之男神・剣の血から生まれた神",
+    "father": "kagutsuchi",
+    "mother": null,
+    "spouses": [
+     "iwatsutsunome"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/カグツチ",
+    "note": "イザナギがカグツチを斬った際、十拳剣に付いた血から誕生した。通常の親子関係による誕生ではない。",
+    "kana": "イワツツノオ",
+    "aliases": [
+     {
+      "name": "磐筒男神",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": []
+   },
+   {
+    "id": "mikahayahi",
+    "name": "甕速日神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "甕速日神・剣の血から生まれた神",
+    "father": "kagutsuchi",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/カグツチ",
+    "note": "イザナギがカグツチを斬った際、十拳剣に付いた血から誕生した。通常の親子関係による誕生ではない。",
+    "kana": "ミカハヤヒ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "hihayahi",
+    "name": "樋速日神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "樋速日神・剣の血から生まれた神",
+    "father": "kagutsuchi",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/カグツチ",
+    "note": "イザナギがカグツチを斬った際、十拳剣に付いた血から誕生した。通常の親子関係による誕生ではない。",
+    "kana": "ヒハヤヒ",
+    "aliases": [
+     {
+      "name": "熯速日神",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": []
+   },
+   {
+    "id": "takemikazuchi",
+    "name": "建御雷神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "建御雷神・雷と剣の神",
+    "father": "kagutsuchi",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/建御雷神",
+    "note": "剣の血から生まれた雷神・武神。鹿島神宮の主祭神。国譲りの交渉では天鳥船に乗って遣わされ、大国主と対峙した。",
+    "kana": "タケミカヅチ",
+    "alt": [
+     {
+      "source": "九鬼文書",
+      "text": "九鬼文書の神代系譜では、月夜見天皇の直裔・天児根命（思金神）の弟神とされ、「常陸大中臣ノ太祖也」と記される（記紀の「迦具土の血から化生」とは異なる）。"
+     }
+    ],
+    "aliases": [
+     {
+      "name": "建御雷之男神",
+      "source": "古事記"
+     },
+     {
+      "name": "武甕槌神",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "鹿島神宮",
+      "note": "主祭神"
+     },
+     {
+      "name": "春日大社"
+     }
+    ]
+   },
+   {
+    "id": "kuraokami",
+    "name": "闇淤加美神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "闇淤加美神・水と雨の神",
+    "father": "kagutsuchi",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/闇淤加美神",
+    "note": "剣の柄に溜まった血から生まれた水神・龍神。貴船神社に祀られる。日河比売の父。",
+    "kana": "クラオカミ",
+    "aliases": [
+     {
+      "name": "闇龗神",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "丹生川上神社",
+      "note": "下社に闇龗神として"
+     }
+    ]
+   },
+   {
+    "id": "kuramitsuha",
+    "name": "闇御津羽神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "闇御津羽神・水の神",
+    "father": "kagutsuchi",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/カグツチ",
+    "note": "剣の柄の血から闇淤加美神とともに生まれた水の神。",
+    "kana": "クラミツハ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "masakayamatsumi",
+    "name": "正鹿山津見神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "正鹿山津見神・頭から生まれた山の神",
+    "father": "kagutsuchi",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/カグツチ",
+    "note": "斬られたカグツチの遺体の部位から化生した山の神。通常の親子関係による誕生ではない。",
+    "kana": "マサカヤマツミ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "odoyamatsumi",
+    "name": "淤縢山津見神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "淤縢山津見神・胸から生まれた山の神",
+    "father": "kagutsuchi",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/カグツチ",
+    "note": "斬られたカグツチの遺体の部位から化生した山の神。通常の親子関係による誕生ではない。",
+    "kana": "オドヤマツミ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "okuyamatsumi",
+    "name": "奥山津見神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "奥山津見神・腹から生まれた山の神",
+    "father": "kagutsuchi",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/カグツチ",
+    "note": "斬られたカグツチの遺体の部位から化生した山の神。通常の親子関係による誕生ではない。",
+    "kana": "オクヤマツミ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "kurayamatsumi",
+    "name": "闇山津見神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "闇山津見神・陰部から生まれた山の神",
+    "father": "kagutsuchi",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/カグツチ",
+    "note": "斬られたカグツチの遺体の部位から化生した山の神。通常の親子関係による誕生ではない。",
+    "kana": "クラヤマツミ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "hayamatsumi",
+    "name": "羽山津見神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "羽山津見神・左手から生まれた山の神",
+    "father": "kagutsuchi",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/カグツチ",
+    "note": "斬られたカグツチの遺体の部位から化生した山の神。通常の親子関係による誕生ではない。",
+    "kana": "ハヤマツミ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "harayamatsumi",
+    "name": "原山津見神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "原山津見神・右手から生まれた山の神",
+    "father": "kagutsuchi",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/カグツチ",
+    "note": "斬られたカグツチの遺体の部位から化生した山の神。通常の親子関係による誕生ではない。",
+    "kana": "ハラヤマツミ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "toyamatsumi",
+    "name": "戸山津見神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "戸山津見神・左足から生まれた山の神",
+    "father": "kagutsuchi",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/カグツチ",
+    "note": "斬られたカグツチの遺体の部位から化生した山の神。通常の親子関係による誕生ではない。",
+    "kana": "トヤマツミ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "tokiyamatsumi",
+    "name": "時山津見神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "時山津見神・右足から生まれた山の神",
+    "father": "kagutsuchi",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/カグツチ",
+    "note": "斬られたカグツチの遺体の部位から化生した山の神。通常の親子関係による誕生ではない。",
+    "kana": "トキヤマツミ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "yasomagatsuhi",
+    "name": "八十禍津日神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "八十禍津日神・穢れから生まれた神",
+    "father": "izanagi",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/禊",
+    "note": "黄泉国から戻ったイザナギが禊をした際、穢れから生まれた災厄の神。",
+    "kana": "ヤソマガツヒ",
+    "aliases": [
+     {
+      "name": "八十枉津日神",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": []
+   },
+   {
+    "id": "oonaobi",
+    "name": "大直日神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "大直日神・禊で生まれた神",
+    "father": "izanagi",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/禊",
+    "note": "八十禍津日神の災いを直すために生まれた神。イザナギの禊による誕生。",
+    "kana": "オホナオビ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "izunome",
+    "name": "伊豆能売",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "伊豆能売・禊で生まれた神",
+    "father": "izanagi",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/禊",
+    "note": "イザナギの禊の際に生まれた女神。",
+    "kana": "イズノメ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "sokotsuwatatsumi",
+    "name": "底津綿津見神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "底津綿津見神・綿津見三神",
+    "father": "izanagi",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/綿津見三神",
+    "note": "イザナギが禊で海の底に潜った際に生まれた海の神。",
+    "kana": "ソコツワタツミ",
+    "aliases": [
+     {
+      "name": "底津少童命",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "志賀海神社",
+      "note": "綿津見三神の総本社"
+     }
+    ]
+   },
+   {
+    "id": "nakatsuwatatsumi",
+    "name": "中津綿津見神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "中津綿津見神・綿津見三神",
+    "father": "izanagi",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/綿津見三神",
+    "note": "イザナギが禊で海の中ほどに潜った際に生まれた海の神。",
+    "kana": "ナカツワタツミ",
+    "aliases": [
+     {
+      "name": "中津少童命",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "志賀海神社",
+      "note": "綿津見三神の総本社"
+     }
+    ]
+   },
+   {
+    "id": "uwatsuwatatsumi",
+    "name": "上津綿津見神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "上津綿津見神・綿津見三神",
+    "father": "izanagi",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/綿津見三神",
+    "note": "イザナギが禊で海の水面に浮いた際に生まれた海の神。",
+    "kana": "ウワツワタツミ",
+    "aliases": [
+     {
+      "name": "表津少童命",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "志賀海神社",
+      "note": "綿津見三神の総本社"
+     }
+    ]
+   },
+   {
+    "id": "sokotsutsunoo",
+    "name": "底筒之男命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "底筒之男命・住吉三神",
+    "father": "izanagi",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/住吉三神",
+    "note": "イザナギの禊で海底に沈んだ際に生まれた神。住吉大社に祀られる。",
+    "kana": "ソコツツノオ",
+    "aliases": [
+     {
+      "name": "底筒男命",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "住吉大社",
+      "note": "住吉三神の総本社"
+     },
+     {
+      "name": "住吉神社",
+      "note": "福岡市博多区"
+     }
+    ]
+   },
+   {
+    "id": "nakatsutsunoo",
+    "name": "中筒之男命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "中筒之男命・住吉三神",
+    "father": "izanagi",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/住吉三神",
+    "note": "イザナギの禊で海の中ほどに生まれた神。住吉大社に祀られる。",
+    "kana": "ナカツツノオ",
+    "aliases": [
+     {
+      "name": "中筒男命",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "住吉大社",
+      "note": "住吉三神の総本社"
+     },
+     {
+      "name": "住吉神社",
+      "note": "福岡市博多区"
+     }
+    ]
+   },
+   {
+    "id": "uwatsutsunoo",
+    "name": "上筒之男命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "上筒之男命・住吉三神",
+    "father": "izanagi",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/住吉三神",
+    "note": "イザナギの禊で水面に生まれた神。住吉大社に祀られる。",
+    "kana": "ウワツツノオ",
+    "aliases": [
+     {
+      "name": "表筒男命",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "住吉大社",
+      "note": "住吉三神の総本社"
+     },
+     {
+      "name": "住吉神社",
+      "note": "福岡市博多区"
+     }
+    ]
+   },
+   {
+    "id": "amaterasu",
+    "name": "天照",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "天照大御神・太陽神、高天原の主宰神",
+    "father": "izanagi",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/天照大御神",
+    "note": "イザナギの禊で左目から生まれた三貴子の一柱。高天原を治める太陽神で、皇室の祖神。伊勢神宮に祀られる。",
+    "kana": "アマテラス",
+    "alt": [
+     {
+      "source": "ホツマツタエ",
+      "text": "ホツマツタエでは「アマテル」と呼ばれ、イサナギ・イサナミの子として生まれた男性の統治者（アマカミ）とされる。記紀の「禊ぎで左目から生まれた女神」とは描かれ方が大きく異なる。"
+     },
+     {
+      "source": "九鬼文書",
+      "text": "九鬼文書では、スサノオの姉であるアマテラスと、スサノオの娘であるアマテラスの、二人のアマテラスの存在が挙げられ、天皇家は後者から発したとされる。"
+     }
+    ],
+    "aliases": [
+     {
+      "name": "天照大御神",
+      "source": "古事記"
+     },
+     {
+      "name": "天照大神",
+      "source": "日本書紀"
+     },
+     {
+      "name": "大日孁貴神",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "伊勢神宮内宮",
+      "note": "皇大神宮の主祭神"
+     },
+     {
+      "name": "天岩戸神社",
+      "note": "岩戸隠れの天岩戸を祀る"
+     }
+    ]
+   },
+   {
+    "id": "tsukuyomi",
+    "name": "月読",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "月読命・月の神",
+    "father": "izanagi",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ツクヨミ",
+    "note": "イザナギの禊で右目から生まれた三貴子の一柱。夜の世界を治める月の神。",
+    "kana": "ツクヨミ",
+    "alt": [
+     {
+      "source": "九鬼文書",
+      "text": "九鬼文書の神代系譜では、前期出雲王朝の第2代天皇「月夜見天日嗣身光天皇」とされる。その直裔から天児根命（思金神）らが出たといい、子孫として釈迦が現れたともされる。"
+     }
+    ],
+    "aliases": [
+     {
+      "name": "月夜見尊",
+      "source": "日本書紀"
+     },
+     {
+      "name": "月弓尊",
+      "source": "日本書紀"
+     },
+     {
+      "name": "月読尊",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "月讀宮",
+      "note": "伊勢神宮内宮の別宮"
+     },
+     {
+      "name": "月読神社",
+      "note": "京都市"
+     },
+     {
+      "name": "月山神社",
+      "note": "月山の名の由来とされる"
+     }
+    ]
+   },
+   {
+    "id": "susanoo",
+    "name": "須佐之男",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "須佐之男命・海原と嵐の神",
+    "father": "izanagi",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/スサノオ",
+    "note": "イザナギの禊で鼻から生まれた三貴子の一柱。高天原を追われ、出雲でヤマタノオロチを退治した。大国主神の祖。",
+    "kana": "スサノオ",
+    "alt": [
+     {
+      "source": "ホツマツタエ",
+      "text": "ホツマツタエでは「ソサノヲ」と呼ばれ、イサナギ・イサナミの子とされる。その子が初代オオモノヌシとなった。"
+     },
+     {
+      "source": "九鬼文書",
+      "text": "九鬼文書では「素戔嗚天皇」とされ、子孫は海外まで広がって、ノア・モーゼ・イエスもスサノオの子孫とされる。"
+     },
+     {
+      "source": "宮下文書",
+      "text": "宮下文書では、スサノオは多加王という新羅王の四男で、日本を征服しようとして来寇した朝鮮の王族であったと記される。"
+     }
+    ],
+    "aliases": [
+     {
+      "name": "建速須佐之男命",
+      "source": "古事記"
+     },
+     {
+      "name": "素戔嗚尊",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "八坂神社",
+      "note": "祇園信仰の総本社"
+     },
+     {
+      "name": "津島神社",
+      "note": "津島信仰・天王社の総本社"
+     },
+     {
+      "name": "氷川神社",
+      "note": "主祭神"
+     }
+    ]
+   },
+   {
+    "id": "takiribime",
+    "name": "多岐理毘売命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "多岐理毘売命・宗像三女神の長女",
+    "father": "susanoo",
+    "mother": "amaterasu",
+    "spouses": [
+     "ookuninushi"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/宗像三女神",
+    "note": "アマテラスとスサノオの誓約（うけい）により、スサノオの十拳剣をアマテラスが噛んで吹いた霧から誕生した。宗像の沖津宮に鎮座。大国主神の妻となり、阿遅鉏高日子根神・下光比売命を生んだ。",
+    "kana": "タキリビメ",
+    "aliases": [
+     {
+      "name": "田心姫命",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "宗像大社",
+      "note": "沖津宮の祭神（田心姫神）"
+     }
+    ]
+   },
+   {
+    "id": "ichikishimahime",
+    "name": "市杵島比売命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "市杵島比売命・宗像三女神の次女",
+    "father": "susanoo",
+    "mother": "amaterasu",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/宗像三女神",
+    "note": "アマテラスとスサノオの誓約（うけい）により、スサノオの十拳剣をアマテラスが噛んで吹いた霧から誕生した。宗像の中津宮に鎮座。弁才天と同一視もされる。",
+    "kana": "イチキシマヒメ",
+    "aliases": [
+     {
+      "name": "市杵嶋姫命",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "宗像大社",
+      "note": "辺津宮の祭神"
+     },
+     {
+      "name": "厳島神社",
+      "note": "主祭神"
+     }
+    ]
+   },
+   {
+    "id": "takitsuhime",
+    "name": "多岐都比売命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "多岐都比売命・宗像三女神の三女",
+    "father": "susanoo",
+    "mother": "amaterasu",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/宗像三女神",
+    "note": "アマテラスとスサノオの誓約（うけい）により、スサノオの十拳剣をアマテラスが噛んで吹いた霧から誕生した。宗像の辺津宮に鎮座。",
+    "kana": "タキツヒメ",
+    "aliases": [
+     {
+      "name": "湍津姫命",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "宗像大社",
+      "note": "中津宮の祭神（湍津姫神）"
+     }
+    ]
+   },
+   {
+    "id": "amenooshihomimi",
+    "name": "天忍穂耳命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "天忍穂耳命・天孫の父",
+    "father": "susanoo",
+    "mother": "amaterasu",
+    "spouses": [
+     "yorozuhatahime"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/天忍穂耳命",
+    "note": "アマテラスとスサノオの誓約（うけい）により、アマテラスの勾玉をスサノオが噛んで吹いた息から誕生した。天孫降臨を命じられたが、子のニニギに譲った。",
+    "kana": "アメノオシホミミ",
+    "aliases": [
+     {
+      "name": "正哉吾勝勝速日天忍穂耳尊",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "英彦山神宮",
+      "note": "主祭神"
+     },
+     {
+      "name": "天忍穂耳神社",
+      "note": "奈良県生駒市"
+     },
+     {
+      "name": "鵜戸神宮",
+      "note": "相殿"
+     }
+    ]
+   },
+   {
+    "id": "amenohohi",
+    "name": "天穂日命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "天穂日命・出雲国造家の祖神",
+    "father": "susanoo",
+    "mother": "amaterasu",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/天穂日命",
+    "note": "アマテラスとスサノオの誓約（うけい）により、アマテラスの勾玉をスサノオが噛んで吹いた息から誕生した。葦原中国の平定に最初に遣わされた神。出雲国造・土師氏らの祖。",
+    "kana": "アメノホヒ",
+    "aliases": [
+     {
+      "name": "天之菩卑能命",
+      "source": "古事記"
+     },
+     {
+      "name": "天穂比命",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "能義神社",
+      "note": "出雲四大神・野城大神として"
+     },
+     {
+      "name": "天穂日命神社",
+      "note": "鳥取市"
+     }
+    ]
+   },
+   {
+    "id": "amatsuhikone",
+    "name": "天津日子根命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "天津日子根命・誓約で生まれた神",
+    "father": "susanoo",
+    "mother": "amaterasu",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/天津日子根命",
+    "note": "アマテラスとスサノオの誓約（うけい）により、アマテラスの勾玉をスサノオが噛んで吹いた息から誕生した。多賀大社などに祀られる。",
+    "kana": "アマツヒコネ",
+    "aliases": [],
+    "enshrined": [
+     {
+      "name": "多度大社"
+     },
+     {
+      "name": "桑名宗社"
+     }
+    ]
+   },
+   {
+    "id": "ikutsuhikone",
+    "name": "活津日子根命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "活津日子根命・誓約で生まれた神",
+    "father": "susanoo",
+    "mother": "amaterasu",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/宗像大社",
+    "note": "アマテラスとスサノオの誓約（うけい）により、アマテラスの勾玉をスサノオが噛んで吹いた息から誕生した。",
+    "kana": "イクツヒコネ",
+    "aliases": [],
+    "enshrined": [
+     {
+      "name": "八王子神社",
+      "note": "五男三女神の一柱として"
+     }
+    ]
+   },
+   {
+    "id": "kumanokusubi",
+    "name": "熊野久須毘命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "熊野久須毘命・誓約で生まれた神",
+    "father": "susanoo",
+    "mother": "amaterasu",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/天照大御神",
+    "note": "アマテラスとスサノオの誓約（うけい）により、アマテラスの勾玉をスサノオが噛んで吹いた息から誕生した。",
+    "kana": "クマノクスビ",
+    "aliases": [],
+    "enshrined": [
+     {
+      "name": "八王子神社",
+      "note": "五男三女神の一柱として"
+     }
+    ]
+   },
+   {
+    "id": "yorozuhatahime",
+    "name": "万幡豊秋津師比売命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "万幡豊秋津師比売命・ニニギの母",
+    "father": "takamimusuhi",
+    "mother": null,
+    "spouses": [
+     "amenooshihomimi"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/万幡豊秋津師比売命",
+    "note": "高御産巣日神の娘。天忍穂耳命の妻となり、ニニギを生んだ。",
+    "kana": "ヨロズハタヒメ",
+    "aliases": [
+     {
+      "name": "栲幡千千姫命",
+      "source": "日本書紀"
+     },
+     {
+      "name": "万幡豊秋津媛命",
+      "source": "日本書紀一書"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "真清田神社"
+     },
+     {
+      "name": "機物神社",
+      "note": "大阪府交野市"
+     }
+    ]
+   },
+   {
+    "id": "omoikane",
+    "name": "思金神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "思金神・知恵の神",
+    "father": "takamimusuhi",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/思金神",
+    "note": "高御産巣日神の子。天の岩戸隠れの際、アマテラスを誘い出す策を練った知恵の神。",
+    "kana": "オモイカネ",
+    "alt": [
+     {
+      "source": "九鬼文書",
+      "text": "九鬼文書の神代系譜では「天児根命またの名を天八意思兼尊」とされ、前期出雲王朝第2代・月夜見天皇の直裔で、大中臣の祖神とされる（記紀の「高御産巣日神の子」とは系譜が異なる）。"
+     }
+    ],
+    "aliases": [
+     {
+      "name": "思兼神",
+      "source": "日本書紀"
+     },
+     {
+      "name": "天八意思兼命",
+      "source": "先代旧事本紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "戸隠神社",
+      "note": "中社"
+     },
+     {
+      "name": "阿智神社"
+     },
+     {
+      "name": "思金神社",
+      "note": "神奈川県横浜市"
+     }
+    ]
+   },
+   {
+    "id": "sukunabikona",
+    "name": "少名毘古那神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "少名毘古那神・国作りの協力者",
+    "father": "kamimusuhi",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/少彦名神",
+    "note": "『日本書紀』では神産巣日神の子とされる。大国主神と協力して国作りを進めた小さな神。",
+    "kana": "スクナビコナ",
+    "aliases": [
+     {
+      "name": "少彦名命",
+      "source": "日本書紀"
+     },
+     {
+      "name": "天少彦根命",
+      "source": "先代旧事本紀"
+     },
+     {
+      "name": "須久奈比古命",
+      "source": "出雲国風土記"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "大洗磯前神社",
+      "note": "主祭神"
+     },
+     {
+      "name": "酒列磯前神社"
+     },
+     {
+      "name": "粟島神社",
+      "note": "鳥取県米子市"
+     }
+    ]
+   },
+   {
+    "id": "ninigi",
+    "name": "邇邇芸命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "邇邇芸命・天孫降臨の主役",
+    "father": "amenooshihomimi",
+    "mother": "yorozuhatahime",
+    "spouses": [
+     "konohanasakuyahime"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/邇邇芸命",
+    "note": "アマテラスの命で天孫降臨し、葦原中国を治めた。木花之佐久夜毘売を娶る。",
+    "kana": "ニニギ",
+    "aliases": [
+     {
+      "name": "天津彦彦火瓊瓊杵尊",
+      "source": "日本書紀"
+     },
+     {
+      "name": "天津日高彦火瓊瓊杵尊",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "霧島神宮",
+      "note": "主祭神"
+     },
+     {
+      "name": "高千穂神社"
+     }
+    ]
+   },
+   {
+    "id": "konohanasakuyahime",
+    "name": "木花之佐久夜毘売",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "木花之佐久夜毘売・桜と火の女神",
+    "father": "ooyamatsumi",
+    "mother": null,
+    "spouses": [
+     "ninigi"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/木花之佐久夜毘売",
+    "note": "大山津見神の娘。ニニギの妻。一夜で身籠った疑いを晴らすため、火の中でホデリ・ホスセリ・ホオリを生んだ。浅間神社の主祭神。",
+    "kana": "コノハナサクヤヒメ",
+    "aliases": [
+     {
+      "name": "木花開耶姫",
+      "source": "日本書紀"
+     },
+     {
+      "name": "神阿多都比売",
+      "source": "古事記"
+     },
+     {
+      "name": "神吾田鹿葦津姫",
+      "source": "日本書紀"
+     },
+     {
+      "name": "桜大刀自",
+      "source": "宮崎の伝承（妻萬神社など）"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "富士山本宮浅間大社",
+      "note": "浅間神社の総本宮"
+     },
+     {
+      "name": "北口本宮富士浅間神社"
+     },
+     {
+      "name": "霧島神宮"
+     }
+    ]
+   },
+   {
+    "id": "iwanagahime",
+    "name": "石長比売",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "石長比売・岩の女神",
+    "father": "ooyamatsumi",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/石長比売",
+    "note": "大山津見神の娘で木花之佐久夜毘売の姉。ニニギに差し出されたが、醜い姿のため送り返された。これにより天孫の命は岩のように永遠ではなくなったという。",
+    "kana": "イワナガヒメ",
+    "aliases": [
+     {
+      "name": "磐長姫命",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "雲見浅間神社",
+      "note": "石長比売のみを祀る"
+     },
+     {
+      "name": "伊砂砂神社",
+      "note": "主祭神の一柱"
+     }
+    ]
+   },
+   {
+    "id": "hoderi",
+    "name": "火照命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "火照命・海幸彦",
+    "father": "ninigi",
+    "mother": "konohanasakuyahime",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/山幸彦と海幸彦",
+    "note": "ニニギと木花之佐久夜毘売の長子。海の幸を司る「海幸彦」。隼人の祖とされる。",
+    "kana": "ホデリ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "hosuseri",
+    "name": "火須勢理命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "火須勢理命・ニニギの子",
+    "father": "ninigi",
+    "mother": "konohanasakuyahime",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/山幸彦と海幸彦",
+    "note": "ニニギと木花之佐久夜毘売の次子。",
+    "kana": "ホスセリ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "hoori",
+    "name": "火遠理命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "火遠理命・山幸彦",
+    "father": "ninigi",
+    "mother": "konohanasakuyahime",
+    "spouses": [
+     "toyotamahime"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/山幸彦と海幸彦",
+    "note": "ニニギの三子。「山幸彦」。兄ホデリの釣針を失くし、海神の宮で豊玉比売と結ばれた。",
+    "kana": "ホオリ",
+    "aliases": [
+     {
+      "name": "天津日高日子穂穂手見命",
+      "source": "古事記"
+     },
+     {
+      "name": "彦火火出見尊",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "若狭彦神社",
+      "note": "若狭彦神として主祭神"
+     },
+     {
+      "name": "鵜戸神宮",
+      "note": "相殿"
+     }
+    ]
+   },
+   {
+    "id": "toyotamahime",
+    "name": "豊玉比売",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "豊玉比売・海神の娘",
+    "father": "oowatatsumi",
+    "mother": null,
+    "spouses": [
+     "hoori"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/豊玉姫",
+    "note": "大綿津見神の娘。海神の宮を訪れたホオリ（山幸彦）の妻となり、ウガヤフキアエズを生んだ。出産の姿（龍・鰐）を見られたため海へ帰った。",
+    "kana": "トヨタマヒメ",
+    "aliases": [
+     {
+      "name": "豊玉姫命",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "豊玉姫神社",
+      "note": "鹿児島県南九州市"
+     },
+     {
+      "name": "和多都美神社"
+     },
+     {
+      "name": "若狭姫神社",
+      "note": "若狭姫神として"
+     }
+    ]
+   },
+   {
+    "id": "ugayafukiaezu",
+    "name": "鵜葺草葺不合命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "鵜葺草葺不合命・神武天皇の父",
+    "father": "hoori",
+    "mother": "toyotamahime",
+    "spouses": [
+     "tamayorihime"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/鵜葺草葺不合命",
+    "note": "ホオリと豊玉比売の子。産殿の葺き替えが終わらないうちに生まれたことが名の由来。玉依比売に育てられ、のち娶った。",
+    "kana": "ウガヤフキアエズ",
+    "alt": [
+     {
+      "source": "宮下文書",
+      "text": "宮下文書では、ウガヤフキアエズはウガヤ王朝の第51代とされる（竹内文書・九鬼文書の72〜73代とは数が異なる）。初代の時に外寇を防ぐため、富士の高天原から九州の高千穂へ都を移したとも記される。"
+     }
+    ],
+    "aliases": [
+     {
+      "name": "天津日高日子波限建鵜葺草葺不合命",
+      "source": "古事記"
+     },
+     {
+      "name": "彦波瀲武鵜葺草葺不合尊",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "鵜戸神宮",
+      "note": "主祭神。降誕の地とされる"
+     }
+    ]
+   },
+   {
+    "id": "tamayorihime",
+    "name": "玉依比売",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "玉依比売・神武天皇の母",
+    "father": "oowatatsumi",
+    "mother": null,
+    "spouses": [
+     "ugayafukiaezu"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/玉依姫命",
+    "note": "大綿津見神の娘で豊玉比売の妹。姉に代わってウガヤフキアエズを育て、のちその妻となり神武天皇らを生んだ。",
+    "kana": "タマヨリヒメ",
+    "aliases": [
+     {
+      "name": "玉依姫命",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": []
+   },
+   {
+    "id": "jimmu",
+    "name": "神武天皇",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "初代天皇",
+    "father": "ugayafukiaezu",
+    "mother": "tamayorihime",
+    "spouses": [
+     "himetatara_isuzuhime"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/神武天皇",
+    "note": "ウガヤフキアエズと玉依比売の四子。東征ののち橿原で即位したとされる初代天皇。ここから皇室の系図へ続く。",
+    "kana": "ジンムテンノウ",
+    "aliases": [
+     {
+      "name": "神倭伊波礼毘古命",
+      "source": "古事記"
+     },
+     {
+      "name": "神日本磐余彦天皇",
+      "source": "日本書紀"
+     },
+     {
+      "name": "若御毛沼命",
+      "source": "古事記"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "橿原神宮",
+      "note": "主祭神"
+     },
+     {
+      "name": "宮崎神宮",
+      "note": "主祭神"
+     },
+     {
+      "name": "鵜戸神宮",
+      "note": "相殿"
+     }
+    ]
+   },
+   {
+    "id": "ashinazuchi",
+    "name": "脚摩乳",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "脚摩乳・クシナダヒメの父",
+    "father": "ooyamatsumi",
+    "mother": null,
+    "spouses": [
+     "tenazuchi"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/櫛名田比売",
+    "note": "大山津見神の子。手摩乳とともに八岐大蛇に娘を捧げる運命に嘆いていたところを、スサノオに救われた。",
+    "kana": "アシナヅチ",
+    "aliases": [
+     {
+      "name": "足名椎命",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": []
+   },
+   {
+    "id": "tenazuchi",
+    "name": "手摩乳",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "手摩乳・クシナダヒメの母",
+    "father": "ooyamatsumi",
+    "mother": null,
+    "spouses": [
+     "ashinazuchi"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/櫛名田比売",
+    "note": "大山津見神の子。脚摩乳の妻。",
+    "kana": "テナヅチ",
+    "aliases": [
+     {
+      "name": "手名椎命",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": []
+   },
+   {
+    "id": "kushinadahime",
+    "name": "櫛名田比売",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "櫛名田比売・スサノオの妻",
+    "father": "ashinazuchi",
+    "mother": "tenazuchi",
+    "spouses": [
+     "susanoo"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/櫛名田比売",
+    "note": "八岐大蛇の生贄になるところをスサノオに救われ、その妻となった。名は「奇し稲田姫」とも解される。",
+    "kana": "クシナダヒメ",
+    "aliases": [
+     {
+      "name": "奇稲田姫命",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "八重垣神社"
+     },
+     {
+      "name": "須佐神社",
+      "note": "島根県出雲市"
+     },
+     {
+      "name": "八坂神社"
+     }
+    ]
+   },
+   {
+    "id": "kamiooichihime",
+    "name": "神大市比売",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "神大市比売・大山津見神の娘",
+    "father": "ooyamatsumi",
+    "mother": null,
+    "spouses": [
+     "susanoo"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/スサノオ",
+    "note": "大山津見神の娘。スサノオの妻となり、大年神と宇迦之御魂神を生んだ。",
+    "kana": "カムオホイチヒメ",
+    "aliases": [
+     {
+      "name": "神大市姫命",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "大歳御祖神社",
+      "note": "静岡市"
+     }
+    ]
+   },
+   {
+    "id": "ootoshi",
+    "name": "大年神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "大年神・五穀と年の神",
+    "father": "susanoo",
+    "mother": "kamiooichihime",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/大年神",
+    "note": "スサノオと神大市比売の子。稲・五穀の実りを司る年神。",
+    "kana": "オホトシ",
+    "aliases": [],
+    "enshrined": [
+     {
+      "name": "葛木御歳神社",
+      "note": "御歳神社・大歳神社の総本社"
+     },
+     {
+      "name": "飛騨一宮水無神社"
+     }
+    ]
+   },
+   {
+    "id": "ukanomitama",
+    "name": "宇迦之御魂神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "宇迦之御魂神・稲荷の神",
+    "father": "susanoo",
+    "mother": "kamiooichihime",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/宇迦之御魂神",
+    "note": "スサノオと神大市比売の子。食物・稲の神で、稲荷神社の主祭神。",
+    "kana": "ウカノミタマ",
+    "aliases": [
+     {
+      "name": "倉稲魂命",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "伏見稲荷大社",
+      "note": "主祭神。稲荷神社の総本宮"
+     },
+     {
+      "name": "笠間稲荷神社"
+     },
+     {
+      "name": "祐徳稲荷神社"
+     }
+    ]
+   },
+   {
+    "id": "yashimajinumi",
+    "name": "八島士奴美神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "八島士奴美神・スサノオの子",
+    "father": "susanoo",
+    "mother": "kushinadahime",
+    "spouses": [
+     "konohanachiruhime"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/十七世神",
+    "note": "スサノオと櫛名田比売の子。ここから大国主神へ至る『古事記』の十七世神の系譜が始まる。",
+    "kana": "ヤシマジヌミ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "konohanachiruhime",
+    "name": "木花知流比売",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "木花知流比売・大山津見神の娘",
+    "father": "ooyamatsumi",
+    "mother": null,
+    "spouses": [
+     "yashimajinumi"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/十七世神",
+    "note": "大山津見神の娘。八島士奴美神の妻。",
+    "kana": "コノハナチルヒメ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "fuhanomochikukusunushi",
+    "name": "布波能母遅久奴須奴神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "布波能母遅久奴須奴神・十七世神の系譜",
+    "father": "yashimajinumi",
+    "mother": "konohanachiruhime",
+    "spouses": [
+     "hikawahime"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/十七世神",
+    "note": "八島士奴美神と木花知流比売の子。",
+    "kana": "フハノモチククスヌ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "hikawahime",
+    "name": "日河比売",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "日河比売・闇淤加美神の娘",
+    "father": "kuraokami",
+    "mother": null,
+    "spouses": [
+     "fuhanomochikukusunushi"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/十七世神",
+    "note": "水神・闇淤加美神の娘。布波能母遅久奴須奴神の妻。",
+    "kana": "ヒカワヒメ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "fukafuchinomizuyarehana",
+    "name": "深淵之水夜礼花神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "深淵之水夜礼花神・十七世神の系譜",
+    "father": "fuhanomochikukusunushi",
+    "mother": "hikawahime",
+    "spouses": [
+     "amenotsudoechine"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/十七世神",
+    "note": "布波能母遅久奴須奴神と日河比売の子。",
+    "kana": "フカフチノミズヤレハナ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "amenotsudoechine",
+    "name": "天之都度閇知泥神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "天之都度閇知泥神・十七世神の系譜",
+    "father": null,
+    "mother": null,
+    "spouses": [
+     "fukafuchinomizuyarehana"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/十七世神",
+    "note": "深淵之水夜礼花神の妻。出自は伝わらない。",
+    "kana": "アメノツドエチネ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "omizunushi",
+    "name": "淤美豆奴神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "淤美豆奴神・十七世神の系譜",
+    "father": "fukafuchinomizuyarehana",
+    "mother": "amenotsudoechine",
+    "spouses": [
+     "futemimi"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/十七世神",
+    "note": "深淵之水夜礼花神と天之都度閇知泥神の子。",
+    "kana": "オミヅヌ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "futemimi",
+    "name": "布帝耳神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "布帝耳神・十七世神の系譜",
+    "father": null,
+    "mother": null,
+    "spouses": [
+     "omizunushi"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/十七世神",
+    "note": "淤美豆奴神の妻。布怒豆怒神の娘とされる。",
+    "kana": "フテミミ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "amenofuyukinu",
+    "name": "天之冬衣神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "天之冬衣神・大国主神の父",
+    "father": "omizunushi",
+    "mother": "futemimi",
+    "spouses": [
+     "sashikuniwakahime"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/十七世神",
+    "note": "淤美豆奴神と布帝耳神の子。刺国若比売を娶り大国主神を生んだ。",
+    "kana": "アメノフユキヌ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "sashikuniwakahime",
+    "name": "刺国若比売",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "刺国若比売・大国主神の母",
+    "father": null,
+    "mother": null,
+    "spouses": [
+     "amenofuyukinu"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/大国主",
+    "note": "天之冬衣神の妻。刺国大神の娘とされ、大国主神を生んだ。",
+    "kana": "サシクニワカヒメ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "ookuninushi",
+    "name": "大国主",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "大国主神・国作りと国譲りの主役",
+    "father": "amenofuyukinu",
+    "mother": "sashikuniwakahime",
+    "spouses": [
+     "suseribime",
+     "takiribime",
+     "kamuyatatehime",
+     "yagamihime",
+     "nunakawahime",
+     "totori",
+     "mihotsuhime"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/大国主",
+    "note": "スサノオの六世の孫（『古事記』）。少名毘古那神と国作りを進め、国譲りののち幽冥界の主となった。出雲大社の主祭神。別名オオナムチ。",
+    "kana": "オオクニヌシ",
+    "alt": [
+     {
+      "source": "九鬼文書",
+      "text": "九鬼文書では、素戔嗚天皇の第三子・天佐登美命の嫡男とされ、インド・朝鮮を経由して出雲に帰り、後期出雲王朝を建てたとされる（記紀の「須佐之男の六世孫」とは世代が異なる）。"
+     },
+     {
+      "source": "ホツマツタエ",
+      "text": "ホツマツタエの系図では、大国主と同一視されるオオモノヌシ（大物主）は世襲の名で三代続き、初代はソサノヲの子とされる。"
+     }
+    ],
+    "aliases": [
+     {
+      "name": "大国主神",
+      "source": "古事記"
+     },
+     {
+      "name": "大己貴神",
+      "source": "日本書紀"
+     },
+     {
+      "name": "大穴牟遅神",
+      "source": "古事記"
+     },
+     {
+      "name": "八千矛神",
+      "source": "古事記"
+     },
+     {
+      "name": "葦原醜男",
+      "source": "古事記"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "出雲大社",
+      "note": "主祭神"
+     },
+     {
+      "name": "気多大社",
+      "note": "大己貴命として主祭神"
+     },
+     {
+      "name": "大國魂神社",
+      "note": "東京都府中市"
+     }
+    ]
+   },
+   {
+    "id": "suseribime",
+    "name": "須勢理毘売命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "須勢理毘売命・大国主の嫡后",
+    "father": "susanoo",
+    "mother": null,
+    "spouses": [
+     "ookuninushi"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/須勢理毘売命",
+    "note": "スサノオの娘。大国主の正妻。根の国で父スサノオの試練に遭う大国主を助けた。",
+    "kana": "スセリビメ",
+    "aliases": [
+     {
+      "name": "須世理姫命",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "出雲大社",
+      "note": "摂社・大神大后神社（御向社）"
+     },
+     {
+      "name": "那売佐神社"
+     }
+    ]
+   },
+   {
+    "id": "kamuyatatehime",
+    "name": "神屋楯比売命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "神屋楯比売命・事代主神の母",
+    "father": null,
+    "mother": null,
+    "spouses": [
+     "ookuninushi"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/大国主",
+    "note": "大国主の妻。事代主神を生んだ。出自は伝わらない。",
+    "kana": "カムヤタテヒメ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "yagamihime",
+    "name": "八上比売",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "八上比売・因幡の女神",
+    "father": null,
+    "mother": null,
+    "spouses": [
+     "ookuninushi"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/八上比売",
+    "note": "因幡の女神。大国主（大穴牟遅神）が八十神と争って娶り、木俣神を生んだ。因幡の白兎の物語に連なる。",
+    "kana": "ヤガミヒメ",
+    "aliases": [
+     {
+      "name": "八上姫",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "売沼神社",
+      "note": "鳥取県鳥取市"
+     },
+     {
+      "name": "八上姫神社",
+      "note": "島根県出雲市"
+     }
+    ]
+   },
+   {
+    "id": "nunakawahime",
+    "name": "沼河比売",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "沼河比売・高志国の女神",
+    "father": null,
+    "mother": null,
+    "spouses": [
+     "ookuninushi"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/大国主",
+    "note": "高志国（越）の女神。大国主が八千矛神の名で歌を交わして娶り、建御名方神を生んだ。",
+    "kana": "ヌナカワヒメ",
+    "aliases": [
+     {
+      "name": "奴奈河波比売",
+      "source": "古事記"
+     }
+    ],
+    "enshrined": []
+   },
+   {
+    "id": "totori",
+    "name": "鳥取神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "鳥取神・鳥鳴海神の母",
+    "father": null,
+    "mother": null,
+    "spouses": [
+     "ookuninushi"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/十七世神",
+    "note": "大国主の妻。八島牟遅能神の娘とされ、鳥鳴海神を生んだ。",
+    "kana": "トリノカミ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "ajishikitakahikone",
+    "name": "阿遅鉏高日子根神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "阿遅鉏高日子根神・雷霆の神",
+    "father": "ookuninushi",
+    "mother": "takiribime",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/阿遅鉏高日子根神",
+    "note": "大国主と多岐理毘売命の子。葬儀に訪れた天若日子の遺体を激怒して斬った逸話で知られる。高鴨神社などに祀られる。",
+    "kana": "アヂシキタカヒコネ",
+    "aliases": [
+     {
+      "name": "味耜高彦根神",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "高鴨神社",
+      "note": "主祭神"
+     },
+     {
+      "name": "都都古和氣神社",
+      "note": "主祭神"
+     }
+    ]
+   },
+   {
+    "id": "shitaateruhime",
+    "name": "下照比売",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "下光比売命・大国主の娘",
+    "father": "ookuninushi",
+    "mother": "takiribime",
+    "spouses": [
+     "amenowakahiko"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/大国主",
+    "note": "大国主と多岐理毘売命の娘。天若日子の妻。",
+    "kana": "シタテルヒメ",
+    "aliases": [
+     {
+      "name": "下照姫",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "賣布神社",
+      "note": "主祭神"
+     }
+    ]
+   },
+   {
+    "id": "kotoshironushi",
+    "name": "事代主",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "事代主神・国譲りの使者に応じた神",
+    "father": "ookuninushi",
+    "mother": "kamuyatatehime",
+    "spouses": [
+     "mizokuihime",
+     "tamakushihime"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/事代主神",
+    "note": "大国主と神屋楯比売命の子。国譲りの交渉で父に隠退を勧めた。恵比寿神としても信仰される。",
+    "kana": "コトシロヌシ",
+    "aliases": [
+     {
+      "name": "八重言代主神",
+      "source": "古事記"
+     },
+     {
+      "name": "八重事代主神",
+      "source": "日本書紀"
+     },
+     {
+      "name": "都味歯八重事代主神",
+      "source": "先代旧事本紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "美保神社",
+      "note": "主祭神。えびす社の総本宮"
+     },
+     {
+      "name": "三嶋大社",
+      "note": "大山祇神と共に祭神"
+     }
+    ]
+   },
+   {
+    "id": "kimata",
+    "name": "木俣神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "木俣神・大国主の子",
+    "father": "ookuninushi",
+    "mother": "yagamihime",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/大国主",
+    "note": "大国主と八上比売の子。母が木の俣に挟んで生んだことが名の由来とされる。",
+    "kana": "キノマタ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "takeminakata",
+    "name": "建御名方神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "建御名方神・諏訪の神",
+    "father": "ookuninushi",
+    "mother": "nunakawahime",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/建御名方神",
+    "note": "大国主と沼河比売の子。国譲りの際に建御雷神と力比べをして敗れ、諏訪へ逃れてその地の神となった。諏訪大社の主祭神。",
+    "kana": "タケミナカタ",
+    "aliases": [
+     {
+      "name": "建御名方富命",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "諏訪大社",
+      "note": "上社の祭神。諏訪神社の総本社"
+     }
+    ]
+   },
+   {
+    "id": "torinarumi",
+    "name": "鳥鳴海神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "鳥鳴海神・十七世神の系譜",
+    "father": "ookuninushi",
+    "mother": "totori",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/十七世神",
+    "note": "大国主と鳥取神の子。ここから先の系譜は『古事記』の十七世神として氏族の祖へ続いていく。",
+    "kana": "トリナルミ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "amenouzume",
+    "name": "天宇受売命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "天宇受売命・芸能の女神",
+    "father": null,
+    "mother": null,
+    "spouses": [
+     "sarutahiko"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/天宇受売命",
+    "note": "天の岩戸の前で舞い、アマテラスを誘い出した女神。芸能・舞踊の祖神。『古事記』に親は記されず、後世の伝承で猿田毘古神の妻とされる。",
+    "kana": "アメノウズメ",
+    "alt": [
+     {
+      "source": "ホツマツタエ",
+      "text": "ホツマツタエでは、ニニキネ（ニニギ）に仕える女性として描かれ、サルタヒコと結ばれて「猿部之君」の神名を賜ったとされる。父・出自を明記した記述はホツマツタエ本文では確認できなかった（ホツマ研究では「ウズメ」を舞女の役職名とする解釈もある）。"
+     },
+     {
+      "source": "先代旧事本紀",
+      "text": "先代旧事本紀系の古伝では、父は天太玉命、母は天比理刀咩命とされる。記紀に親の記載はなく、正データの父・母は未詳のまま。"
+     }
+    ],
+    "aliases": [
+     {
+      "name": "天宇受賣命",
+      "source": "古事記"
+     },
+     {
+      "name": "天鈿女命",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "佐瑠女神社",
+      "note": "猿田彦神社の境内社"
+     },
+     {
+      "name": "荒立神社"
+     },
+     {
+      "name": "芸能神社",
+      "note": "車折神社の境内社。芸能の神として"
+     }
+    ]
+   },
+   {
+    "id": "futodama",
+    "name": "天太玉命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "天太玉命・忌部氏の祖神",
+    "father": null,
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/フトダマ",
+    "note": "天の岩戸の段では天児屋命とともに太占を行い、勾玉や鏡を下げた真賢木を捧げ持った。天孫降臨では五伴緒の一柱としてニニギに随伴した。忌部氏（後の斎部氏）の祖神。『記紀』に出自は記されない。",
+    "kana": "フトダマ",
+    "alt": [
+     {
+      "source": "古語拾遺",
+      "text": "『古語拾遺』では高皇産霊神の裔とされ、系譜は高皇産霊神―栲幡千千姫命―天忍日命―天太玉命と続くとされる。忌部（斎部）氏の立場から編まれた同書では、天岩戸の段でもフトダマが中心的な役割を担う。"
+     },
+     {
+      "source": "先代旧事本紀",
+      "text": "先代旧事本紀系の古伝では、天太玉命は天宇受売命の父（母は天比理刀咩命）とされる。記紀にはこの親子関係の記載はない。"
+     }
+    ],
+    "aliases": [
+     {
+      "name": "布刀玉命",
+      "source": "古事記"
+     },
+     {
+      "name": "太玉命",
+      "source": "日本書紀"
+     },
+     {
+      "name": "天太玉命",
+      "source": "古語拾遺"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "天太玉命神社",
+      "note": "奈良県橿原市"
+     },
+     {
+      "name": "大麻比古神社",
+      "note": "阿波国一宮"
+     },
+     {
+      "name": "安房神社"
+     }
+    ]
+   },
+   {
+    "id": "sarutahiko",
+    "name": "猿田毘古神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "猿田毘古神・道案内の神",
+    "father": null,
+    "mother": null,
+    "spouses": [
+     "amenouzume"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/猿田毘古神",
+    "note": "天孫降臨の際、天の八衢に立ってニニギを迎えた国津神。道開きの神。『古事記』に親は記されない。",
+    "kana": "サルタヒコ",
+    "alt": [
+     {
+      "source": "ホツマツタエ",
+      "text": "ホツマツタエでは、タカシマのナガタで生まれた者とされ、ニニキネ（ニニギ）の道案内を務めた後、ウズメと結ばれて「猿部之君」の神名を賜ったとされる。"
+     },
+     {
+      "source": "宮下文書",
+      "text": "宮下文書では、大物主命と猿田彦命は共通の祖先から分かれたとされ、ウガヤ王朝とも祖先を同じくしたとする。"
+     }
+    ],
+    "aliases": [],
+    "enshrined": [
+     {
+      "name": "猿田彦神社",
+      "note": "総本宮"
+     },
+     {
+      "name": "椿大神社",
+      "note": "総本宮"
+     },
+     {
+      "name": "白鬚神社",
+      "note": "総本宮"
+     }
+    ]
+   },
+   {
+    "id": "mizokuihime",
+    "name": "溝杭姫",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "溝杭姫",
+    "father": null,
+    "mother": null,
+    "spouses": [
+     "kotoshironushi"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/%E5%8B%BE%E6%9D%AD%E5%A7%AB",
+    "note": "事代主神の妻。ヒメタタライスズヒメの母。",
+    "kana": "ミゾクイヒメ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "himetatara_isuzuhime",
+    "name": "ヒメタタライスズヒメ",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "神武天皇の皇后",
+    "father": "kotoshironushi",
+    "mother": "mizokuihime",
+    "spouses": [
+     "jimmu"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/%E3%83%92%E3%83%A1%E3%82%BF%E3%82%BF%E3%83%A9%E3%82%A4%E3%82%B9%E3%82%BA%E3%83%92%E3%83%A1",
+    "note": "事代主神と溝杭姫の子。神武天皇の皇后。",
+    "kana": "ヒメタタライスズヒメ",
+    "aliases": [
+     {
+      "name": "比売多多良伊須気余理比売",
+      "source": "古事記"
+     },
+     {
+      "name": "媛蹈鞴五十鈴媛命",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "橿原神宮",
+      "note": "主祭神"
+     },
+     {
+      "name": "率川神社",
+      "note": "主神。子守明神として"
+     }
+    ]
+   },
+   {
+    "id": "amenokoyane",
+    "name": "天児屋命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "天児屋命・中臣氏と藤原氏の祖神",
+    "father": null,
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/天児屋命",
+    "note": "天の岩戸の段で太占を行い祝詞を奏上した。天孫降臨では五伴緒の一柱としてニニギに随伴した。中臣氏・藤原氏の祖神。出自は記紀本文に明記がなく、日本書紀・新撰姓氏録系では興台産霊命の子、古語拾遺では津速産霊神の子とされる（関係線で併記）。",
+    "kana": "アメノコヤネ",
+    "aliases": [
+     {
+      "name": "天児屋根命",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "春日大社"
+     },
+     {
+      "name": "枚岡神社"
+     }
+    ]
+   },
+   {
+    "id": "tamanooya",
+    "name": "玉祖命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "玉祖命・玉作りの祖神",
+    "father": null,
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/玉祖命",
+    "note": "天の岩戸の段で八尺瓊勾玉を作った。玉作部（玉造部）の祖神。『古事記』にのみ登場し、出自の記載はない。天孫降臨では五伴緒の一柱として随伴した。",
+    "kana": "タマノオヤ",
+    "aliases": [
+     {
+      "name": "天明玉命",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "玉作湯神社"
+     },
+     {
+      "name": "玉祖神社",
+      "note": "大阪府八尾市"
+     },
+     {
+      "name": "安房神社"
+     }
+    ]
+   },
+   {
+    "id": "ishikoridome",
+    "name": "伊斯許理度売命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "伊斯許理度売命・鏡作りの女神",
+    "father": "amenonukado",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/イシコリドメ",
+    "note": "天の岩戸の段で八咫鏡を作った女神。作鏡連の祖神。『日本書紀』では天糠戸命の子とされる。天孫降臨では五伴緒の一柱として随伴した。",
+    "kana": "イシコリドメ",
+    "aliases": [
+     {
+      "name": "石凝姥命",
+      "source": "日本書紀"
+     },
+     {
+      "name": "石凝戸辺",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "鞴神社",
+      "note": "大阪市天王寺区"
+     },
+     {
+      "name": "鏡作坐天照御魂神社",
+      "note": "奈良県磯城郡"
+     }
+    ]
+   },
+   {
+    "id": "amenonukado",
+    "name": "天糠戸命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "天糠戸命・伊斯許理度売命の父",
+    "father": null,
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/天糠戸命",
+    "note": "伊斯許理度売命の父。『日本書紀』に子との関係が記されるが、自身の出自は記紀に記されない。後世の『大倭神社註進状』では大山津見神の子とされる（関係線で併記）。",
+    "kana": "アメノヌカド",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "amenotajikarao",
+    "name": "天手力男神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "天手力男神・怪力の神",
+    "father": null,
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/アメノタヂカラオ",
+    "note": "天の岩戸の脇に控え、顔をのぞかせた天照を岩戸から引き出して世界に光を取り戻した怪力の神。天孫降臨にも随伴したとされる。",
+    "kana": "アメノタヂカラオ",
+    "aliases": [
+     {
+      "name": "天手力雄神",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "戸隠神社"
+     },
+     {
+      "name": "佐那神社"
+     }
+    ]
+   },
+   {
+    "id": "futsunushi",
+    "name": "経津主神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "経津主神・香取神宮の祭神",
+    "father": "iwatutsunoo",
+    "mother": "iwatsutsunome",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/経津主神",
+    "note": "『日本書紀』に登場する武神。磐筒男神・磐筒女神の子とされ、国譲りの際は建御雷神とともに葦原中国へ派遣された。香取神宮の祭神。『古事記』には登場しない。",
+    "kana": "フツヌシ",
+    "aliases": [
+     {
+      "name": "斎主神",
+      "source": "日本書紀"
+     },
+     {
+      "name": "布都怒志命",
+      "source": "出雲国風土記"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "香取神宮",
+      "note": "主祭神。香取神社の総本社"
+     },
+     {
+      "name": "春日大社"
+     }
+    ]
+   },
+   {
+    "id": "iwatsutsunome",
+    "name": "磐筒女神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "磐筒女神・経津主神の母",
+    "father": null,
+    "mother": null,
+    "spouses": [
+     "iwatutsunoo"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/経津主神",
+    "note": "『日本書紀』で磐筒男神とともに経津主神を生んだとされる女神。磐裂神・根裂神の系統に連なる。",
+    "kana": "イワツツノメ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "oomononushi",
+    "name": "大物主神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "大物主神・三輪山の神",
+    "father": null,
+    "mother": null,
+    "spouses": [
+     "ikutamayorihime",
+     "seyadatarahime"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/大物主",
+    "note": "三輪山の大神。『日本書紀』では大国主神の幸魂・奇魂とされる。活玉依毘売を娶って櫛御方命を、勢夜陀多良比売を娶って比売多多良伊須気余理比売（古事記の伝）を生んだ。三輪氏・大神氏の祖神。",
+    "kana": "オオモノヌシ",
+    "aliases": [
+     {
+      "name": "美和之大物主神",
+      "source": "古事記"
+     },
+     {
+      "name": "大三輪之神",
+      "source": "日本書紀"
+     },
+     {
+      "name": "倭大物主櫛甕玉命",
+      "source": "出雲国造神賀詞"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "大神神社",
+      "note": "主祭神"
+     }
+    ]
+   },
+   {
+    "id": "ikutamayorihime",
+    "name": "活玉依毘売",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "活玉依毘売・大物主神の妻",
+    "father": "suetsumimi",
+    "mother": null,
+    "spouses": [
+     "oomononushi"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/活玉依毘売",
+    "note": "陶津耳命の娘。蛇（大物主神）の子を身ごもり、櫛御方命を生んだ。『古事記』に記される大物主神の妻。",
+    "kana": "イクタマヨリヒメ",
+    "aliases": [
+     {
+      "name": "活玉依媛",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": []
+   },
+   {
+    "id": "suetsumimi",
+    "name": "陶津耳命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "陶津耳命・活玉依毘売の父",
+    "father": null,
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/大物主",
+    "note": "活玉依毘売の父。『古事記』に娘との関係が記される。",
+    "kana": "スエツミミ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "kushimikata",
+    "name": "櫛御方命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "櫛御方命・大物主神の子",
+    "father": "oomononushi",
+    "mother": "ikutamayorihime",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/大物主",
+    "note": "大物主神と活玉依毘売の子（『古事記』）。大田田根子の高祖父にあたる。",
+    "kana": "クシミカタ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "ootataneko",
+    "name": "大田田根子",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "大田田根子・大神神社の初代神主",
+    "father": null,
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/大田田根子",
+    "note": "崇神天皇の代に大物主神の神託を受け、大三輪の神主となった人物。『古事記』では大物主神と活玉依毘売の玄孫（櫛御方命―飯肩巣見命―建甕槌命―大田田根子）、『日本書紀』では大物主神の子とされる。三輪氏・鴨君の祖。",
+    "kana": "オオタタネコ",
+    "aliases": [
+     {
+      "name": "意富多多泥古命",
+      "source": "古事記"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "大直禰子神社",
+      "note": "大神神社の摂社"
+     }
+    ]
+   },
+   {
+    "id": "seyadatarahime",
+    "name": "勢夜陀多良比売",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "勢夜陀多良比売・三嶋溝杭の娘",
+    "father": "mishimamizokui",
+    "mother": null,
+    "spouses": [
+     "oomononushi"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/玉櫛媛",
+    "note": "三嶋湟咋（溝杭）の娘。丹塗り矢に化した大物主神との間に比売多多良伊須気余理比売を生んだ（『古事記』）。玉櫛媛・活玉依姫と同一視されることもある。",
+    "kana": "セヤダタラヒメ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "tamakushihime",
+    "name": "玉櫛媛",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "玉櫛媛・事代主神の妻",
+    "father": "mishimamizokui",
+    "mother": null,
+    "spouses": [
+     "kotoshironushi"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/玉櫛媛",
+    "note": "三嶋溝橛耳神の娘。『日本書紀』では事代主神の妻で、媛蹈鞴五十鈴媛命（神武天皇の皇后）の母とされる。",
+    "kana": "タマクシヒメ",
+    "aliases": [
+     {
+      "name": "玉櫛姫",
+      "source": "日本書紀"
+     },
+     {
+      "name": "三島溝樴姫",
+      "source": "日本書紀一書"
+     }
+    ],
+    "enshrined": []
+   },
+   {
+    "id": "mishimamizokui",
+    "name": "三嶋溝杭命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "三嶋溝杭命・神武天皇の外祖父",
+    "father": null,
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/三嶋溝杭命",
+    "note": "摂津国三島の神。娘の勢夜陀多良比売・玉櫛媛を通じて神武天皇の母方の祖父にあたる。記紀に本人の事績はほとんど記されない。",
+    "kana": "ミシマミゾクイ",
+    "aliases": [
+     {
+      "name": "三嶋湟咋",
+      "source": "古事記"
+     },
+     {
+      "name": "三嶋溝橛耳神",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "溝咋神社",
+      "note": "相殿に溝咋耳命として"
+     }
+    ]
+   },
+   {
+    "id": "amenowakahiko",
+    "name": "天若日子",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "天若日子・葦原中国に遣わされた神",
+    "father": "amatsukunitama",
+    "mother": null,
+    "spouses": [
+     "shitaateruhime"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/アメノワカヒコ",
+    "note": "天津国玉神の子。葦原中国平定に遣わされたが、大国主の娘・下照比売と結婚して帰らず、高木神（高皇産霊）の天之逆矢に討たれた。",
+    "kana": "アメノワカヒコ",
+    "aliases": [
+     {
+      "name": "天稚彦",
+      "source": "日本書紀"
+     },
+     {
+      "name": "天若彦",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "安孫子神社",
+      "note": "主祭神"
+     },
+     {
+      "name": "天稚彦神社",
+      "note": "主祭神"
+     },
+     {
+      "name": "賣布神社",
+      "note": "下照比売の配神として"
+     }
+    ]
+   },
+   {
+    "id": "amatsukunitama",
+    "name": "天津国玉神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "天津国玉神・天若日子の父",
+    "father": null,
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/アメノワカヒコ",
+    "note": "天若日子の父。『古事記』に子との関係が記されるが、自身の系譜の記述はない。",
+    "kana": "アマツクニタマ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "amenohoakari",
+    "name": "天火明命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "天火明命・ニニギの兄",
+    "father": "amenooshihomimi",
+    "mother": "yorozuhatahime",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/天火明命",
+    "note": "天忍穂耳命と万幡豊秋津師比売命（栲幡千千姫命）の子で、ニニギの兄（『日本書紀』）。尾張氏らの祖神。『先代旧事本紀』では饒速日命と同一神とされる。",
+    "kana": "アメノホアカリ",
+    "aliases": [
+     {
+      "name": "天照国照彦天火明櫛玉饒速日尊",
+      "source": "先代旧事本紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "籠神社",
+      "note": "彦火明命として"
+     },
+     {
+      "name": "真清田神社"
+     }
+    ]
+   },
+   {
+    "id": "nigihayahi",
+    "name": "饒速日命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "饒速日命・物部氏の祖神",
+    "father": null,
+    "mother": null,
+    "spouses": [
+     "tomiyabime"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ニギハヤヒ",
+    "note": "天磐船に乗って河内に天降りしたとされる神。長髄彦の妹・登美夜毘売を娶り、宇摩志麻遅命を生んだ。物部氏の祖神。『先代旧事本紀』では天火明命と同一神とされる。",
+    "kana": "ニギハヤヒ",
+    "aliases": [
+     {
+      "name": "邇藝速日命",
+      "source": "古事記"
+     },
+     {
+      "name": "櫛玉饒速日命",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "石切劔箭神社",
+      "note": "主祭神"
+     }
+    ]
+   },
+   {
+    "id": "tomiyabime",
+    "name": "登美夜毘売",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "登美夜毘売・饒速日命の妻",
+    "father": null,
+    "mother": null,
+    "spouses": [
+     "nigihayahi"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ニギハヤヒ",
+    "note": "大和の豪族・長髄彦（那賀須泥毘古）の妹。饒速日命の妻となり、宇摩志麻遅命を生んだ。『日本書紀』では三炊屋媛と記される。",
+    "kana": "トミヤビメ",
+    "aliases": [
+     {
+      "name": "三炊屋媛",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": []
+   },
+   {
+    "id": "umashimaji",
+    "name": "宇摩志麻遅命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "宇摩志麻遅命・物部氏の祖",
+    "father": "nigihayahi",
+    "mother": "tomiyabime",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ニギハヤヒ",
+    "note": "饒速日命と登美夜毘売の子。物部連・穂積臣・采女臣の祖とされる。",
+    "kana": "ウマシマヂ",
+    "aliases": [
+     {
+      "name": "宇摩志摩治命",
+      "source": "先代旧事本紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "石切劔箭神社",
+      "note": "可美真手命として"
+     }
+    ]
+   },
+   {
+    "id": "amenokaguyama",
+    "name": "天香山命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "天香山命・尾張氏の祖神",
+    "father": null,
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/天香山命",
+    "note": "『先代旧事本紀』では饒速日命と天道日女命の子で、宇摩志麻遅命とは母を異にする兄弟とされる。尾張氏らの祖神。高倉下と同一視される。",
+    "kana": "アメノカグヤマ",
+    "aliases": [
+     {
+      "name": "天香語山命",
+      "source": "先代旧事本紀"
+     },
+     {
+      "name": "高倉下",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "彌彦神社"
+     },
+     {
+      "name": "田村神社"
+     }
+    ]
+   },
+   {
+    "id": "kamotaketsunumi",
+    "name": "賀茂建角身命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "賀茂建角身命・賀茂氏の祖神",
+    "father": null,
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/賀茂建角身命",
+    "note": "山城の賀茂氏（賀茂県主）の始祖。下鴨神社の祭神。『新撰姓氏録』では神産巣日神（神魂命）の孫とされ、神武東征の際に八咫烏に化身して先導したのが天八咫烏の号の由来とされる。",
+    "kana": "カモタケツヌミ",
+    "aliases": [
+     {
+      "name": "鴨建角身命",
+      "source": "新撰姓氏録"
+     },
+     {
+      "name": "八咫烏",
+      "source": "新撰姓氏録"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "賀茂御祖神社",
+      "note": "下鴨神社。西殿の祭神"
+     },
+     {
+      "name": "矢宮神社",
+      "note": "主祭神"
+     }
+    ]
+   },
+   {
+    "id": "kamoi_tamayorihime",
+    "name": "玉依毘売命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "玉依毘売命・賀茂別雷命の母",
+    "father": null,
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/賀茂建角身命",
+    "note": "賀茂建角身命の娘（『山城国風土記』）。火雷神との間に賀茂別雷命を生んだ。下鴨神社の祭神。綿津見神の娘の玉依比売（神武天皇の母）とは別人。",
+    "kana": "タマヨリヒメ",
+    "aliases": [],
+    "enshrined": [
+     {
+      "name": "賀茂御祖神社",
+      "note": "下鴨神社。東殿の祭神"
+     }
+    ]
+   },
+   {
+    "id": "kamowakeikazuchi",
+    "name": "賀茂別雷命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "賀茂別雷命・上賀茂神社の祭神",
+    "father": null,
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/賀茂別雷命",
+    "note": "賀茂建角身命の孫。母は玉依毘売命、父は火雷神とされる（『山城国風土記』）。上賀茂神社（賀茂別雷神社）の祭神。",
+    "kana": "カモワケイカヅチ",
+    "aliases": [
+     {
+      "name": "別雷命",
+      "source": "山城国風土記"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "賀茂別雷神社",
+      "note": "上賀茂神社。主祭神"
+     }
+    ]
+   },
+   {
+    "id": "amenoshihi",
+    "name": "天忍日命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "天忍日命・大伴氏の祖神",
+    "father": null,
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/アメノオシヒ",
+    "note": "天孫降臨の際に先払いを務めた神。大伴氏の祖神。記紀に出自の記載はなく、『古語拾遺』の系譜では高皇産霊神―栲幡千千姫命―天忍日命―天太玉命と続く。天忍穂耳命とは別人。",
+    "kana": "アメノオシヒ",
+    "aliases": [
+     {
+      "name": "天押日命",
+      "source": "先代旧事本紀"
+     },
+     {
+      "name": "神狭日命",
+      "source": "先代旧事本紀"
+     }
+    ],
+    "enshrined": [
+     {
+      "name": "油日神社"
+     },
+     {
+      "name": "大伴神社",
+      "note": "長野県佐久市"
+     }
+    ]
+   },
+   {
+    "id": "kogotomusuhi",
+    "name": "興台産霊命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "興台産霊命・天児屋命の父",
+    "father": null,
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/天児屋命",
+    "note": "『日本書紀』や『新撰姓氏録』で天児屋命の父とされる産霊の神。津速産霊神の御子神とされる。",
+    "kana": "コゴトムスヒ",
+    "aliases": [
+     {
+      "name": "居々登魂命",
+      "source": "日本書紀"
+     }
+    ],
+    "enshrined": []
+   },
+   {
+    "id": "tsuhayamusuhi",
+    "name": "津速産霊神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "津速産霊神・産霊の神",
+    "father": null,
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/天児屋命",
+    "note": "『古語拾遺』で天児屋命の父、『日本書紀』系の系譜で興台産霊命の父とされる産霊の神。",
+    "kana": "ツハヤムスヒ",
+    "aliases": [
+     {
+      "name": "津速魂命",
+      "source": "古語拾遺"
+     }
+    ],
+    "enshrined": []
+   },
+   {
+    "id": "kotonomachihime",
+    "name": "許等能麻知媛命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "許等能麻知媛命・天児屋命の母",
+    "father": null,
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/天児屋命",
+    "note": "安国玉主命の娘で、天児屋命の母とされる（日本書紀・新撰姓氏録系の系譜）。",
+    "kana": "コトノマチヒメ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "hiritome",
+    "name": "天比理刀咩命",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "天比理刀咩命・天宇受売命の母",
+    "father": null,
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/フトダマ",
+    "note": "先代旧事本紀系の古伝で、天太玉命の妻、天宇受売命の母とされる女神。記紀にはこの系譜の記載はない。",
+    "kana": "アメノヒリトメ",
+    "aliases": [],
+    "enshrined": []
+   },
+   {
+    "id": "mihotsuhime",
+    "name": "三穂津姫",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "三穂津姫・大国主神の妻",
+    "father": "takamimusuhi",
+    "mother": null,
+    "spouses": [
+     "ookuninushi"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/三穂津姫",
+    "note": "『日本書紀』では高皇産霊尊の娘で、国譲りの後に大国主神（大己貴神）の妻となったとされる。美保神社の主祭神。",
+    "kana": "ミホツヒメ",
+    "aliases": [],
+    "enshrined": [
+     {
+      "name": "美保神社",
+      "note": "主祭神"
+     },
+     {
+      "name": "御穂神社",
+      "note": "主祭神"
+     }
+    ]
+   },
+   {
+    "id": "ukemochi",
+    "name": "保食神",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "保食神・食物の女神",
+    "father": null,
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/保食神",
+    "note": "『日本書紀』の一書にのみ登場する食物の女神。口から食物を出して月夜見尊をもてなしたが、汚らわしいと怒った月夜見尊に斬られた。その死体から穀物や蚕が生まれたとされる。",
+    "kana": "ウケモチ",
+    "aliases": [],
+    "enshrined": [
+     {
+      "name": "駒形神社",
+      "note": "馬の神として。東日本に多い"
+     }
+    ]
+   },
+   {
+    "id": "kunisatsuchi",
+    "name": "国狭槌尊",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "国狭槌尊・日本書紀の神代の神",
+    "father": null,
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/国之常立神",
+    "note": "『日本書紀』の神代冒頭で、国常立尊の次に現れる神。『古事記』には登場しない。",
+    "kana": "クニサツチ",
+    "aliases": [],
+    "enshrined": []
+   }
+  ],
+  "relations": [
+   {
+    "from": "sukunabikona",
+    "to": "ookuninushi",
+    "label": "国作りの相棒",
+    "note": "大国主の国作りに協力した（古事記）。血縁ではないため関係線で結ぶ。"
+   },
+   {
+    "from": "amenouzume",
+    "to": "amaterasu",
+    "label": "天岩戸で舞い、天照を誘い出した",
+    "note": "天岩戸の前で舞い、天照大御神を岩戸から誘い出した（古事記）。"
+   },
+   {
+    "from": "sarutahiko",
+    "to": "ninigi",
+    "label": "天孫降臨の道案内",
+    "note": "天孫降臨の際、天の八衢で出迎え道案内をした（古事記）。"
+   },
+   {
+    "from": "takemikazuchi",
+    "to": "kotoshironushi",
+    "label": "国譲りの交渉相手",
+    "note": "葦原中国の平定のため派遣された使者。事代主は父・大国主に隠退を勧めた（古事記）。"
+   },
+   {
+    "from": "takemikazuchi",
+    "to": "takeminakata",
+    "label": "国譲りの際の力比べの相手",
+    "note": "建御名方は国譲りに抵抗し、伊那佐の小浜で建御雷神と力比べをして敗れた（古事記）。"
+   },
+   {
+    "from": "amenotrifune",
+    "to": "takemikazuchi",
+    "label": "国譲りの使者として同行",
+    "note": "建御雷神とともに葦原中国平定の使者を務めた（古事記）。"
+   },
+   {
+    "from": "omoikane",
+    "to": "tsukuyomi",
+    "label": "九鬼文書では月夜見天皇の直裔",
+    "note": "九鬼文書の神代系譜では、天児根命（天八意思兼尊＝思金神）は前期出雲王朝第2代・月夜見天皇の直裔とされる。記紀の系譜（高御産巣日神の子）とは異なる古史古伝の異説のため、sourceAlt付きの関係線として併記する。",
+    "sourceAlt": "九鬼文書"
+   },
+   {
+    "from": "takemikazuchi",
+    "to": "tsukuyomi",
+    "label": "九鬼文書では月夜見天皇の裔・天児根命の弟神",
+    "note": "九鬼文書の神代系譜では、武御雷命は天児根命の弟神で月夜見天皇の裔とされる。記紀の系譜（迦具土の血から化生）とは異なる古史古伝の異説のため、sourceAlt付きの関係線として併記する。",
+    "sourceAlt": "九鬼文書"
+   },
+   {
+    "from": "sukunabikona",
+    "to": "takamimusuhi",
+    "label": "日本書紀では高皇産霊神の子",
+    "note": "『古事記』では神産巣日神の子（正データ）だが、『日本書紀』では高皇産霊神の子とされる。出典が分かれるため関係線で併記する。",
+    "kind": "lineage",
+    "source": "日本書紀"
+   },
+   {
+    "from": "amenoshihi",
+    "to": "yorozuhatahime",
+    "label": "古語拾遺では栲幡千千姫命の子",
+    "note": "『古語拾遺』の忌部系譜では、高皇産霊神―栲幡千千姫命（＝万幡豊秋津師比売命）―天忍日命―天太玉命と続く。天忍日命を高皇産霊の直の子とする伝（先代旧事本紀「神代本紀」）もある。",
+    "kind": "lineage",
+    "source": "古語拾遺"
+   },
+   {
+    "from": "futodama",
+    "to": "amenoshihi",
+    "label": "古語拾遺では天忍日命の子",
+    "note": "『古語拾遺』の系譜で天太玉命は天忍日命の子とされる。これにより天太玉命は高皇産霊神の裔として本流に接続する。",
+    "kind": "lineage",
+    "source": "古語拾遺"
+   },
+   {
+    "from": "amenokoyane",
+    "to": "kogotomusuhi",
+    "label": "日本書紀では興台産霊命の子",
+    "note": "天児屋命の父は『日本書紀』および『新撰姓氏録』では興台産霊命とされる。記紀本文に明記がないため関係線で併記する。",
+    "kind": "lineage",
+    "source": "日本書紀"
+   },
+   {
+    "from": "amenokoyane",
+    "to": "tsuhayamusuhi",
+    "label": "古語拾遺では津速産霊神の子",
+    "note": "『古語拾遺』では天児屋命の父を津速産霊神（津速魂命）とする。日本書紀系の系譜（興台産霊命の子）とは出典が異なるため併記する。",
+    "kind": "lineage",
+    "source": "古語拾遺"
+   },
+   {
+    "from": "amenokoyane",
+    "to": "kotonomachihime",
+    "label": "母は許等能麻知媛命",
+    "note": "天児屋命の母は安国玉主命の娘・許等能麻知媛命とされる（日本書紀・新撰姓氏録系の系譜）。",
+    "kind": "lineage",
+    "source": "新撰姓氏録"
+   },
+   {
+    "from": "kogotomusuhi",
+    "to": "tsuhayamusuhi",
+    "label": "日本書紀では津速産霊神の御子神",
+    "note": "興台産霊命は津速産霊神の御子神とされる（『日本書紀』・『新撰姓氏録』）。",
+    "kind": "lineage",
+    "source": "日本書紀"
+   },
+   {
+    "from": "amenouzume",
+    "to": "futodama",
+    "label": "先代旧事本紀系では天太玉命の娘",
+    "note": "先代旧事本紀系の古伝では天宇受売命の父は天太玉命とされる。記紀に親の記載はないため関係線で併記する。",
+    "kind": "lineage",
+    "source": "先代旧事本紀"
+   },
+   {
+    "from": "amenouzume",
+    "to": "hiritome",
+    "label": "先代旧事本紀系では天比理刀咩命の娘",
+    "note": "先代旧事本紀系の古伝では天宇受売命の母は天比理刀咩命とされる。",
+    "kind": "lineage",
+    "source": "先代旧事本紀"
+   },
+   {
+    "from": "kamotaketsunumi",
+    "to": "kamimusuhi",
+    "label": "新撰姓氏録では神産巣日神の孫",
+    "note": "『新撰姓氏録』によれば鴨建津之身命（賀茂建角身命）は神魂命（神産巣日神）の孫とされる。途中の世代は明記されないため関係線で結ぶ。",
+    "kind": "lineage",
+    "source": "新撰姓氏録"
+   },
+   {
+    "from": "amenokaguyama",
+    "to": "nigihayahi",
+    "label": "先代旧事本紀では饒速日命の子",
+    "note": "『先代旧事本紀』では天香山命は饒速日命と天道日女命の子で、宇摩志麻遅命とは母を異にする兄弟とされる。",
+    "kind": "lineage",
+    "source": "先代旧事本紀"
+   },
+   {
+    "from": "kamoi_tamayorihime",
+    "to": "kamotaketsunumi",
+    "label": "山城国風土記では賀茂建角身命の娘",
+    "note": "賀茂氏の系譜（『山城国風土記』逸文）では玉依毘売命は賀茂建角身命の娘とされる。",
+    "kind": "lineage",
+    "source": "山城国風土記"
+   },
+   {
+    "from": "kamowakeikazuchi",
+    "to": "kamoi_tamayorihime",
+    "label": "山城国風土記では玉依毘売命の子",
+    "note": "『山城国風土記』逸文では、玉依毘売命が火雷神との間に賀茂別雷命を生んだとされる。",
+    "kind": "lineage",
+    "source": "山城国風土記"
+   },
+   {
+    "from": "himetatara_isuzuhime",
+    "to": "oomononushi",
+    "label": "古事記では大物主神の娘",
+    "note": "『古事記』では比売多多良伊須気余理比売は大物主神と勢夜陀多良比売の娘とされる。正データの系譜（事代主・溝杭姫）とは出典が異なるため関係線で併記する。",
+    "kind": "lineage",
+    "source": "古事記"
+   },
+   {
+    "from": "himetatara_isuzuhime",
+    "to": "seyadatarahime",
+    "label": "古事記では勢夜陀多良比売の娘",
+    "note": "『古事記』では母は三嶋湟咋の娘・勢夜陀多良比売とされる。",
+    "kind": "lineage",
+    "source": "古事記"
+   },
+   {
+    "from": "himetatara_isuzuhime",
+    "to": "tamakushihime",
+    "label": "日本書紀では玉櫛媛の娘",
+    "note": "『日本書紀』では媛蹈鞴五十鈴媛命は事代主神と玉櫛媛の娘とされる。",
+    "kind": "lineage",
+    "source": "日本書紀"
+   },
+   {
+    "from": "ootataneko",
+    "to": "kushimikata",
+    "label": "古事記では櫛御方命の玄孫",
+    "note": "『古事記』の系譜は櫛御方命―飯肩巣見命―建甕槌命―大田田根子。『日本書紀』では大物主神の直の子ともされる。",
+    "kind": "lineage",
+    "source": "古事記"
+   },
+   {
+    "from": "kunisatsuchi",
+    "to": "kuninotokotachi",
+    "label": "日本書紀では国常立尊の次に現れる",
+    "note": "『日本書紀』の神代冒頭では国常立尊・国狭槌尊・豊斟渟尊が続けて現れる。親子とは明記されないが、系譜の連なりとして関係線で結ぶ。",
+    "kind": "lineage",
+    "source": "日本書紀"
+   },
+   {
+    "from": "amenonukado",
+    "to": "ooyamatsumi",
+    "label": "大倭神社註進状では大山津見神の子",
+    "note": "天糠戸命の出自は記紀に記されないが、『大倭神社註進状』の裏書（鏡作神社三座条）では大山祇命の子とされる。後世の社伝のため関係線で併記する。",
+    "kind": "lineage",
+    "source": "大倭神社註進状"
+   },
+   {
+    "from": "amenotajikarao",
+    "to": "omoikane",
+    "label": "斎部氏家牒では思金神の子",
+    "note": "『大和志料』引用の『斎部氏家牒』では、天手力男神は天八意思兼命（思金神）の子で阿智祝の遠祖とされる。記紀にない系譜のため関係線で併記する。",
+    "kind": "lineage",
+    "source": "斎部氏家牒"
+   },
+   {
+    "from": "nigihayahi",
+    "to": "amenohoakari",
+    "label": "先代旧事本紀では天火明命と同一神",
+    "note": "『先代旧事本紀』では饒速日命は天火明命と同一神とされる。記紀では別々に記されるため、同一神の伝として関係線で結ぶ。",
+    "kind": "identity",
+    "source": "先代旧事本紀"
+   },
+   {
+    "from": "amenokoyane",
+    "to": "amaterasu",
+    "label": "天岩戸で太占と祝詞を担った",
+    "note": "天の岩戸の段で、天児屋命は天太玉命とともに太占を行い、祝詞を奏上した（古事記）。"
+   },
+   {
+    "from": "futodama",
+    "to": "amaterasu",
+    "label": "天岩戸で太占を行った",
+    "note": "天の岩戸の段で、天太玉命は天児屋命とともに太占を行い、真賢木に勾玉と鏡を下げて捧げ持った（古事記）。"
+   },
+   {
+    "from": "amenotajikarao",
+    "to": "amaterasu",
+    "label": "天岩戸を引き開け、天照を引き出した",
+    "note": "岩戸の脇に控え、顔をのぞかせた天照大御神の手を取り、岩戸から引き出した（古事記）。"
+   },
+   {
+    "from": "ishikoridome",
+    "to": "amaterasu",
+    "label": "八咫鏡を作った",
+    "note": "天の岩戸の段で、伊斯許理度売命が八咫鏡を作った（古事記）。"
+   },
+   {
+    "from": "tamanooya",
+    "to": "amaterasu",
+    "label": "八尺瓊勾玉を作った",
+    "note": "天の岩戸の段で、玉祖命が八尺瓊勾玉を作った（古事記）。"
+   },
+   {
+    "from": "omoikane",
+    "to": "amaterasu",
+    "label": "天岩戸の策を立案した",
+    "note": "天の岩戸隠れの際、思金神が天照大御神を誘い出す策を練った（古事記）。"
+   },
+   {
+    "from": "futsunushi",
+    "to": "takemikazuchi",
+    "label": "国譲りの使者として同行",
+    "note": "『日本書紀』では経津主神は建御雷神とともに葦原中国平定の使者を務めた。"
+   },
+   {
+    "from": "oomononushi",
+    "to": "ookuninushi",
+    "label": "日本書紀では大国主の幸魂・奇魂",
+    "note": "『日本書紀』では大物主神（三輪之神）は大己貴神（大国主）の幸魂・奇魂とされる。『先代旧事本紀』では術魂でもあるとされる。"
+   },
+   {
+    "from": "tsukuyomi",
+    "to": "ukemochi",
+    "label": "日本書紀一書では保食神を斬った",
+    "note": "『日本書紀』神産み段の一書では、月夜見尊は食物の出し方に怒って保食神を斬り、天照大神との不和の原因となった。"
+   },
+   {
+    "from": "amenowakahiko",
+    "to": "takamimusuhi",
+    "label": "高木神の天之逆矢に討たれた",
+    "note": "天若日子が放った天之加久矢を、高木神（高皇産霊神）が「悪しき心で射たならば当たれ」と投げ返し、天若日子を討った（古事記）。"
+   },
+   {
+    "from": "amenoshihi",
+    "to": "ninigi",
+    "label": "天孫降臨で先払いを務めた",
+    "note": "天孫降臨の際、天忍日命は天槵津大来目を率いて天孫の先払いをした（日本書紀・古語拾遺）。"
+   },
+   {
+    "from": "kamotaketsunumi",
+    "to": "jimmu",
+    "label": "八咫烏として神武東征を先導",
+    "note": "『新撰姓氏録』では、賀茂建角身命が大烏に化身して神武天皇を先導したのが天八咫烏の号の由来とされる。",
+    "source": "新撰姓氏録"
+   },
+   {
+    "from": "izanami",
+    "to": "takamimusuhi",
+    "label": "ホツマツタエでは5代目タカミムスビの娘イサコ",
+    "note": "ホツマツタエではタカミムスビは世襲名とされ、5代目トヨケの娘イサコがイサナミ（伊邪那美）とされる。記紀の系譜とは異なる古史古伝の異説のため、sourceAlt付きの関係線として併記する。",
+    "sourceAlt": "ホツマツタエ"
+   },
+   {
+    "from": "amenominakanushi",
+    "to": "takamimusuhi",
+    "label": "次に現れた",
+    "note": "『古事記』の天地開闢で、天之御中主神の次に高天原に成った。",
+    "kind": "sequence",
+    "source": "古事記"
+   },
+   {
+    "from": "takamimusuhi",
+    "to": "kamimusuhi",
+    "label": "次に現れた",
+    "note": "『古事記』の天地開闢で、高御産巣日神の次に成った。ここまでの三柱が造化三神。",
+    "kind": "sequence",
+    "source": "古事記"
+   },
+   {
+    "from": "kamimusuhi",
+    "to": "umashiashikabihikoji",
+    "label": "次に現れた",
+    "note": "造化三神に次いで、国土がまだ稚く浮き脂のように漂う頃に成った（古事記）。",
+    "kind": "sequence",
+    "source": "古事記"
+   },
+   {
+    "from": "umashiashikabihikoji",
+    "to": "amenotokotachi",
+    "label": "次に現れた",
+    "note": "『古事記』で宇摩志阿斯訶備比古遅神の次に成った。ここまでの五柱が別天津神。",
+    "kind": "sequence",
+    "source": "古事記"
+   },
+   {
+    "from": "amenotokotachi",
+    "to": "kuninotokotachi",
+    "label": "次に現れた",
+    "note": "別天津神に次いで成った、神世七代の第一代（古事記）。",
+    "kind": "sequence",
+    "source": "古事記"
+   },
+   {
+    "from": "kuninotokotachi",
+    "to": "toyokumono",
+    "label": "次に現れた",
+    "note": "『古事記』で国之常立神の次に成った、神世七代の第二代。ここまでの二柱も独神。",
+    "kind": "sequence",
+    "source": "古事記"
+   },
+   {
+    "from": "toyokumono",
+    "to": "uhijini",
+    "label": "次に現れた",
+    "note": "『古事記』で豊雲野神の次に成った、神世七代の第三代の男神。",
+    "kind": "sequence",
+    "source": "古事記"
+   },
+   {
+    "from": "uhijini",
+    "to": "suhijini",
+    "label": "次に現れた",
+    "note": "『古事記』では宇比地邇神の次に「妹・須比智邇神」と続く。",
+    "kind": "sequence",
+    "source": "古事記"
+   },
+   {
+    "from": "suhijini",
+    "to": "tsunuguhi",
+    "label": "次に現れた",
+    "note": "『古事記』で須比智邇神の次に成った、神世七代の第四代の男神。",
+    "kind": "sequence",
+    "source": "古事記"
+   },
+   {
+    "from": "tsunuguhi",
+    "to": "ikuguhi",
+    "label": "次に現れた",
+    "note": "『古事記』では角杙神の次に「妹・活杙神」と続く。",
+    "kind": "sequence",
+    "source": "古事記"
+   },
+   {
+    "from": "ikuguhi",
+    "to": "ootonoji",
+    "label": "次に現れた",
+    "note": "『古事記』で活杙神の次に成った、神世七代の第五代の男神。",
+    "kind": "sequence",
+    "source": "古事記"
+   },
+   {
+    "from": "ootonoji",
+    "to": "ootonobe",
+    "label": "次に現れた",
+    "note": "『古事記』では意富斗能地神の次に「妹・大斗乃辨神」と続く。",
+    "kind": "sequence",
+    "source": "古事記"
+   },
+   {
+    "from": "ootonobe",
+    "to": "omodaru",
+    "label": "次に現れた",
+    "note": "『古事記』で大斗乃辨神の次に成った、神世七代の第六代の男神。",
+    "kind": "sequence",
+    "source": "古事記"
+   },
+   {
+    "from": "omodaru",
+    "to": "ayakashikone",
+    "label": "次に現れた",
+    "note": "『古事記』では於母陀流神の次に「妹・阿夜訶志古泥神」と続く。",
+    "kind": "sequence",
+    "source": "古事記"
+   },
+   {
+    "from": "ayakashikone",
+    "to": "izanagi",
+    "label": "次に現れた",
+    "note": "『古事記』で阿夜訶志古泥神の次に成った、神世七代の第七代の男神。",
+    "kind": "sequence",
+    "source": "古事記"
+   },
+   {
+    "from": "izanagi",
+    "to": "izanami",
+    "label": "次に現れた",
+    "note": "『古事記』では伊邪那岐神の次に「妹・伊邪那美神」と続き、神世七代が完結する。",
+    "kind": "sequence",
+    "source": "古事記"
+   },
+   {
+    "from": "kuninotokotachi",
+    "to": "kunisatsuchi",
+    "label": "次に現れた",
+    "note": "『日本書紀』本文の開闢では、国常立尊の次に国狭槌尊が現れる（国狭槌尊は『古事記』には登場しない）。",
+    "kind": "sequence",
+    "source": "日本書紀"
+   },
+   {
+    "from": "kunisatsuchi",
+    "to": "toyokumono",
+    "label": "次に現れた",
+    "note": "『日本書紀』本文では、国狭槌尊の次に豊斟渟尊（＝豊雲野神）が化生した。",
+    "kind": "sequence",
+    "source": "日本書紀"
+   },
+   {
+    "from": "amakagami",
+    "to": "kuninotokotachi",
+    "label": "日本書紀一書では国常立尊の子",
+    "note": "『日本書紀』の一書（異伝）の系譜は「国常立尊生天鏡尊、天鏡尊生天萬尊。天萬尊、生沫蕩尊。沫蕩尊、生伊弉諾尊」と続く。本書（本文）の神世七代とは異なる異伝のため、正データの親子には混ぜず関係線で併記する。",
+    "kind": "lineage",
+    "source": "日本書紀（一書）"
+   },
+   {
+    "from": "amayorozu",
+    "to": "amakagami",
+    "label": "日本書紀一書では天鏡尊の子",
+    "note": "『日本書紀』の一書（異伝）の系譜で天鏡尊の子とされる。",
+    "kind": "lineage",
+    "source": "日本書紀（一書）"
+   },
+   {
+    "from": "awanagi",
+    "to": "amayorozu",
+    "label": "日本書紀一書では天萬尊の子",
+    "note": "『日本書紀』の一書（異伝）の系譜で天萬尊の子とされる。",
+    "kind": "lineage",
+    "source": "日本書紀（一書）"
+   },
+   {
+    "from": "izanagi",
+    "to": "awanagi",
+    "label": "日本書紀一書では沫蕩尊の子",
+    "note": "『日本書紀』の一書（異伝）では伊弉諾尊は沫蕩尊の子とされる。正データの系譜（神世七代の於母陀流神・阿夜訶志古泥神の子）とは出典が異なるため関係線で併記する。",
+    "kind": "lineage",
+    "source": "日本書紀（一書）"
+   },
+   {
+    "from": "amenominakanushi",
+    "to": "amemiwoya",
+    "label": "ホツマツタエではアメミヲヤの分霊",
+    "note": "ホツマツタエでは、天之御中主（ミナカヌシ）は創造神アメミヲヤが造った最初の人間であり、その分霊として地上に降りたと説かれる。古史古伝の異説のため、sourceAlt付きの関係線として併記する。",
+    "sourceAlt": "ホツマツタエ"
+   },
+   {
+    "from": "kuninotokotachi",
+    "to": "amemiwoya",
+    "label": "ホツマツタエではアメミヲヤの分霊",
+    "note": "ホツマツタエでは、国之常立は人々に常世の道を教える者として創造神アメミヲヤが降ろした神（分霊）とされる。古史古伝の異説のため、sourceAlt付きの関係線として併記する。",
+    "sourceAlt": "ホツマツタエ"
+   }
+  ],
+  "floaters": [
+   {
+    "id": "amemiwoya",
+    "level": 2
+   },
+   {
+    "id": "amenominakanushi",
+    "level": 1
+   },
+   {
+    "id": "umashiashikabihikoji",
+    "level": 1
+   },
+   {
+    "id": "amenotokotachi",
+    "level": 1
+   }
+  ]
+ },
+ {
+  "id": "greek",
+  "name": "ギリシャ神話",
+  "full": "ギリシア神話の神々",
+  "desc": "カオスから生まれた原初の神々、ティーターン神族、そしてオリュンポス十二神へと続くギリシア神話の系譜。ヘーシオドス『神統記』とアポロドーロスの系譜を基本とする。",
+  "theme": {
+   "crest": "laurel",
+   "bg": "linear-gradient(180deg,#0b2a44,#04101e)",
+   "bgc": "#071c30",
+   "ink": "#eef4f2",
+   "mut": "#9db8c4",
+   "accent": "#c9a45c",
+   "accentSoft": "rgba(201,164,92,.13)",
+   "panel": "rgba(10,34,56,.88)",
+   "panelLine": "rgba(201,164,92,.32)",
+   "nodeBg": "rgba(15,44,70,.94)",
+   "nodeLine": "rgba(201,164,92,.55)",
+   "nodeText": "#eef4f2",
+   "edge": "rgba(201,164,92,.5)",
+   "highlight": "#e6c987",
+   "headerBg": "rgba(6,24,40,.92)",
+   "crestColor": "#c9a45c",
+   "crestOpacity": 0.08
+  },
+  "members": [
+   {
+    "id": "chaos",
+    "name": "カオス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "原初の混沌",
+    "father": null,
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/カオス",
+    "note": "万物の始源とされる混沌。ヘーシオドス『神統記』では、最初にカオスが生じ、次いでガイアらが現れたとされる。"
+   },
+   {
+    "id": "gaia",
+    "name": "ガイア",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "大地の女神",
+    "father": "chaos",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ガイア",
+    "note": "カオスの後に現れた、大地そのものの女神。ウーラノスやポントスを単独で生み、ウーラノスとの間にティーターン神族をもうけた。系図上はカオスから連なるものとして配置する。"
+   },
+   {
+    "id": "tartaros",
+    "name": "タルタロス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "奈落の神",
+    "father": "chaos",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/タルタロス",
+    "note": "大地の底にある奈落そのものの神。ガイアとの間に巨怪テューポーンをもうけたとされる。"
+   },
+   {
+    "id": "eros",
+    "name": "エロース",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "愛の原初神",
+    "father": "chaos",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/エロース",
+    "note": "世界の始まりに現れた、愛と結合を司る原初の神。アプロディーテーの子とされるエロースとは別格の存在である。"
+   },
+   {
+    "id": "erebos",
+    "name": "エレボス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "暗黒の神",
+    "father": "chaos",
+    "mother": null,
+    "spouses": [
+     "nyx"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/エレボス",
+    "note": "カオスから生まれた暗黒（闇）そのものの神。ニュクスとの間にアイテールとヘーメラーをもうけた。"
+   },
+   {
+    "id": "nyx",
+    "name": "ニュクス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "夜の女神",
+    "father": "chaos",
+    "mother": null,
+    "spouses": [
+     "erebos"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ニュクス",
+    "note": "カオスから生まれた夜の女神。単独でタナトス、ヒュプノス、モイライなど多くの神々を生んだ。"
+   },
+   {
+    "id": "aither",
+    "name": "アイテール",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "上天の光の神",
+    "father": "erebos",
+    "mother": "nyx",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/アイテール",
+    "note": "エレボスとニュクスの子。上層の清らかな大気と光を司る神。"
+   },
+   {
+    "id": "hemera",
+    "name": "ヘーメラー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "昼の女神",
+    "father": "erebos",
+    "mother": "nyx",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ヘーメラー",
+    "note": "エレボスとニュクスの娘。昼そのものの女神。"
+   },
+   {
+    "id": "thanatos",
+    "name": "タナトス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "死の神",
+    "father": null,
+    "mother": "nyx",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/タナトス",
+    "note": "ニュクスの子。死そのものを司る神で、ヒュプノスとは双子とされる。"
+   },
+   {
+    "id": "hypnos",
+    "name": "ヒュプノス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "眠りの神",
+    "father": null,
+    "mother": "nyx",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ヒュプノス",
+    "note": "ニュクスの子。眠りそのものを司る神で、タナトスの双子の兄弟。"
+   },
+   {
+    "id": "nemesis",
+    "name": "ネメシス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "報復の女神",
+    "father": null,
+    "mother": "nyx",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ネメシス",
+    "note": "ニュクスの娘。人間の分を超えた幸福や傲慢に対する、神の怒りと報いを司る。"
+   },
+   {
+    "id": "eris",
+    "name": "エリス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "不和の女神",
+    "father": null,
+    "mother": "nyx",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/エリス",
+    "note": "ニュクスの娘。争いと不和そのものの女神。「不和の林檎」を投じたことがトロイア戦争の遠因となったとされる。"
+   },
+   {
+    "id": "momos",
+    "name": "モーモス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "非難の神",
+    "father": null,
+    "mother": "nyx",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/モモス",
+    "note": "ニュクスの子。嘲笑と非難を司る神。"
+   },
+   {
+    "id": "klotho",
+    "name": "クロートー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "運命の女神（モイライ）",
+    "father": null,
+    "mother": "nyx",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/モイラ",
+    "note": "運命の三女神モイライの一柱。生命の糸を紡ぐ。モイライの親については、ゼウスとテミスの娘とする説もある。"
+   },
+   {
+    "id": "lachesis",
+    "name": "ラケシス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "運命の女神（モイライ）",
+    "father": null,
+    "mother": "nyx",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/モイラ",
+    "note": "運命の三女神モイライの一柱。紡がれた糸の長さ（寿命）を測る。親についてはゼウスとテミスの娘とする説もある。"
+   },
+   {
+    "id": "atropos",
+    "name": "アトロポス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "運命の女神（モイライ）",
+    "father": null,
+    "mother": "nyx",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/モイラ",
+    "note": "運命の三女神モイライの一柱。糸を断ち切り、死を定める。親についてはゼウスとテミスの娘とする説もある。"
+   },
+   {
+    "id": "uranus",
+    "name": "ウーラノス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "天空の神",
+    "father": null,
+    "mother": "gaia",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ウーラノス",
+    "note": "ガイアが単独で生んだ天空そのものの神。ガイアとの間にティーターンやキュクロープスらをもうけたが、子らを幽閉したため、末子クロノスに襲われ王位と男根を奪われた。その血からエリーニュエスとギガンテスが、泡からアプロディーテーが生まれたとされる。"
+   },
+   {
+    "id": "pontos",
+    "name": "ポントス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "海の原初神",
+    "father": null,
+    "mother": "gaia",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ポントス",
+    "note": "ガイアが単独で生んだ海そのものの神。ガイアとの間にネーレウスら海の古い神々をもうけた。"
+   },
+   {
+    "id": "erinyes",
+    "name": "エリーニュエス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "復讐の女神たち",
+    "father": "uranus",
+    "mother": "gaia",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/エリーニュエス",
+    "note": "切り取られたウーラノスの血を受けたガイアから生まれた復讐の三女神。アレークトー、ティーシポネー、メガイラ。"
+   },
+   {
+    "id": "gigantes",
+    "name": "ギガンテス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "巨人族",
+    "father": "uranus",
+    "mother": "gaia",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ギガンテス",
+    "note": "ウーラノスの血から生まれた巨人たち。後にオリュンポスの神々と、ギガントマキアーと呼ばれる大戦を繰り広げた。"
+   },
+   {
+    "id": "oceanus",
+    "name": "オーケアノス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "大洋の神",
+    "father": "uranus",
+    "mother": "gaia",
+    "spouses": [
+     "tethys"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/オーケアノス",
+    "note": "ティーターンの長老格。世界を取り巻く大洋そのものの神。テーテュースとの間に三千の河の神々と三千のオケアニデス（大洋のニュンペー）をもうけたとされる。"
+   },
+   {
+    "id": "koios",
+    "name": "コイオス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "ティーターン神",
+    "father": "uranus",
+    "mother": "gaia",
+    "spouses": [
+     "phoibe"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/コイオス",
+    "note": "ティーターンの一柱。ポイベーとの間にレートーとアステリアーをもうけた。"
+   },
+   {
+    "id": "krios",
+    "name": "クレイオス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "ティーターン神",
+    "father": "uranus",
+    "mother": "gaia",
+    "spouses": [
+     "eurybia"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/クレイオス",
+    "note": "ティーターンの一柱。エウリュビアーとの間にアストライオス、パラース、ペルセースをもうけた。"
+   },
+   {
+    "id": "hyperion",
+    "name": "ヒュペリーオーン",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "光明のティーターン",
+    "father": "uranus",
+    "mother": "gaia",
+    "spouses": [
+     "theia"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ヒュペリーオーン",
+    "note": "ティーターンの一柱。テイアーとの間にヘーリオス（太陽）、セレーネー（月）、エーオース（暁）をもうけた。"
+   },
+   {
+    "id": "iapetos",
+    "name": "イーアペトス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "ティーターン神",
+    "father": "uranus",
+    "mother": "gaia",
+    "spouses": [
+     "klymene"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/イーアペトス",
+    "note": "ティーターンの一柱。オケアニスのクリュメネーとの間にアトラース、プロメーテウスらをもうけた。人類の祖とされることもある。"
+   },
+   {
+    "id": "theia",
+    "name": "テイアー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "光の女神",
+    "father": "uranus",
+    "mother": "gaia",
+    "spouses": [
+     "hyperion"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/テイアー",
+    "note": "ティーターンの一柱。ヒュペリーオーンの妻で、太陽・月・暁の母。"
+   },
+   {
+    "id": "rhea",
+    "name": "レアー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "大地の母神",
+    "father": "uranus",
+    "mother": "gaia",
+    "spouses": [
+     "kronos"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/レアー",
+    "note": "ティーターンの一柱。クロノスの妻。生まれた子を次々に呑むクロノスから、末子ゼウスを隠してクレーテーで育てた。"
+   },
+   {
+    "id": "themis",
+    "name": "テミス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "掟の女神",
+    "father": "uranus",
+    "mother": "gaia",
+    "spouses": [
+     "zeus"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/テミス",
+    "note": "ティーターンの一柱。掟と正義を司る女神。ゼウスとの間にホーライ（季節の女神たち）をもうけた。モイライの母とする説もある。"
+   },
+   {
+    "id": "mnemosyne",
+    "name": "ムネーモシュネー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "記憶の女神",
+    "father": "uranus",
+    "mother": "gaia",
+    "spouses": [
+     "zeus"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ムネーモシュネー",
+    "note": "ティーターンの一柱。記憶そのものの女神。ゼウスとの間に九柱のムーサイ（文芸の女神たち）をもうけた。"
+   },
+   {
+    "id": "phoibe",
+    "name": "ポイベー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "ティーターン女神",
+    "father": "uranus",
+    "mother": "gaia",
+    "spouses": [
+     "koios"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ポイベー",
+    "note": "ティーターンの一柱。コイオスの妻で、レートーとアステリアーの母。"
+   },
+   {
+    "id": "tethys",
+    "name": "テーテュース",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "海の大女神",
+    "father": "uranus",
+    "mother": "gaia",
+    "spouses": [
+     "oceanus"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/テーテュース",
+    "note": "ティーターンの一柱。オーケアノスの妻で、河の神々とオケアニデスの母。"
+   },
+   {
+    "id": "kronos",
+    "name": "クロノス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "ティーターンの王",
+    "father": "uranus",
+    "mother": "gaia",
+    "spouses": [
+     "rhea"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/クロノス",
+    "note": "ティーターンの末子。父ウーラノスを襲って王位を奪ったが、自分の子に奪われるという予言を恐れ、レアーとの子らを次々に呑んだ。末子ゼウスに敗れてタルタロスへ落とされた。農耕の神ともされる。"
+   },
+   {
+    "id": "kyklopes",
+    "name": "キュクロープス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "一つ目の巨人たち",
+    "father": "uranus",
+    "mother": "gaia",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/キュクロープス",
+    "note": "ウーラノスとガイアの子ら。ブロンテース、ステロペース、アルゲースの三兄弟で、一つ目の巨人。後にゼウスのために雷霆を鍛えた。"
+   },
+   {
+    "id": "hekatoncheires",
+    "name": "ヘカトンケイレス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "百手の巨人たち",
+    "father": "uranus",
+    "mother": "gaia",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ヘカトンケイレス",
+    "note": "ウーラノスとガイアの子ら。コットス、ブリアレオース、ギュゲースの三兄弟で、各々五十の頭と百の腕を持つ。ティーターノマキアーではゼウス側について戦った。"
+   },
+   {
+    "id": "typhon",
+    "name": "テューポーン",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "最大の巨怪",
+    "father": "tartaros",
+    "mother": "gaia",
+    "spouses": [
+     "echidna"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/テューポーン",
+    "note": "タルタロスとガイアの子。百の蛇頭を持つ最大最強の怪物で、ゼウスの支配に挑んで敗れた。エキドナとの間に多くの怪物をもうけた。"
+   },
+   {
+    "id": "nereus",
+    "name": "ネーレウス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "海の老人",
+    "father": "pontos",
+    "mother": "gaia",
+    "spouses": [
+     "doris"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ネーレウス",
+    "note": "ポントスとガイアの子。偽りを嫌う誠実な海の古神で、ドーリスとの間に五十人のネーレーイデス（海のニュンペー）をもうけたとされる。"
+   },
+   {
+    "id": "thaumas",
+    "name": "タウマース",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "海の神",
+    "father": "pontos",
+    "mother": "gaia",
+    "spouses": [
+     "elektra"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/タウマース",
+    "note": "ポントスとガイアの子。オケアニスのエーレクトラーとの間に、虹の女神イーリスとハルピュイアイをもうけた。"
+   },
+   {
+    "id": "phorkys",
+    "name": "ポルキュース",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "海の古神",
+    "father": "pontos",
+    "mother": "gaia",
+    "spouses": [
+     "keto"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ポルキュース",
+    "note": "ポントスとガイアの子。ケートーとの間に、ゴルゴーンやエキドナなど海の怪異を多くもうけた。"
+   },
+   {
+    "id": "keto",
+    "name": "ケートー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "海の怪物たちの母",
+    "father": "pontos",
+    "mother": "gaia",
+    "spouses": [
+     "phorkys"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ケートー",
+    "note": "ポントスとガイアの娘。兄ポルキュースの妻となり、多くの怪物たちの母となった。"
+   },
+   {
+    "id": "eurybia",
+    "name": "エウリュビアー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "海の女神",
+    "father": "pontos",
+    "mother": "gaia",
+    "spouses": [
+     "krios"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/エウリュビアー",
+    "note": "ポントスとガイアの娘。クレイオスの妻で、アストライオスらの母。"
+   },
+   {
+    "id": "doris",
+    "name": "ドーリス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "大洋のニュンペー",
+    "father": "oceanus",
+    "mother": "tethys",
+    "spouses": [
+     "nereus"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ドーリス",
+    "note": "オケアニスの一人。ネーレウスの妻で、テティスやアンピトリーテーらネーレーイデスの母。"
+   },
+   {
+    "id": "styx",
+    "name": "ステュクス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "冥界の川の女神",
+    "father": "oceanus",
+    "mother": "tethys",
+    "spouses": [
+     "pallas"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ステュクス",
+    "note": "オケアニスの長姉格。冥界の川ステュクスの女神で、神々はその水にかけて誓いを立てる。パラースとの間にニーケーらをもうけた。"
+   },
+   {
+    "id": "metis",
+    "name": "メーティス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "知恵の女神",
+    "father": "oceanus",
+    "mother": "tethys",
+    "spouses": [
+     "zeus"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/メーティス",
+    "note": "オケアニスの一人。知恵そのものの女神で、ゼウスの最初の妻。その子が自分を超えるという予言のためゼウスに呑まれ、ゼウスの頭からアテーナーが生まれたとされる。"
+   },
+   {
+    "id": "klymene",
+    "name": "クリュメネー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "大洋のニュンペー",
+    "father": "oceanus",
+    "mother": "tethys",
+    "spouses": [
+     "iapetos"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/クリュメネー",
+    "note": "オケアニスの一人。イーアペトスの妻で、アトラース、プロメーテウスらの母。"
+   },
+   {
+    "id": "elektra",
+    "name": "エーレクトラー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "大洋のニュンペー",
+    "father": "oceanus",
+    "mother": "tethys",
+    "spouses": [
+     "thaumas"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/エーレクトラー",
+    "note": "オケアニスの一人。タウマースの妻で、虹の女神イーリスの母。アトラースの娘でプレイアデスの一人である同名の女神とは別人。"
+   },
+   {
+    "id": "eurynome",
+    "name": "エウリュノメー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "大洋のニュンペー",
+    "father": "oceanus",
+    "mother": "tethys",
+    "spouses": [
+     "zeus"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/エウリュノメー",
+    "note": "オケアニスの一人。ゼウスとの間にカリテス（優美の女神たち）をもうけたとされる。"
+   },
+   {
+    "id": "pleione",
+    "name": "プレーイオネー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "大洋のニュンペー",
+    "father": "oceanus",
+    "mother": "tethys",
+    "spouses": [
+     "atlas"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/プレーイオネー",
+    "note": "オケアニスの一人。アトラースの妻で、プレイアデス七姉妹の母。マイアもその一人である。"
+   },
+   {
+    "id": "perse",
+    "name": "ペルセー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "大洋のニュンペー",
+    "father": "oceanus",
+    "mother": "tethys",
+    "spouses": [
+     "helios"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ペルセーイス",
+    "note": "オケアニスの一人。ヘーリオスの妻で、キルケー、アイエーテース、パーシパエーの母。"
+   },
+   {
+    "id": "thetis",
+    "name": "テティス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "海の女神",
+    "father": "nereus",
+    "mother": "doris",
+    "spouses": [
+     "peleus"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/テティス",
+    "note": "ネーレーイデスの筆頭格の海の女神。人間の英雄ペーレウスとの間にアキレウスをもうけた。"
+   },
+   {
+    "id": "amphitrite",
+    "name": "アンピトリーテー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "海の女王",
+    "father": "nereus",
+    "mother": "doris",
+    "spouses": [
+     "poseidon"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/アンピトリーテー",
+    "note": "ネーレーイデスの一人。ポセイドーンの妻となり、海の女王となった。"
+   },
+   {
+    "id": "iris",
+    "name": "イーリス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "虹の女神",
+    "father": "thaumas",
+    "mother": "elektra",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/イーリス",
+    "note": "タウマースとエーレクトラーの娘。虹そのものの女神で、神々の伝令を務める。"
+   },
+   {
+    "id": "harpyiai",
+    "name": "ハルピュイアイ",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "鳥身の女怪たち",
+    "father": "thaumas",
+    "mother": "elektra",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ハルピュイア",
+    "note": "タウマースとエーレクトラーの娘たち。アエロー、オーキュペテーら、疾風のような翼を持つ女怪。"
+   },
+   {
+    "id": "sthenno",
+    "name": "ステンノー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "ゴルゴーン",
+    "father": "phorkys",
+    "mother": "keto",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ゴルゴーン",
+    "note": "ゴルゴーン三姉妹の長姉。蛇の髪を持つ女怪で、不死の存在とされる。"
+   },
+   {
+    "id": "euryale",
+    "name": "エウリュアレー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "ゴルゴーン",
+    "father": "phorkys",
+    "mother": "keto",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ゴルゴーン",
+    "note": "ゴルゴーン三姉妹の次姉。不死の存在とされる。"
+   },
+   {
+    "id": "medusa",
+    "name": "メドゥーサ",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "ゴルゴーン",
+    "father": "phorkys",
+    "mother": "keto",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/メドゥーサ",
+    "note": "ゴルゴーン三姉妹の末妹で、唯一の死すべき存在。その姿を見た者は石になった。ペルセウスに首を討たれ、その血からペーガソスとクリューサーオールが生まれた。"
+   },
+   {
+    "id": "echidna",
+    "name": "エキドナ",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "怪物たちの母",
+    "father": "phorkys",
+    "mother": "keto",
+    "spouses": [
+     "typhon"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/エキドナ",
+    "note": "ポルキュースとケートーの娘とされる、半人半蛇の女怪。テューポーンとの間にケルベロス、ヒュドラー、キマイラら多くの怪物を生んだ。親については異説も多い。"
+   },
+   {
+    "id": "pegasos",
+    "name": "ペーガソス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "天馬",
+    "father": "poseidon",
+    "mother": "medusa",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ペーガソス",
+    "note": "ポセイドーンとメドゥーサの子。メドゥーサの首が討たれた際、その血から生まれた翼を持つ天馬。英雄ベレロポーンの愛馬となった。"
+   },
+   {
+    "id": "chrysaor",
+    "name": "クリューサーオール",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "黄金の剣の巨人",
+    "father": "poseidon",
+    "mother": "medusa",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/クリューサーオール",
+    "note": "ポセイドーンとメドゥーサの子。ペーガソスと共にメドゥーサの血から生まれた、黄金の剣を持つ巨人。"
+   },
+   {
+    "id": "orthros",
+    "name": "オルトロス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "双頭の犬",
+    "father": "typhon",
+    "mother": "echidna",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/オルトロス",
+    "note": "テューポーンとエキドナの子。二つの頭を持つ巨犬で、巨人ゲーリュオーンの牛の群れを守っていたが、ヘーラクレースに倒された。"
+   },
+   {
+    "id": "kerberos",
+    "name": "ケルベロス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "冥界の番犬",
+    "father": "typhon",
+    "mother": "echidna",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ケルベロス",
+    "note": "テューポーンとエキドナの子。冥界の門を守る多頭の番犬。ヘーラクレースの十二功業の最後に、生け捕りにされて地上へ連れ出された。"
+   },
+   {
+    "id": "hydra",
+    "name": "ヒュドラー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "多頭の水蛇",
+    "father": "typhon",
+    "mother": "echidna",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ヒュドラー",
+    "note": "テューポーンとエキドナの子。レルネーの沼に棲む九頭の水蛇で、首を切っても再生した。ヘーラクレースとイオラーオスに倒された。"
+   },
+   {
+    "id": "chimaira",
+    "name": "キマイラ",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "合成の女怪",
+    "father": "typhon",
+    "mother": "echidna",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/キマイラ",
+    "note": "テューポーンとエキドナの子。獅子の頭、山羊の体、蛇（竜）の尾を持つ合成獣で、火を吐いた。ペーガソスに乗るベレロポーンに倒された。"
+   },
+   {
+    "id": "sphinx",
+    "name": "スピンクス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "謎かけの女怪",
+    "father": "typhon",
+    "mother": "echidna",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/スピンクス",
+    "note": "エキドナの子とされる、人頭獅子身に翼を持つ女怪。テーバイの旅人に謎をかけ、答えられなければ食らった。オイディプースに謎を解かれて身を投げたとされる。父についてはオルトロスとする説もある。"
+   },
+   {
+    "id": "nemean",
+    "name": "ネメアーの獅子",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "巨獅子",
+    "father": "typhon",
+    "mother": "echidna",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ネメアーの獅子",
+    "note": "エキドナの子とされる巨大な獅子。いかなる刃も通さぬ毛皮を持ち、ヘーラクレースに絞め殺された。その毛皮は英雄のトレードマークとなった。"
+   },
+   {
+    "id": "helios",
+    "name": "ヘーリオス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "太陽の神",
+    "father": "hyperion",
+    "mother": "theia",
+    "spouses": [
+     "perse"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ヘーリオス",
+    "note": "ヒュペリーオーンとテイアーの子。太陽そのものの神で、四頭立ての戦車を駆って天空を巡る。"
+   },
+   {
+    "id": "selene",
+    "name": "セレーネー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "月の女神",
+    "father": "hyperion",
+    "mother": "theia",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/セレーネー",
+    "note": "ヒュペリーオーンとテイアーの娘。月そのものの女神。"
+   },
+   {
+    "id": "eos",
+    "name": "エーオース",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "暁の女神",
+    "father": "hyperion",
+    "mother": "theia",
+    "spouses": [
+     "astraios"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/エーオース",
+    "note": "ヒュペリーオーンとテイアーの娘。暁そのものの女神で、毎朝太陽の到来を告げる。アストライオスとの間に風の神々（アネモイ）をもうけた。"
+   },
+   {
+    "id": "kirke",
+    "name": "キルケー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "魔女",
+    "father": "helios",
+    "mother": "perse",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/キルケー",
+    "note": "ヘーリオスとペルセーの娘。アイアイエー島に住む魔女で、オデュッセウスの部下たちを豚に変えた。"
+   },
+   {
+    "id": "aietes",
+    "name": "アイエーテース",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "コルキスの王",
+    "father": "helios",
+    "mother": "perse",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/アイエーテース",
+    "note": "ヘーリオスとペルセーの子。コルキスの王で金羊毛の持ち主。魔女メーデイアの父。"
+   },
+   {
+    "id": "pasiphae",
+    "name": "パーシパエー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "クレーテー王妃",
+    "father": "helios",
+    "mother": "perse",
+    "spouses": [
+     "minos"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/パーシパエー",
+    "note": "ヘーリオスとペルセーの娘。クレーテー王ミーノースの妻。白い牡牛への恋からミーノータウロスを生んだとされる。"
+   },
+   {
+    "id": "astraios",
+    "name": "アストライオス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "星の神",
+    "father": "krios",
+    "mother": "eurybia",
+    "spouses": [
+     "eos"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/アストライオス",
+    "note": "クレイオスとエウリュビアーの子。星々と風の父とされ、エーオースとの間に風の神々をもうけた。"
+   },
+   {
+    "id": "pallas",
+    "name": "パラース",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "ティーターン神",
+    "father": "krios",
+    "mother": "eurybia",
+    "spouses": [
+     "styx"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/パラース",
+    "note": "クレイオスとエウリュビアーの子。ステュクスとの間にニーケーらをもうけた。アテーナーの称号「パラース」とは別の存在。"
+   },
+   {
+    "id": "perses",
+    "name": "ペルセース",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "ティーターン神",
+    "father": "krios",
+    "mother": "eurybia",
+    "spouses": [
+     "asteria"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ペルセース",
+    "note": "クレイオスとエウリュビアーの子。アステリアーとの間にヘカテーをもうけた。"
+   },
+   {
+    "id": "nike",
+    "name": "ニーケー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "勝利の女神",
+    "father": "pallas",
+    "mother": "styx",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ニーケー",
+    "note": "パラースとステュクスの娘。勝利そのものの女神で、兄弟のゼーロス、クラトス、ビアーと共にゼウスの側近を務める。"
+   },
+   {
+    "id": "asteria",
+    "name": "アステリアー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "星の女神",
+    "father": "koios",
+    "mother": "phoibe",
+    "spouses": [
+     "perses"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/アステリアー",
+    "note": "コイオスとポイベーの娘。ペルセースとの間にヘカテーをもうけた。ゼウスの求愛から逃れて鶉（うずら）の姿となり、海に身を投じてデーロス島になったとされる。"
+   },
+   {
+    "id": "leto",
+    "name": "レートー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "女神",
+    "father": "koios",
+    "mother": "phoibe",
+    "spouses": [
+     "zeus"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/レートー",
+    "note": "コイオスとポイベーの娘。ゼウスとの間にアポローンとアルテミスをもうけた。ヘーラーの嫉妬により出産の地を求めてさまよい、デーロス島で双子を産んだ。"
+   },
+   {
+    "id": "hekate",
+    "name": "ヘカテー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "魔術の女神",
+    "father": "perses",
+    "mother": "asteria",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ヘカテー",
+    "note": "ペルセースとアステリアーの娘。天空・大地・海に権能を持ち、魔術と岐路（分かれ道）を司る女神。"
+   },
+   {
+    "id": "atlas",
+    "name": "アトラース",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "天を支える巨人",
+    "father": "iapetos",
+    "mother": "klymene",
+    "spouses": [
+     "pleione"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/アトラース",
+    "note": "イーアペトスとクリュメネーの子。ティーターノマキアーの罰として、世界の西の果てで天球を支え続ける。プレーイオネーとの間にプレイアデス七姉妹をもうけた。"
+   },
+   {
+    "id": "prometheus",
+    "name": "プロメーテウス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "人類の守護者",
+    "father": "iapetos",
+    "mother": "klymene",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/プロメーテウス",
+    "note": "イーアペトスとクリュメネーの子。ゼウスの命に背いて人間に火を与えたため、カウカソスの岩に縛られ鷲に肝臓を啄まれる罰を受けた。人類の守護者として知られる。"
+   },
+   {
+    "id": "epimetheus",
+    "name": "エピメーテウス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "ティーターン神",
+    "father": "iapetos",
+    "mother": "klymene",
+    "spouses": [
+     "pandora"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/エピメーテウス",
+    "note": "イーアペトスとクリュメネーの子。プロメーテウスの弟。兄の警告を聞かずパンドーラーを受け入れ、その甕が開かれて災いが世に広がった。"
+   },
+   {
+    "id": "pandora",
+    "name": "パンドーラー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "人類最初の女性",
+    "father": null,
+    "mother": null,
+    "spouses": [
+     "epimetheus"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/パンドーラー",
+    "note": "神々によって作られた人類最初の女性。エピメーテウスの妻となり、災いの詰まった甕（いわゆる「パンドラの箱」）を開けてしまったとされる。"
+   },
+   {
+    "id": "deukalion",
+    "name": "デウカリオン",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "大洪水の生存者",
+    "father": "prometheus",
+    "mother": null,
+    "spouses": [
+     "ピュラー"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/デウカリオン",
+    "note": "プロメーテウスの子。ゼウスの大洪水に際して箱舟で生き延び、妻ピュラーと共に石を投げて人類を再興したとされる。"
+   },
+   {
+    "id": "maia",
+    "name": "マイア",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "プレイアデスの長姉",
+    "father": "atlas",
+    "mother": "pleione",
+    "spouses": [
+     "zeus"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/マイア",
+    "note": "アトラースとプレーイオネーの娘、プレイアデス七姉妹の長姉。ゼウスとの間にヘルメースをもうけた。"
+   },
+   {
+    "id": "kalypso",
+    "name": "カリュプソー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "女神",
+    "father": "atlas",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/カリュプソー",
+    "note": "アトラースの娘。オギュギアー島に住み、漂着したオデュッセウスを七年間引き留めた。"
+   },
+   {
+    "id": "hestia",
+    "name": "ヘスティアー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "竈の女神",
+    "father": "kronos",
+    "mother": "rhea",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ヘスティアー",
+    "note": "クロノスとレアーの長女。竈（かまど）の火と家庭を守る女神で、オリュンポス十二神の一柱。"
+   },
+   {
+    "id": "demeter",
+    "name": "デーメーテール",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "穀物の女神",
+    "father": "kronos",
+    "mother": "rhea",
+    "spouses": [
+     "zeus"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/デーメーテール",
+    "note": "クロノスとレアーの娘。穀物と大地の実りを司る女神。ゼウスとの間にペルセポネーをもうけた。娘をハーデースにさらわれ、嘆きの間、地上は実りを失ったとされる。"
+   },
+   {
+    "id": "hera",
+    "name": "ヘーラー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "神々の女王",
+    "father": "kronos",
+    "mother": "rhea",
+    "spouses": [
+     "zeus"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ヘーラー",
+    "note": "クロノスとレアーの娘。ゼウスの正妻で神々の女王。結婚と女性を守る女神だが、ゼウスの浮気への激しい嫉妬でも知られる。"
+   },
+   {
+    "id": "hades",
+    "name": "ハーデース",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "冥界の王",
+    "father": "kronos",
+    "mother": "rhea",
+    "spouses": [
+     "persephone"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ハーデース",
+    "note": "クロノスとレアーの子。兄弟で世界をくじ引きで分け、冥界の支配権を得た死者の国の王。ペルセポネーをさらって妻とした。"
+   },
+   {
+    "id": "poseidon",
+    "name": "ポセイドーン",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "海の王",
+    "father": "kronos",
+    "mother": "rhea",
+    "spouses": [
+     "amphitrite"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ポセイドーン",
+    "note": "クロノスとレアーの子。くじ引きで海の支配権を得た。三叉の戟を持ち、地震をも司る。"
+   },
+   {
+    "id": "zeus",
+    "name": "ゼウス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "天空の王・雷霆の神",
+    "father": "kronos",
+    "mother": "rhea",
+    "spouses": [
+     "hera",
+     "metis",
+     "themis",
+     "demeter",
+     "leto",
+     "maia",
+     "semele",
+     "alkmene",
+     "danae",
+     "leda",
+     "europe"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ゼウス",
+    "note": "クロノスとレアーの末子。父を倒して神々の王となり、オリュンポスを中心に世界を支配した。雷霆を武器とする天空神。正妻はヘーラー。"
+   },
+   {
+    "id": "aphrodite",
+    "name": "アプロディーテー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "愛と美の女神",
+    "father": "uranus",
+    "mother": null,
+    "spouses": [
+     "hephaistos"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/アプロディーテー",
+    "note": "切り離されたウーラノスの男根の周りに生じた海の泡から誕生したとされる、愛と美の女神。ゼウスとディオーネーの娘とする説もある。夫はヘーパイストスだが、アレースとの間にハルモニアーをもうけた。"
+   },
+   {
+    "id": "ares",
+    "name": "アレース",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "戦の神",
+    "father": "zeus",
+    "mother": "hera",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/アレース",
+    "note": "ゼウスとヘーラーの子。戦いの狂乱と流血を司る神。アプロディーテーの愛人としても知られる。"
+   },
+   {
+    "id": "hephaistos",
+    "name": "ヘーパイストス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "炎と鍛冶の神",
+    "father": "zeus",
+    "mother": "hera",
+    "spouses": [
+     "aphrodite"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ヘーパイストス",
+    "note": "炎と鍛冶の神。ホメーロスではゼウスとヘーラーの子とされるが、ヘーシオドス『神統記』ではヘーラーが夫なしに単独で生んだとされる。オリュンポスの工房で神々の武器や道具を鍛える。"
+   },
+   {
+    "id": "hebe",
+    "name": "ヘーベー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "青春の女神",
+    "father": "zeus",
+    "mother": "hera",
+    "spouses": [
+     "herakles"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ヘーベー",
+    "note": "ゼウスとヘーラーの娘。青春そのものの女神で、神々に神酒（ネクタル）を注ぐ役を務めた。神格化されたヘーラクレースの妻となった。"
+   },
+   {
+    "id": "apollon",
+    "name": "アポローン",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "光明・予言・音楽の神",
+    "father": "zeus",
+    "mother": "leto",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/アポローン",
+    "note": "ゼウスとレートーの子。デルポイの神託で知られる予言の神であり、音楽・弓術・医術を司る光明神。アルテミスとは双子。"
+   },
+   {
+    "id": "artemis",
+    "name": "アルテミス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "狩猟の女神",
+    "father": "zeus",
+    "mother": "leto",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/アルテミス",
+    "note": "ゼウスとレートーの娘。アポローンの双子の姉。狩猟と野生を司り、月にも結びつけられる女神。"
+   },
+   {
+    "id": "athena",
+    "name": "アテーナー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "知恵と戦の女神",
+    "father": "zeus",
+    "mother": "metis",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/アテーナー",
+    "note": "ゼウスが呑んだメーティスの子。ゼウスの頭から武装した姿で生まれたとされる、知恵と戦略の女神。アテーナイの守護神。"
+   },
+   {
+    "id": "persephone",
+    "name": "ペルセポネー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "冥界の女王",
+    "father": "zeus",
+    "mother": "demeter",
+    "spouses": [
+     "hades"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ペルセポネー",
+    "note": "ゼウスとデーメーテールの娘。ハーデースにさらわれ冥界の女王となった。一年の一部を地上で母と過ごし、その不在が冬をもたらすとされる。"
+   },
+   {
+    "id": "hermes",
+    "name": "ヘルメース",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "伝令の神",
+    "father": "zeus",
+    "mother": "maia",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ヘルメース",
+    "note": "ゼウスとマイアの子。翼の生えたサンダルを持つ神々の伝令。旅人・商人・盗人の守護者でもある。"
+   },
+   {
+    "id": "semele",
+    "name": "セメレー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "テーバイ王女",
+    "father": null,
+    "mother": null,
+    "spouses": [
+     "zeus"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/セメレー",
+    "note": "テーバイ王カドモスの娘。ゼウスの子ディオニューソスを身ごもったが、ヘーラーの計略により、本来の姿で現れたゼウスの雷霆に焼かれて死んだ。"
+   },
+   {
+    "id": "dionysos",
+    "name": "ディオニューソス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "葡萄酒の神",
+    "father": "zeus",
+    "mother": "semele",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ディオニューソス",
+    "note": "ゼウスと人間の女性セメレーの子。母の死後、ゼウスの腿（もも）に縫い込まれて育てられた葡萄酒と陶酔の神。オリュンポス十二神の一柱。"
+   },
+   {
+    "id": "musai",
+    "name": "ムーサイ",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "文芸の女神たち",
+    "father": "zeus",
+    "mother": "mnemosyne",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ムーサイ",
+    "note": "ゼウスとムネーモシュネーの娘たち。クレイオー、エウテルペー、タレイア、メルポメネー、テルプシコレー、エラトー、ポリュムニアー、ウーラニアー、カリオペーの九柱で、詩歌・音楽・学芸を司る。"
+   },
+   {
+    "id": "eunomia",
+    "name": "エウノミアー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "秩序の女神",
+    "father": "zeus",
+    "mother": "themis",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ホーラ",
+    "note": "ホーライ（季節と秩序の女神たち）の一柱。秩序と法の整いを司る。"
+   },
+   {
+    "id": "dike",
+    "name": "ディケー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "正義の女神",
+    "father": "zeus",
+    "mother": "themis",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ホーラ",
+    "note": "ホーライの一柱。正義そのものの女神で、人間の不正をゼウスに告げるとされる。"
+   },
+   {
+    "id": "eirene",
+    "name": "エイレーネー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "平和の女神",
+    "father": "zeus",
+    "mother": "themis",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ホーラ",
+    "note": "ホーライの一柱。平和そのものの女神。"
+   },
+   {
+    "id": "charites",
+    "name": "カリテス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "優美の女神たち",
+    "father": "zeus",
+    "mother": "eurynome",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/カリテス",
+    "note": "ゼウスとエウリュノメーの娘たち。アグライアー、エウプロシュネー、タレイアの三柱で、優美と喜び、宴を司る。"
+   },
+   {
+    "id": "triton",
+    "name": "トリートーン",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "海の伝令",
+    "father": "poseidon",
+    "mother": "amphitrite",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/トリートーン",
+    "note": "ポセイドーンとアンピトリーテーの子。法螺貝を吹き鳴らして海を鎮める、半人半魚の神。"
+   },
+   {
+    "id": "harmonia",
+    "name": "ハルモニアー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "調和の女神",
+    "father": "ares",
+    "mother": "aphrodite",
+    "spouses": [
+     "カドモス"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ハルモニアー",
+    "note": "アレースとアプロディーテーの娘。テーバイ王カドモスの妻となり、その結婚式には神々が集ったとされる。婚礼の首飾りは、後世に災いをもたらした。"
+   },
+   {
+    "id": "pan",
+    "name": "パーン",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "牧神",
+    "father": "hermes",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/パーン",
+    "note": "ヘルメースの子とされる、山羊の脚を持つ牧神。葦笛（パンパイプ）の発明者。母についてはドリュオプスなど諸説がある。"
+   },
+   {
+    "id": "asklepios",
+    "name": "アスクレーピオス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "医神",
+    "father": "apollon",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/アスクレーピオス",
+    "note": "アポローンの子。母はテッサリアの王女コローニス。医術に通じ死者をも蘇らせたためゼウスの雷に打たれたが、後に神格化されて医神として祀られた。"
+   },
+   {
+    "id": "europe",
+    "name": "エウローペー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "王女",
+    "father": null,
+    "mother": null,
+    "spouses": [
+     "zeus"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/エウローペー",
+    "note": "ポイニーキアの王女。白い牡牛に化けたゼウスにさらわれ、海を渡ってクレーテーに至った。ミーノースらの母で、ヨーロッパ大陸の名の由来とされる。"
+   },
+   {
+    "id": "minos",
+    "name": "ミーノース",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "クレーテー王",
+    "father": "zeus",
+    "mother": "europe",
+    "spouses": [
+     "pasiphae"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ミーノース",
+    "note": "ゼウスとエウローペーの子。クレーテーの王で、死後は冥界の裁判官の一人となった。パーシパエーの夫。"
+   },
+   {
+    "id": "ariadne",
+    "name": "アリアドネー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "クレーテー王女",
+    "father": "minos",
+    "mother": "pasiphae",
+    "spouses": [
+     "dionysos"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/アリアドネー",
+    "note": "ミーノースとパーシパエーの娘。テーセウスに糸玉を与えて迷宮からの脱出を助けた。後にディオニューソスの妻となり、神格化された。"
+   },
+   {
+    "id": "alkmene",
+    "name": "アルクメーネー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "ミュケーナイ王女",
+    "father": null,
+    "mother": null,
+    "spouses": [
+     "zeus"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/アルクメーネー",
+    "note": "ミュケーナイ王エーレクトリュオーンの娘。アムピトリュオーンの妻だったが、夫の姿に化けたゼウスに愛され、ヘーラクレースをもうけた。"
+   },
+   {
+    "id": "herakles",
+    "name": "ヘーラクレース",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "最大の英雄",
+    "father": "zeus",
+    "mother": "alkmene",
+    "spouses": [
+     "hebe"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ヘーラクレース",
+    "note": "ゼウスとアルクメーネーの子。ヘーラーの怒りによる狂気で妻子を殺し、贖罪として十二の功業（難業）を成し遂げた。死後に神格化され、ヘーベーを妻とした。"
+   },
+   {
+    "id": "danae",
+    "name": "ダナエー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "アルゴス王女",
+    "father": null,
+    "mother": null,
+    "spouses": [
+     "zeus"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ダナエー",
+    "note": "アルゴス王アクリシオスの娘。「娘の子に殺される」という神託のため塔に幽閉されたが、黄金の雨となって訪れたゼウスとの間にペルセウスをもうけた。"
+   },
+   {
+    "id": "perseus",
+    "name": "ペルセウス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "英雄",
+    "father": "zeus",
+    "mother": "danae",
+    "spouses": [
+     "アンドロメダー"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ペルセウス",
+    "note": "ゼウスとダナエーの子。メドゥーサの首を討ち取り、海の怪物の生贄にされかけたアンドロメダーを救って妻とした。"
+   },
+   {
+    "id": "leda",
+    "name": "レーダー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "スパルタ王妃",
+    "father": null,
+    "mother": null,
+    "spouses": [
+     "zeus"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/レーダー",
+    "note": "スパルタ王テュンダレオースの妻。白鳥に化けたゼウスに愛され、ヘレネーらを生んだとされる。"
+   },
+   {
+    "id": "helene",
+    "name": "ヘレネー",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "絶世の美女",
+    "father": "zeus",
+    "mother": "leda",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ヘレネー",
+    "note": "ゼウスとレーダーの娘。白鳥に化けたゼウスとの間に生まれたとされる絶世の美女で、彼女を巡る争いがトロイア戦争の発端となった。"
+   },
+   {
+    "id": "peleus",
+    "name": "ペーレウス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "英雄",
+    "father": null,
+    "mother": null,
+    "spouses": [
+     "thetis"
+    ],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/ペーレウス",
+    "note": "アイアコスの子。海の女神テティスの夫となり、アキレウスをもうけた。二人の婚礼の席に「不和の林檎」が投じられたとされる。"
+   },
+   {
+    "id": "achilleus",
+    "name": "アキレウス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "トロイア戦争最大の英雄",
+    "father": "peleus",
+    "mother": "thetis",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/アキレウス",
+    "note": "ペーレウスとテティスの子。『イーリアス』の主人公で、踵（かかと）だけを弱点とする英雄。トロイア戦争最大の戦士として知られる。"
+   },
+   {
+    "id": "theseus",
+    "name": "テーセウス",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "アテーナイの英雄",
+    "father": "poseidon",
+    "mother": null,
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/テーセウス",
+    "note": "アテーナイ王アイゲウスの子とされるが、ポセイドーンの子とも言われる。クレーテーの迷宮でミーノータウロスを倒した英雄。"
+   },
+   {
+    "id": "aineias",
+    "name": "アイネイアース",
+    "birth": "",
+    "death": "",
+    "byear": null,
+    "dyear": null,
+    "title": "トロイアの英雄",
+    "father": null,
+    "mother": "aphrodite",
+    "spouses": [],
+    "birthplace": "",
+    "fate": "",
+    "img": null,
+    "wiki": "https://ja.wikipedia.org/wiki/アイネイアース",
+    "note": "アプロディーテーと人間のアンキーセースの子。トロイア陥落を生き延び、イタリアへ渡ってローマ人の祖となったとされる。"
+   }
+  ]
+ }
+];
+/*__GEN_DATA_END__*/
+</script>
 <script>
 "use strict";
 /* ========= 家紋（簡略SVG・雰囲気優先） ========= */
@@ -213,6 +7728,22 @@ function crestSVG(type){
        (Public Domain, Wikimedia Commons). See crests/SOURCES.md. */
     return '<svg viewBox="-99 -99 198 198" fill="currentColor" aria-hidden="true"><path d="M0 0L81-16c22 0 22 32 0 32Z" transform="rotate(11.25)" fill-opacity="0.45"/><path d="M0 0L81-16c22 0 22 32 0 32Z" transform="rotate(33.75)" fill-opacity="0.45"/><path d="M0 0L81-16c22 0 22 32 0 32Z" transform="rotate(56.25)" fill-opacity="0.45"/><path d="M0 0L81-16c22 0 22 32 0 32Z" transform="rotate(78.75)" fill-opacity="0.45"/><path d="M0 0L81-16c22 0 22 32 0 32Z" transform="rotate(101.25)" fill-opacity="0.45"/><path d="M0 0L81-16c22 0 22 32 0 32Z" transform="rotate(123.75)" fill-opacity="0.45"/><path d="M0 0L81-16c22 0 22 32 0 32Z" transform="rotate(146.25)" fill-opacity="0.45"/><path d="M0 0L81-16c22 0 22 32 0 32Z" transform="rotate(168.75)" fill-opacity="0.45"/><path d="M0 0L81-16c22 0 22 32 0 32Z" transform="rotate(191.25)" fill-opacity="0.45"/><path d="M0 0L81-16c22 0 22 32 0 32Z" transform="rotate(213.75)" fill-opacity="0.45"/><path d="M0 0L81-16c22 0 22 32 0 32Z" transform="rotate(236.25)" fill-opacity="0.45"/><path d="M0 0L81-16c22 0 22 32 0 32Z" transform="rotate(258.75)" fill-opacity="0.45"/><path d="M0 0L81-16c22 0 22 32 0 32Z" transform="rotate(281.25)" fill-opacity="0.45"/><path d="M0 0L81-16c22 0 22 32 0 32Z" transform="rotate(303.75)" fill-opacity="0.45"/><path d="M0 0L81-16c22 0 22 32 0 32Z" transform="rotate(326.25)" fill-opacity="0.45"/><path d="M0 0L81-16c22 0 22 32 0 32Z" transform="rotate(348.75)" fill-opacity="0.45"/><path d="M0 0L81-16c22 0 22 32 0 32Z" transform="rotate(0)"/><path d="M0 0L81-16c22 0 22 32 0 32Z" transform="rotate(22.5)"/><path d="M0 0L81-16c22 0 22 32 0 32Z" transform="rotate(45)"/><path d="M0 0L81-16c22 0 22 32 0 32Z" transform="rotate(67.5)"/><path d="M0 0L81-16c22 0 22 32 0 32Z" transform="rotate(90)"/><path d="M0 0L81-16c22 0 22 32 0 32Z" transform="rotate(112.5)"/><path d="M0 0L81-16c22 0 22 32 0 32Z" transform="rotate(135)"/><path d="M0 0L81-16c22 0 22 32 0 32Z" transform="rotate(157.5)"/><path d="M0 0L81-16c22 0 22 32 0 32Z" transform="rotate(180)"/><path d="M0 0L81-16c22 0 22 32 0 32Z" transform="rotate(202.5)"/><path d="M0 0L81-16c22 0 22 32 0 32Z" transform="rotate(225)"/><path d="M0 0L81-16c22 0 22 32 0 32Z" transform="rotate(247.5)"/><path d="M0 0L81-16c22 0 22 32 0 32Z" transform="rotate(270)"/><path d="M0 0L81-16c22 0 22 32 0 32Z" transform="rotate(292.5)"/><path d="M0 0L81-16c22 0 22 32 0 32Z" transform="rotate(315)"/><path d="M0 0L81-16c22 0 22 32 0 32Z" transform="rotate(337.5)"/><circle r="13"/></svg>';
 }
+  if (type === "laurel"){
+    /* 月桂樹の冠：左右の枝に葉を並べた簡略モチーフ（ギリシャ神話用） */
+    var leafP = '<path d="M0 -11 C4.5 -5 4.5 5 0 11 C-4.5 5 -4.5 -5 0 -11 Z"/>';
+    var out = '<svg viewBox="0 0 100 100" fill="currentColor" aria-hidden="true">';
+    [-1, 1].forEach(function(side){
+      for (var i = 0; i < 7; i++){
+        var th = side * (16 + i * 15.5) * Math.PI / 180;
+        var cx = 50 + Math.sin(th) * 31, cy = 56 - Math.cos(th) * 31;
+        var rot = side * (16 + i * 15.5) + side * 38;
+        out += '<g transform="translate(' + cx.toFixed(1) + ' ' + cy.toFixed(1) + ') rotate(' + rot.toFixed(1) + ')">' + leafP + '</g>';
+      }
+      out += '<circle cx="' + (50 + side * 13.5) + '" cy="83" r="2.6"/>';
+    });
+    out += '<path d="M41 88 Q50 93 59 88 L59 84 Q50 88.5 41 84 Z"/></svg>';
+    return out;
+  }
   /* 笹竜胆：暫定の簡略図（本物のPD素材「笹竜胆.svg」は取得でき次第差し替える） */
   var leaf = '<path d="M50 82 C45 60 45 39 50 13 C55 39 55 60 50 82 Z" fill="currentColor" fill-opacity=".16"/><path d="M50 79 L50 17"/>';
   var petal = '<path d="M50 91 C46.6 84.5 46.6 79.5 50 75.5 C53.4 79.5 53.4 84.5 50 91 Z" fill="currentColor" stroke="none"/>';
@@ -226,7 +7757,7 @@ function crestSVG(type){
 /* ========= データ（ダミー） ========= */
 var CLANS = [
 {
-  id:"genji", name:"源氏", full:"河内源氏",
+  id:"genji", name:"源氏", full:"河内源氏", dummy:true,
   desc:"清和源氏の一流・河内源氏。頼信を祖とし、頼朝が鎌倉幕府を開いた。",
   theme:{ crest:"sasarindo",
     bg:"linear-gradient(180deg,#fbf9f3,#efe8d8)", bgc:"#f4efe2",
@@ -262,7 +7793,7 @@ var CLANS = [
   ]
 },
 {
-  id:"heike", name:"平家", full:"伊勢平氏",
+  id:"heike", name:"平家", full:"伊勢平氏", dummy:true,
   desc:"桓武平氏の一流・伊勢平氏。清盛が武家の棟梁として太政大臣に上り、壇ノ浦に滅んだ。",
   theme:{ crest:"agehacho",
     bg:"linear-gradient(180deg,#2c0a11,#150409)", bgc:"#1c0509",
@@ -286,7 +7817,7 @@ var CLANS = [
     {id:"antoku", name:"安徳天皇", kana:"アントクテンノウ", birth:"1178年", death:"1185年", byear:1178, dyear:1185, title:"第81代天皇", father:null, mother:"tokuko", spouses:[], birthplace:"山城国（京都）", fate:"壇ノ浦で入水", img:null, wiki:"https://ja.wikipedia.org/wiki/安徳天皇", note:"清盛の外孫。8歳で壇ノ浦に没した。"}
   ]
 }
-];
+].concat(typeof REAL_CLANS !== "undefined" ? REAL_CLANS : []);
 </script>
 <script>
 "use strict";
@@ -300,6 +7831,16 @@ var selectedId = null, animId = null, hlTimer = null;
 var canvas = document.getElementById("canvas"), viewport = document.getElementById("viewport"), stage = document.getElementById("stage");
 
 function el(tag, attrs){ var e = document.createElementNS(SVGNS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); return e; }
+/* ========= 関係線・古史古伝の出典色 ========= */
+var ALT_COLORS = {"ホツマツタエ":"#8e44ad", "九鬼文書":"#1f7a6d", "宮下文書":"#c05621", "先代旧事本紀":"#3367a8", "古語拾遺":"#7c6a1e"};
+function altColor(src){ return ALT_COLORS[src] || "#777777"; }
+function relStyleOf(r){
+  if (r.sourceAlt) return {cls:"rel-alt", color:altColor(r.sourceAlt), dash:"5 3", label:true, arrow:false};
+  if (r.kind === "lineage") return {cls:"rel-lineage", color:"#a07c2c", dash:"8 4", label:true, arrow:false};
+  if (r.kind === "sequence") return {cls:"rel-sequence", color:"#5b7aa5", dash:"1.5 4", label:false, arrow:true};
+  if (r.kind === "identity") return {cls:"rel-identity", color:"#a07c2c", dash:"6 3 1.5 3", label:true, arrow:false};
+  return {cls:"rel-plain", color:"#8a7a52", dash:"2.5 4", label:true, arrow:false};
+}
 function isSpouseOnly(m){ if (byId[m.father] || byId[m.mother]) return false; return (m.spouses || []).some(function(s){ return !!byId[s]; }); }
 function leadIdOf(m){ if (!isSpouseOnly(m)) return m.id; for (var i = 0; i < m.spouses.length; i++){ if (byId[m.spouses[i]]) return m.spouses[i]; } return m.id; }
 
@@ -314,21 +7855,41 @@ function applyTheme(t){
   document.documentElement.dataset.clan = clan.id;
 }
 
+var floatIds = {}; /* id -> level（系譜に繋げずキャンバス上部に浮かせる柱） */
+var unitOf = {}; /* memberId -> その人が属するユニットのリードid */
 function buildLayout(){
-  byId = {}; units = {}; kidsOf = {}; genOfMap = {}; pos = {};
+  byId = {}; units = {}; kidsOf = {}; genOfMap = {}; pos = {}; floatIds = {}; unitOf = {};
   clan.members.forEach(function(m){ byId[m.id] = m; });
-  clan.members.forEach(function(m){
-    if (isSpouseOnly(m)) return;
-    var partners = (m.spouses || []).filter(function(s){ return byId[s] && isSpouseOnly(byId[s]); }).map(function(s){ return byId[s]; });
+  (clan.floaters || []).forEach(function(f){ floatIds[f.id] = f.level; });
+  function makeUnit(m){
+    var partners = (m.spouses || []).filter(function(s){ return byId[s] && isSpouseOnly(byId[s]) && unitOf[s] == null; }).map(function(s){ return byId[s]; });
     units[m.id] = {lead:m, partners:partners, w:0, anchorX:0, cx:0};
     kidsOf[m.id] = [];
-  });
+    unitOf[m.id] = m.id;
+    partners.forEach(function(p){ unitOf[p.id] = m.id; });
+  }
   clan.members.forEach(function(m){
-    if (isSpouseOnly(m)) return;
-    var seen = {};
+    if (floatIds[m.id] != null || isSpouseOnly(m)) return;
+    makeUnit(m);
+  });
+  /* 両方とも親を持たない夫婦（天宇受売命と猿田毘古神、饒速日命と登美夜毘売など）は
+     どちらもリードになれず取り残される。残った配偶者のみメンバーをリードに昇格させて救済する */
+  clan.members.forEach(function(m){
+    if (floatIds[m.id] != null || !isSpouseOnly(m) || unitOf[m.id] != null) return;
+    makeUnit(m);
+  });
+  /* 子は親ユニットのどちらか一方にだけ付ける。両親が別ユニットの神々で
+     二重配置にならないようにするためで、父方を優先し、父がいなければ母方にする。
+     もう一方の親との繋がりは詳細パネルの父・母欄から辿れる */
+  clan.members.forEach(function(m){
+    if (floatIds[m.id] != null || isSpouseOnly(m)) return;
+    var chosen = null;
     [m.father, m.mother].forEach(function(p){
-      if (p && byId[p]){ var L = leadIdOf(byId[p]); if (L !== m.id && !seen[L]){ seen[L] = 1; kidsOf[L].push(m); } }
+      if (chosen || !p) return;
+      var L = unitOf[p];
+      if (L && L !== m.id && units[L]) chosen = L;
     });
+    if (chosen) kidsOf[chosen].push(m);
   });
   Object.keys(kidsOf).forEach(function(k){
     kidsOf[k].sort(function(a, b){ return ((a.byear == null ? 9999 : a.byear) - (b.byear == null ? 9999 : b.byear)) || a.name.localeCompare(b.name, "ja"); });
@@ -337,7 +7898,7 @@ function buildLayout(){
     if (genOfMap[id] != null) return genOfMap[id];
     genOfMap[id] = 0;
     var m = byId[id], gs = [];
-    [m.father, m.mother].forEach(function(p){ if (p && byId[p]){ var L = leadIdOf(byId[p]); if (L !== id) gs.push(gen(L)); } });
+    [m.father, m.mother].forEach(function(p){ var L = p && unitOf[p]; if (L && L !== id) gs.push(gen(L)); });
     genOfMap[id] = gs.length ? Math.max.apply(null, gs) + 1 : 0;
     return genOfMap[id];
   }
@@ -361,24 +7922,47 @@ function buildLayout(){
       ks.forEach(function(c){ place(c.id, kx); kx += units[c.id].w + HGAP; });
     }
   }
-  var roots = Object.keys(units).filter(function(id){ return genOfMap[id] === 0; });
-  roots.sort(function(a, b){ return ((byId[a].byear == null ? 9999 : byId[a].byear) - (byId[b].byear == null ? 9999 : byId[b].byear)); });
+  var isChild = {};
+  Object.keys(kidsOf).forEach(function(k){ kidsOf[k].forEach(function(c){ isChild[c.id] = 1; }); });
+  var roots = Object.keys(units).filter(function(id){ return !isChild[id]; });
+  roots.sort(function(a, b){ return ((byId[a].byear == null ? 9999 : byId[a].byear) - (byId[b].byear == null ? 9999 : byId[b].byear)) || byId[a].name.localeCompare(byId[b].name, "ja"); });
   var totalW = 0; roots.forEach(function(id){ totalW += width(id); });
   totalW += HGAP * Math.max(0, roots.length - 1);
   var rx = 0; roots.forEach(function(id){ place(id, rx); rx += units[id].w + HGAP; });
   var maxY = 0;
   Object.keys(pos).forEach(function(id){ maxY = Math.max(maxY, pos[id].y + NH); });
   contentBox = {minX:-92, minY:-14, maxX:totalW + 12, maxY:maxY + 18};
+  /* 系譜に繋げない柱（天之御中主神・アメミヲヤなど）はキャンバスの一番上に浮かせる。
+     level が大きいほど上（外側）に置く */
+  var fl = clan.floaters || [];
+  if (fl.length){
+    var levels = {};
+    fl.forEach(function(f){ (levels[f.level] = levels[f.level] || []).push(f.id); });
+    Object.keys(levels).forEach(function(lv){
+      var ids = levels[lv].filter(function(id){ return byId[id]; });
+      if (!ids.length) return;
+      var rowW = ids.length * NW + (ids.length - 1) * HGAP;
+      var sx = Math.max(0, (totalW - rowW) / 2);
+      var y = -Number(lv) * (ROWH + 30) - 16;
+      ids.forEach(function(id, i){ pos[id] = {x: sx + i * (NW + HGAP), y: y}; });
+      contentBox.minY = Math.min(contentBox.minY, y - 16);
+    });
+  }
 }
 
 function render(){
   var edges = document.getElementById("edges"), nodes = document.getElementById("nodes"), gl = document.getElementById("genlabels");
-  edges.innerHTML = ""; nodes.innerHTML = ""; gl.innerHTML = "";
+  var relsG = document.getElementById("relations");
+  edges.innerHTML = ""; nodes.innerHTML = ""; gl.innerHTML = ""; relsG.innerHTML = "";
   var oldDefs = document.getElementById("avdefs"); if (oldDefs) oldDefs.remove();
   var defs = el("defs", {id:"avdefs"});
   var cp = el("clipPath", {id:"avclip", clipPathUnits:"userSpaceOnUse"});
   cp.appendChild(el("circle", {cx:19, cy:NH/2, r:11.5}));
-  defs.appendChild(cp); canvas.insertBefore(defs, canvas.firstChild);
+  defs.appendChild(cp);
+  var mk = el("marker", {id:"seqArrow", viewBox:"0 0 10 10", refX:8.5, refY:5, markerWidth:6.5, markerHeight:6.5, orient:"auto-start-reverse"});
+  mk.appendChild(el("path", {d:"M 0 0 L 10 5 L 0 10 z", fill:"#5b7aa5"}));
+  defs.appendChild(mk);
+  canvas.insertBefore(defs, canvas.firstChild);
   var gens = {};
   Object.keys(units).forEach(function(id){ gens[genOfMap[id]] = 1; });
   Object.keys(gens).forEach(function(g){
@@ -405,6 +7989,26 @@ function render(){
       edges.appendChild(el("path", {d:d}));
     }
   });
+  /* 関係線（relations）：種類と出典で描き分ける。線の意味は凡例と詳細パネルの「関係」欄に出す */
+  (clan.relations || []).forEach(function(r){
+    var p1 = pos[r.from], p2 = pos[r.to];
+    if (!p1 || !p2) return;
+    var st = relStyleOf(r);
+    var x1 = p1.x + NW/2, y1 = p1.y + NH/2, x2 = p2.x + NW/2, y2 = p2.y + NH/2;
+    var mx = (x1 + x2)/2, my = (y1 + y2)/2;
+    var dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy) || 1;
+    var off = Math.min(46, Math.max(14, len * 0.14));
+    var cx = mx + (-dy / len) * off, cy = my + (dx / len) * off;
+    var path = el("path", {d:"M " + x1 + " " + y1 + " Q " + cx + " " + cy + " " + x2 + " " + y2, "class":st.cls, stroke:st.color});
+    if (st.dash) path.setAttribute("stroke-dasharray", st.dash);
+    if (st.arrow) path.setAttribute("marker-end", "url(#seqArrow)");
+    relsG.appendChild(path);
+    if (st.label && r.label){
+      var t = el("text", {"class":"rel-label", x:(0.25 * x1 + 0.5 * cx + 0.25 * x2).toFixed(1), y:(0.25 * y1 + 0.5 * cy + 0.25 * y2 - 3).toFixed(1), "text-anchor":"middle", fill:st.color});
+      t.textContent = r.label;
+      relsG.appendChild(t);
+    }
+  });
   clan.members.forEach(function(m){
     var p = pos[m.id]; if (!p) return;
     var g = el("g", {"class":"node" + (m.id === selectedId ? " sel" : ""), transform:"translate(" + p.x + "," + p.y + ")", "data-id":m.id});
@@ -417,7 +8021,7 @@ function render(){
     }
     var nm = el("text", {"class":"nm", x:38, y:23}); nm.textContent = m.name; g.appendChild(nm);
     var yr = el("text", {"class":"yr", x:38, y:40});
-    yr.textContent = (m.byear == null ? "？" : m.byear) + " – " + (m.dyear == null ? (m.alive ? "存命" : "？") : m.dyear);
+    yr.textContent = (m.byear == null && m.dyear == null) ? "" : (m.byear == null ? "？" : m.byear) + " – " + (m.dyear == null ? (m.alive ? "存命" : "？") : m.dyear);
     g.appendChild(yr);
     g.addEventListener("click", function(){ selectPerson(m.id); });
     nodes.appendChild(g);
@@ -537,7 +8141,7 @@ function renderDetail(m){
     d.innerHTML = '<div class="intro-crest">' + crestSVG(clan.theme.crest) + "</div>"
       + "<h2>" + esc(clan.full) + "</h2>"
       + '<p class="note">' + esc(clan.desc) + "</p>"
-      + '<p class="sub">収録 ' + clan.members.length + "人（試作ダミーデータ）。系図の人物をタップ／クリックすると、肖像とプロフィールがここに表示されます。名前で検索すると、その人の場所へ移動してハイライトします。</p>";
+      + '<p class="sub">収録 ' + clan.members.length + "人" + (clan.dummy ? "（試作ダミーデータ）" : "") + "。系図の人物をタップ／クリックすると、肖像とプロフィールがここに表示されます。名前で検索すると、その人の場所へ移動してハイライトします。</p>";
     return;
   }
   var age = (m.byear != null && m.dyear != null) ? (m.dyear - m.byear) + "歳" : "不明";
@@ -557,12 +8161,45 @@ function renderDetail(m){
     ["子", relList(childrenOf(m))],
     ["Wikipedia", m.wiki ? '<a href="' + esc(m.wiki) + '" target="_blank" rel="noopener">記事を開く</a>' : "不明"]
   ];
+  if (m.aliases && m.aliases.length){
+    rows.splice(3, 0, ["別名", m.aliases.map(function(a){ return esc(a.name) + (a.source ? '<span class="src">（' + esc(a.source) + "）</span>" : ""); }).join("、")]);
+  }
+  if (m.enshrined && m.enshrined.length){
+    var ensHtml = m.enshrined.map(function(e){
+      if (typeof e === "string") return esc(e);
+      return esc(e.name) + (e.note ? '<span class="src">（' + esc(e.note) + "）</span>" : "");
+    }).join("、");
+    rows.splice(rows.length - 1, 0, ["祀られる場所", ensHtml]);
+  }
+  /* 関係線の相手と内容（この人物が関わる relations） */
+  var relHtml = "";
+  var myRels = (clan.relations || []).filter(function(r){ return r.from === m.id || r.to === m.id; });
+  if (myRels.length){
+    relHtml = '<div class="relsec"><h3>関係</h3>' + myRels.map(function(r){
+      var otherId = r.from === m.id ? r.to : r.from;
+      var tag = r.sourceAlt ? "古史古伝：" + r.sourceAlt
+        : r.kind === "lineage" ? "古典の系譜" + (r.source ? "（" + r.source + "）" : "")
+        : r.kind === "sequence" ? "出現順" + (r.source ? "（" + r.source + "）" : "")
+        : r.kind === "identity" ? "同一神の伝" + (r.source ? "（" + r.source + "）" : "") : "";
+      return '<div class="ritem">' + parentHTML(otherId) + " ― " + esc(r.label || "")
+        + (tag ? '<span class="tag">' + esc(tag) + "</span>" : "") + "</div>";
+    }).join("") + "</div>";
+  }
+  /* 古史古伝の異説（出典ごとに色分け） */
+  var altHtml = "";
+  if (m.alt && m.alt.length){
+    altHtml = '<div class="altsec"><h3>古史古伝の異説</h3>' + m.alt.map(function(a){
+      var c = altColor(a.source);
+      return '<div class="aitem" style="border-left-color:' + c + '"><span class="altsrc" style="background:' + c + '">' + esc(a.source) + "</span>" + esc(a.text) + "</div>";
+    }).join("") + "</div>";
+  }
   var av = m.img ? '<img src="' + esc(m.img) + '" alt="">' : esc(m.name.charAt(0));
   d.innerHTML = '<div class="avatar">' + av + "</div>"
     + "<h2>" + esc(m.name) + (m.kana ? '<span class="kana">（' + esc(m.kana) + "）</span>" : "") + "</h2>"
     + (m.title ? '<p class="ttl">' + esc(m.title) + "</p>" : "")
     + (m.note ? '<p class="sub" style="margin:0 0 6px">' + esc(m.note) + "</p>" : "")
-    + rows.map(function(r){ return '<div class="drow"><b>' + r[0] + '</b><span class="v">' + r[1] + "</span></div>"; }).join("");
+    + rows.map(function(r){ return '<div class="drow"><b>' + r[0] + '</b><span class="v">' + r[1] + "</span></div>"; }).join("")
+    + relHtml + altHtml;
   d.querySelectorAll(".rel").forEach(function(b){ b.addEventListener("click", function(){ focusPerson(b.dataset.pid); }); });
   d.scrollTop = 0;
 }
@@ -585,7 +8222,35 @@ function setClan(id){
   applyTheme(clan.theme);
   document.getElementById("clanDesc").textContent = clan.full + " ― " + clan.desc;
   document.querySelectorAll("#clanTabs button").forEach(function(b){ b.classList.toggle("on", b.dataset.clan === id); });
-  buildLayout(); render(); renderDetail(null); fitView(false);
+  buildLayout(); render(); renderDetail(null); fitView(false); buildLegend();
+}
+/* ========= 凡例（線の種類と出典色） ========= */
+function lgSwatch(color, dash, dbl){
+  var inner = dbl
+    ? '<line x1="1" y1="2.4" x2="33" y2="2.4"/><line x1="1" y1="5.6" x2="33" y2="5.6"/>'
+    : '<line x1="1" y1="4" x2="33" y2="4"' + (dash ? ' stroke-dasharray="' + dash + '"' : "") + "/>";
+  return '<svg width="34" height="8" viewBox="0 0 34 8" stroke="' + color + '" stroke-width="1.6">' + inner + "</svg>";
+}
+function buildLegend(){
+  var lg = document.getElementById("legend");
+  var kinds = {}, alts = {};
+  (clan.relations || []).forEach(function(r){
+    if (r.sourceAlt) alts[r.sourceAlt] = 1;
+    else kinds[r.kind || "plain"] = 1;
+  });
+  var items = [];
+  items.push("<li>" + lgSwatch("#8a7a52", null, false) + "親子</li>");
+  items.push("<li>" + lgSwatch("#8a7a52", null, true) + "配偶者</li>");
+  if (kinds.lineage) items.push("<li>" + lgSwatch("#a07c2c", "8 4", false) + "古典の系譜</li>");
+  if (kinds.sequence) items.push("<li>" + lgSwatch("#5b7aa5", "1.5 4", false) + "出現順（矢印の向きに成った）</li>");
+  if (kinds.identity) items.push("<li>" + lgSwatch("#a07c2c", "6 3 1.5 3", false) + "同一神の伝</li>");
+  if (kinds.plain) items.push("<li>" + lgSwatch("#8a7a52", "2.5 4", false) + "関係</li>");
+  Object.keys(alts).forEach(function(s){ items.push("<li>" + lgSwatch(altColor(s), "5 3", false) + "古史古伝の関係線（" + esc(s) + "）</li>"); });
+  if (clan.members.some(function(m){ return m.alt && m.alt.length; })) items.push('<li style="display:block;color:var(--mut)">詳細パネルの「古史古伝の異説」も出典ごとに色分けしています</li>');
+  lg.innerHTML = '<button type="button" class="lg-title" id="lgToggle">凡例</button><ul>' + items.join("") + "</ul>";
+  lg.hidden = false;
+  lg.classList.toggle("closed", window.matchMedia("(max-width: 820px)").matches);
+  document.getElementById("lgToggle").addEventListener("click", function(){ lg.classList.toggle("closed"); });
 }
 var tabs = document.getElementById("clanTabs");
 CLANS.forEach(function(c){
@@ -595,12 +8260,27 @@ CLANS.forEach(function(c){
   tabs.appendChild(b);
 });
 var sInput = document.getElementById("searchInput"), cand = document.getElementById("candidates");
+/* 検索の表記ゆれ吸収：ひらがな→カタカナ、ヅ→ジ・ヂ→ジ、歴史的仮名遣い（ヰヱヲ）を寄せる */
+function normName(s){
+  return String(s == null ? "" : s)
+    .replace(/[ぁ-ゖ]/g, function(ch){ return String.fromCharCode(ch.charCodeAt(0) + 0x60); })
+    .replace(/ヅ/g, "ジ").replace(/ヂ/g, "ジ")
+    .replace(/ヰ/g, "イ").replace(/ヱ/g, "エ").replace(/ヲ/g, "オ")
+    .replace(/\s+/g, "");
+}
+function nameMatches(m, nq){
+  if (!nq) return false;
+  if (normName(m.name).indexOf(nq) >= 0) return true;
+  if (m.kana && normName(m.kana).indexOf(nq) >= 0) return true;
+  if (m.title && normName(m.title).indexOf(nq) >= 0) return true;
+  return (m.aliases || []).some(function(a){ return normName(a.name).indexOf(nq) >= 0; });
+}
 sInput.addEventListener("input", function(){
   var q = sInput.value.trim();
   if (!q){ cand.style.display = "none"; cand.innerHTML = ""; return; }
-  var qk = q.replace(/[\u3041-\u3096]/g, function(ch){ return String.fromCharCode(ch.charCodeAt(0) + 0x60); });
+  var nq = normName(q);
   var hits = [];
-  CLANS.forEach(function(c){ c.members.forEach(function(m){ if (m.name.indexOf(q) >= 0 || (m.kana && m.kana.indexOf(qk) >= 0)) hits.push({clan:c, m:m}); }); });
+  CLANS.forEach(function(c){ c.members.forEach(function(m){ if (nameMatches(m, nq)) hits.push({clan:c, m:m}); }); });
   cand.innerHTML = "";
   if (!hits.length){
     cand.innerHTML = '<div style="padding:9px 11px;font-size:12.5px;color:var(--mut)">一致する人物はいません</div>';
