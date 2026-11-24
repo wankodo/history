@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>宗教家名簿｜歴史人物名鑑</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="icon" type="image/png" sizes="512x512" href="favicon.png">
+<link rel="apple-touch-icon" href="favicon.png">
+<meta name="description" content="世界の宗教家の名簿。宗教・宗派・階位・布教の足跡を、静かに、厳かに並べるページ。">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="歴史系ツール集">
+<meta property="og:title" content="宗教家名簿">
+<meta property="og:description" content="世界の宗教家の名簿。宗教・宗派・階位・布教の足跡を、静かに、厳かに並べるページ。">
+<meta property="og:url" content="https://wankodo.github.io/history/religion.html">
+<meta property="og:image" content="https://wankodo.github.io/history/ogp.png?v=2">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://wankodo.github.io/history/ogp.png?v=2">
+<link rel="stylesheet" href="leaflet.css">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QQ4435VBMK"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-QQ4435VBMK');
+</script>
+<style>
+/* ============================================================
+religion.html 専用デザイン（共通CSS・DEF/HUDテーマは使わない）
+方針：祈りの場の静けさ。生成り〜薄墨の地、墨色の文字、
+アクセントは金箔のような鈍い金（--gold）1色だけ。
+動きはフェードのみ、ゆっくり（0.8〜1.2秒）。滑らせない、跳ねさせない。
+============================================================ */
+:root{
+--paper:#f5f2ea;
+--paper-deep:#ede8dc;
+--ink:#26241e;
+--ink-soft:#57544a;
+--ink-faint:#a09a8a;
+--line:#ddd6c6;
+--gold:#9a7d43;
+--serif:"Hiragino Mincho ProN","Hiragino Mincho Pro","YuMincho","Yu Mincho","MS PMincho",serif;
+--sans:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic UI","Yu Gothic",sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+background:linear-gradient(180deg,var(--paper) 0%,var(--paper-deep) 100%);
+background-attachment:fixed;
+color:var(--ink);
+font-family:var(--sans);
+font-weight:300;
+line-height:2;
+-webkit-font-smoothing:antialiased;
+animation:pageIn 1.2s ease both;
+}
+@keyframes pageIn{from{opacity:0;}to{opacity:1;}}
+a{color:inherit;}
+
+/* ---------- サイトバー（共通部品をこのページの色に合わせたもの） ---------- */
+.sitebar{border-bottom:1px solid var(--line);}
+.sitebar .sb-in{
+max-width:1080px;margin:0 auto;padding:8px 32px;
+display:flex;justify-content:space-between;align-items:center;gap:10px;
+}
+.sitebar a{
+color:var(--ink);text-decoration:none;font-size:13px;letter-spacing:.14em;
+transition:color .8s ease;
+}
+.sitebar a:hover{color:var(--gold);}
+.sitebar .sb-name{font-family:var(--serif);}
+.sitebar .sb-tool{color:var(--ink-faint);font-size:12px;letter-spacing:.2em;}
+
+/* ---------- ヘッダー ---------- */
+header{
+max-width:1080px;
+margin:0 auto;
+padding:64px 32px 0;
+text-align:center;
+}
+header .kicker{
+font-size:11px;
+letter-spacing:.55em;
+color:var(--gold);
+text-transform:uppercase;
+}
+header h1{
+font-family:var(--serif);
+font-weight:400;
+font-size:clamp(30px,5vw,44px);
+letter-spacing:.3em;
+text-indent:.3em;
+margin:20px 0 12px;
+}
+header .sub{
+font-size:12.5px;
+color:var(--ink-soft);
+letter-spacing:.16em;
+}
+header .rule{
+width:1px;height:52px;
+background:linear-gradient(180deg,var(--gold),transparent);
+margin:38px auto 0;
+}
+
+/* ---------- 操作部（検索・年代） ---------- */
+.controls{
+max-width:1080px;
+margin:0 auto;
+padding:44px 32px 6px;
+display:flex;
+flex-wrap:wrap;
+gap:28px 48px;
+align-items:flex-end;
+justify-content:center;
+}
+.ctl label{
+display:block;
+font-size:10.5px;
+letter-spacing:.34em;
+color:var(--ink-faint);
+margin-bottom:6px;
+}
+.ctl-search input{
+font-family:var(--serif);
+font-size:17px;
+font-weight:400;
+color:var(--ink);
+background:transparent;
+border:none;
+border-bottom:1px solid var(--ink);
+padding:4px 2px 6px;
+width:min(320px,72vw);
+outline:none;
+border-radius:0;
+}
+.ctl-search input::placeholder{color:var(--ink-faint);font-size:14px;letter-spacing:.08em;}
+.ctl-era{min-width:min(340px,78vw);}
+.ctl-era .era-head{display:flex;justify-content:space-between;align-items:baseline;}
+.ctl-era .era-year{
+font-family:var(--serif);
+font-size:17px;
+letter-spacing:.1em;
+}
+.ctl-era .era-year small{font-size:11px;color:var(--ink-faint);letter-spacing:.15em;margin-left:8px;}
+input[type=range]{
+-webkit-appearance:none;appearance:none;
+width:100%;height:22px;background:transparent;cursor:pointer;
+}
+input[type=range]::-webkit-slider-runnable-track{height:1px;background:var(--ink-soft);}
+input[type=range]::-webkit-slider-thumb{
+-webkit-appearance:none;appearance:none;
+width:13px;height:13px;border-radius:50%;
+background:var(--paper);border:1.5px solid var(--gold);
+margin-top:-6px;
+}
+input[type=range]::-moz-range-track{height:1px;background:var(--ink-soft);}
+input[type=range]::-moz-range-thumb{
+width:11px;height:11px;border-radius:50%;
+background:var(--paper);border:1.5px solid var(--gold);
+}
+.era-all{
+font-family:var(--sans);
+font-size:11px;letter-spacing:.22em;
+background:none;border:none;
+border-bottom:1px solid transparent;
+color:var(--ink-faint);
+cursor:pointer;padding:2px 0;
+transition:color .8s ease,border-color .8s ease;
+}
+.era-all.on{color:var(--gold);border-bottom-color:var(--gold);}
+.count{
+text-align:center;
+font-size:11.5px;letter-spacing:.32em;color:var(--ink-faint);
+padding:28px 0 4px;
+}
+
+/* ---------- 地図（出生地ピン） ---------- */
+.map-sec{
+max-width:1080px;margin:0 auto;padding:18px 32px 0;
+}
+.map-frame{
+border:1px solid rgba(154,125,67,.4);
+padding:10px;
+background:rgba(255,255,255,.18);
+}
+#map{height:440px;width:100%;background:#e9e2cf;}
+@media(max-width:640px){#map{height:340px;}}
+.leaflet-container{font:inherit;background:#e9e2cf;}
+.leaflet-bar{border:1px solid rgba(154,125,67,.45)!important;box-shadow:none!important;}
+.leaflet-bar a{background:rgba(245,242,234,.95);color:var(--ink-soft);border-bottom:1px solid var(--line);}
+.leaflet-control-attribution{background:rgba(245,242,234,.8)!important;color:var(--ink-faint)!important;font-size:9px!important;}
+.leaflet-control-attribution a{color:var(--ink-faint)!important;}
+.map-note{
+text-align:center;font-size:11px;letter-spacing:.18em;color:var(--ink-faint);
+padding:10px 0 0;
+}
+
+/* ---------- 一覧 ---------- */
+main{
+max-width:1080px;
+margin:0 auto;
+padding:30px 32px 100px;
+}
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+gap:72px 48px;
+}
+.card{
+cursor:pointer;
+background:none;border:none;text-align:left;
+font:inherit;color:inherit;
+padding:0;width:100%;
+animation:cardIn 1.1s ease both;
+transition:opacity .8s ease;
+}
+.card:hover{opacity:.72;}
+@keyframes cardIn{from{opacity:0;}to{opacity:1;}}
+.card .frame{
+aspect-ratio:1/1;
+max-height:300px;
+margin:0 auto;
+display:flex;flex-direction:column;
+align-items:center;justify-content:center;
+gap:12px;
+padding:28px;
+text-align:center;
+position:relative;
+overflow:hidden;
+}
+.card .frame::after{
+content:"";position:absolute;inset:9px;
+border:1px solid rgba(154,125,67,.35);
+pointer-events:none;
+}
+.card .frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.card .frame .p-initial{
+font-family:var(--serif);
+font-size:52px;font-weight:400;
+color:rgba(38,36,30,.5);
+line-height:1.2;
+}
+.card .frame .p-religion{
+font-size:11px;letter-spacing:.34em;color:rgba(38,36,30,.55);
+}
+.card .meta{padding-top:22px;text-align:center;}
+.card .a-name{
+font-family:var(--serif);
+font-size:21px;font-weight:400;letter-spacing:.2em;
+}
+.card .a-en{
+font-size:10.5px;letter-spacing:.34em;color:var(--ink-faint);
+text-transform:uppercase;margin-top:3px;
+min-height:1em;
+}
+.card .a-years{
+font-size:12.5px;color:var(--ink-soft);letter-spacing:.14em;margin-top:8px;
+}
+.card .a-sect{
+font-size:11.5px;color:var(--ink-faint);letter-spacing:.2em;margin-top:2px;
+}
+.empty{
+text-align:center;color:var(--ink-faint);
+font-size:13px;letter-spacing:.2em;padding:80px 0;
+display:none;
+}
+.more-wrap{text-align:center;padding:64px 0 0;display:none;}
+.more-btn{
+font-family:var(--serif);font-size:14px;letter-spacing:.3em;text-indent:.3em;
+background:none;border:1px solid rgba(154,125,67,.5);color:var(--ink-soft);
+padding:14px 44px;cursor:pointer;
+transition:color .8s ease,border-color .8s ease;
+}
+.more-btn:hover{color:var(--gold);border-color:var(--gold);}
+
+/* ---------- 詳細パネル ---------- */
+.overlay{
+position:fixed;inset:0;z-index:1200;
+background:linear-gradient(180deg,var(--paper) 0%,var(--paper-deep) 100%);
+overflow-y:auto;
+opacity:0;pointer-events:none;
+transition:opacity 1s ease;
+}
+.overlay.open{opacity:1;pointer-events:auto;}
+.detail{
+max-width:880px;margin:0 auto;
+padding:64px 32px 90px;
+animation:cardIn 1.2s ease both;
+}
+.close-btn{
+position:sticky;top:22px;
+float:right;
+width:44px;height:44px;
+background:none;border:1px solid var(--line);border-radius:50%;
+font-size:17px;color:var(--ink-soft);
+cursor:pointer;line-height:1;
+transition:color .8s ease,border-color .8s ease;
+}
+.close-btn:hover{color:var(--gold);border-color:var(--gold);}
+.d-head{text-align:center;padding-top:8px;}
+.d-portrait{
+width:118px;height:148px;margin:0 auto 28px;
+display:flex;align-items:center;justify-content:center;
+font-family:var(--serif);font-size:44px;
+color:rgba(38,36,30,.5);
+border:1px solid rgba(154,125,67,.4);
+box-shadow:0 0 0 6px var(--paper),0 0 0 7px rgba(154,125,67,.3);
+object-fit:cover;
+}
+.d-name{
+font-family:var(--serif);font-weight:400;
+font-size:clamp(28px,5vw,38px);letter-spacing:.24em;text-indent:.24em;
+}
+.d-en{
+font-size:11px;letter-spacing:.4em;color:var(--ink-faint);
+text-transform:uppercase;margin-top:6px;
+}
+.d-life{
+font-size:13.5px;color:var(--ink-soft);letter-spacing:.16em;margin-top:14px;
+}
+.d-rule{width:1px;height:42px;background:linear-gradient(180deg,var(--gold),transparent);margin:34px auto;}
+dl.profile{max-width:640px;margin:0 auto;}
+dl.profile .row{
+display:flex;gap:24px;
+padding:14px 2px;
+border-bottom:1px solid var(--line);
+font-size:14.5px;
+}
+dl.profile .row:first-child{border-top:1px solid var(--line);}
+dl.profile dt{
+flex:0 0 118px;
+font-size:11px;letter-spacing:.24em;color:var(--ink-faint);
+padding-top:5px;
+}
+dl.profile dd{flex:1;letter-spacing:.05em;}
+dl.profile dd .unknown{color:var(--ink-faint);}
+a.person-link{
+text-decoration:none;
+border-bottom:1px solid var(--ink-faint);
+padding-bottom:1px;
+transition:color .8s ease,border-color .8s ease;
+}
+a.person-link:hover{color:var(--gold);border-bottom-color:var(--gold);}
+.tag-ruler{
+font-size:9.5px;letter-spacing:.18em;color:var(--gold);
+border:1px solid var(--gold);border-radius:2px;
+padding:0 5px;margin-left:7px;vertical-align:2px;white-space:nowrap;
+}
+.d-links{text-align:center;margin-top:56px;display:flex;flex-direction:column;gap:18px;align-items:center;}
+.d-links a{
+font-size:12px;letter-spacing:.26em;color:var(--ink-soft);
+text-decoration:none;border-bottom:1px solid var(--ink-faint);padding-bottom:3px;
+transition:color .8s ease,border-color .8s ease;
+}
+.d-links a:hover{color:var(--gold);border-bottom-color:var(--gold);}
+
+/* ---------- 導入文・解説（読み物） ---------- */
+.intro{
+max-width:760px;margin:0 auto;padding:40px 32px 0;
+font-size:14px;line-height:2.1;color:var(--ink-soft);letter-spacing:.04em;
+}
+.intro p+p{margin-top:14px;}
+.reading{
+max-width:760px;margin:0 auto;padding:56px 32px 10px;
+font-size:14px;line-height:2.1;color:var(--ink-soft);letter-spacing:.04em;
+}
+.reading h2{
+font-family:var(--serif);font-weight:400;font-size:20px;letter-spacing:.18em;
+color:var(--ink);margin:38px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--line);
+}
+.reading h2:first-child{margin-top:0;}
+.reading p+p{margin-top:12px;}
+.ai-summary{
+max-width:760px;margin:0 auto;padding:24px 32px 10px;
+font-size:12px;line-height:2;color:var(--ink-faint);letter-spacing:.04em;
+}
+.ai-summary h2{font-size:11px;letter-spacing:.34em;font-weight:400;color:var(--ink-faint);margin-bottom:10px;text-align:center;}
+@media(max-width:640px){.intro,.reading,.ai-summary{padding-left:20px;padding-right:20px;}}
+
+/* ---------- フッター ---------- */
+footer{
+border-top:1px solid var(--line);
+padding:46px 24px 56px;
+text-align:center;
+}
+footer p{
+font-size:10.5px;color:var(--ink-faint);
+letter-spacing:.08em;line-height:2.1;
+}
+
+@media (max-width:640px){
+header{padding:44px 20px 0;}
+.sitebar .sb-in{padding:8px 20px;}
+.controls{padding:34px 20px 4px;}
+.map-sec{padding:14px 20px 0;}
+main{padding:22px 20px 76px;}
+.grid{gap:52px 0;}
+.detail{padding:44px 20px 68px;}
+dl.profile .row{gap:14px;}
+dl.profile dt{flex-basis:96px;}
+}
+</style>
+<style>
+/* プライバシーポリシー（共通・移動サイトと同一文面/同一流儀） */
+.pp-footer{text-align:center;margin:1rem 0 0;}
+.pp-link{background:none;border:0;padding:10px 14px;min-height:44px;color:inherit;opacity:.75;font-size:13px;text-decoration:underline;cursor:pointer;}
+.pp-overlay{position:fixed;inset:0;z-index:10001;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(8,18,30,.55);}
+.pp-overlay.open{display:flex;}
+.pp-dialog{width:100%;max-width:640px;max-height:min(86dvh,760px);display:flex;flex-direction:column;overflow:hidden;background:#fff;border:1px solid #d7dee6;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.25);color:#1c2b3a;text-align:left;}
+.pp-scroll{overflow-y:auto;padding:22px 22px 8px;-webkit-overflow-scrolling:touch;}
+.pp-actions{border-top:1px solid #d7dee6;padding:12px 22px 14px;}
+.pp-btn-row{display:flex;gap:10px;}
+.pp-close-btn{flex:1;min-height:48px;border:0;border-radius:9px;cursor:pointer;background:#16324f;color:#fff;font-size:15px;font-weight:700;}
+.privacy-policy h2{font-size:16px;margin:0 0 6px;}
+.privacy-policy p{font-size:13px;color:#42566b;line-height:1.8;}
+</style>
+</head>
+<body>
+
+<div class="sitebar"><div class="sb-in"><a class="sb-name" href="index.html">歴史系ツール集</a><span class="sb-tool">宗教家名簿</span></div></div>
+
+<header>
+<div class="kicker">Historical Figures</div>
+<h1>宗教家名簿</h1>
+<p class="sub">祈りと歩みを、静かに辿る。</p>
+<div class="rule"></div>
+</header>
+
+<section class="intro">
+<p>歴史上の人物は、誰も一人では存在しません。宗教家ならなおのことです。教えは師から弟子へ人づてに受け継がれ、宗派は分かれ、布教は土地から土地へ人の足で運ばれてきました。このサイトは、歴史上の人物を一人ずつ紹介する名鑑ではなく、人物同士の繋がりを辿るための名鑑です。宗教家の名簿であるこのページでは、同じ宗教・宗派に連なる人々の広がりと、家族や同時代の人々との繋がりをたどることを大切にしています。</p>
+<p>収録しているのは、世界各地の宗教家4,935人です。気になる名前や宗教から入り、年代スライダーで「その年に生きていたのは誰か」を確かめ、出生地の地図で祈りの生まれた土地を思い浮かべる。繋がりが見えたとき、歴史は点の集まりから一本の流れに変わります。気になる人物から出発して、繋がりをたどる散歩を楽しんでください。</p>
+</section>
+
+<div class="controls">
+<div class="ctl ctl-search">
+<label for="q">検索</label>
+<input type="search" id="q" placeholder="名前・宗教・宗派で探す" autocomplete="off">
+</div>
+<div class="ctl ctl-era">
+<div class="era-head">
+<label for="era" style="margin:0;">年代</label>
+<span class="era-year"><span id="eraYear">すべての時代</span></span>
+</div>
+<input type="range" id="era" min="-600" max="2026" step="1" value="2026">
+<button type="button" class="era-all on" id="eraAll">すべての時代</button>
+</div>
+</div>
+
+<p class="count" id="count"></p>
+
+<section class="map-sec" aria-label="出生地の地図">
+<div class="map-frame"><div id="map"></div></div>
+<p class="map-note">ピンは出生地です（座標が判明している人のみ）。ピンを押すと、その人の詳細が開きます。</p>
+</section>
+
+<main>
+<div class="grid" id="grid"></div>
+<p class="empty" id="empty">該当する宗教家はいません</p>
+<div class="more-wrap" id="moreWrap"><button type="button" class="more-btn" id="moreBtn">さらに表示</button></div>
+</main>
+
+<!-- 詳細パネル -->
+<div class="overlay" id="overlay" role="dialog" aria-modal="true">
+<div class="detail" id="detail"></div>
+</div>
+
+<section class="reading">
+<h2>この名簿が集めたもの</h2>
+<p>収録しているのは、世界各地の宗教家4,935人である。宗教の欄に現れる呼称は324種類にのぼり、カトリック教会（887人）、仏教（401人）が多く、カトリシズム、浄土真宗、聖公会、真言宗などもそれぞれ100人を超え、天台宗も100人にのぼる。ただしこれは「信者数の多い順」でも「歴史上の重要度の順」でもない。公開資料に宗教が明記され、日本語版Wikipediaなどに記事がある人物が集まりやすいという、収集方法による偏りを含んだ数字として読んでほしい。一人ひとりには、名前と英語名、生没年、出生地、宗教、階位（情報がある人で1,257人）、肖像画像（2,426人）などを用意し、全員に日本語版Wikipediaへのリンクを付けている。宗派については3,630人に情報があり、呼称は417種類にのぼる。</p>
+<p>宗教の歩みは、教えを受け継ぐ人の連なりでもある。開祖や高僧だけを並べるのではなく、時代も地域も異なる担い手を幅広く集めたのは、その連なりを眺められるようにするためである。同じ宗教・宗派の名前で検索して絞り込むと、その伝統に連なる人々が時代の流れの中に並ぶ。師から弟子へ、という受け継ぎの形は資料に直接書かれていないことも多いが、同じ宗派の人々を年代順にたどることで、教えがどの土地で、どの時代に厚みを増したのかが見えてくる。</p>
+<h2>データの出典と、「不明」をそのまま出す方針</h2>
+<p>この名簿のデータは、Wikidataや日本語版Wikipediaをはじめとする公開資料に基づいて収集・整理したものである。分からない項目は推測で埋めず、「不明」と正直に表示するのがこのサイト全体の方針だ。宗教家の場合は特に、もっとも、項目によって確認できる人数には大きな差がある。宗派は3,630人、布教先エリアは903人、パトロンは301人、宗教家の友人は431人に情報がある一方で、残りの人については公開資料から確認できず、その場合は「不明」と表示している。項目があるのに「不明」と出るのは、欠陥ではなく、資料で確認できなかったことを正直に示すための表示である。</p>
+<p>古代の宗教的人物については、生没年そのものが伝承に基づく場合がある。たとえばデータの始まりに置かれた人物の年代は、信仰や伝承の中で伝えられてきた年であり、近現代の人物の生年月日のような確かさとは性質が異なる。表示が「何世紀頃」という粗さになっている人物では、その精度をそのまま受け取ってほしい。没年データが無い人については、1900年以降に生まれた人を「存命」とみなし、それ以前の人は没年不詳として扱っている点も、表示の前提として知っておいてほしい。</p>
+<h2>ページの使い方</h2>
+<p>使い方は三つある。第一は検索で、名前のほか宗教・宗派でも探せる。第二は年代スライダーで、任意の年を選ぶと、その年に生きていた宗教家だけが表示される。同時代に別の宗教が別の土地で広がっていた様子を、同じ時間軸で見比べるのに向いている。第三は出生地の地図で、ピンは座標が判明している3,143人分の出生地であり、一覧の絞り込みに連動する。ピンを選ぶとその人の詳細が開く。一覧は一度に全員を表示せず、120人ずつ段階表示する仕組みで、「さらに表示」から続きを読み込める。</p>
+<p>詳細画面では、宗教や階位に加えて、配偶者・父母・兄弟姉妹・子といった家族関係も確認できる。家族の情報がある人は1,351人で、相手がこの名簿に載っている場合はその人の詳細へ、統治者名簿に載っている場合は統治者ページへリンクしている。統治者でもある宗教家は67人おり、詳細画面から統治者名簿でも見ることができる。信仰の担い手が、時に権力と深く関わりながら活動したことが、こうしたリンクからも見えてくる。また、パトロンや宗教家の友人の情報がある人では、相手が本名簿や統治者名簿に載っている場合に、それぞれの詳細へリンクしている。</p>
+<h2>読みどころ――宗教・宗派の広がりを見る</h2>
+<p>読みどころは、宗教・宗派の「広がり」を地図と年代で追うことにある。出生地の地図を宗教で絞って眺めると、教えが生まれた土地と、担い手が多く現れる土地との関係が見えてくる。年代スライダーを進めれば、ある宗教の担い手が特定の世紀に集中して現れることや、逆に長く途切れず続いてきたことが感じられるはずである。仏教ひとつを取っても、日本の宗派名が多く現れるのは、日本語の公開資料に基づく収集だからこそ見えるこの名簿の個性でもある。</p>
+<p>もう一つの読みどころは、階位である。階位の情報がある人では、教団の中でどのような立場にあったのかが分かり、同じ宗教でも開祖、布教者、学僧、聖職者といった役割の違いが見えてくる。「宗教家」という一括りの言葉の内側にある多様な生き方を、一人ひとりの項目から読み取ってほしい。</p>
+<h2>データの限界と注意</h2>
+<p>最後に限界を挙げておく。この名簿は公開資料に基づくため、資料の多い宗教・地域・言語圏に偏りがある。信者数の世界的分布と、この名簿の人数分布は一致しない。また神話や伝承の中の人物と、歴史上の実在人物とが、同じ名簿の形式で並んでいる場合がある。気になる人物については、詳細画面からWikipediaの記事へ進み、出典を確認しながら読むことをおすすめする。この名簿は、祈りの歴史を暗記するための一覧ではなく、一人の宗教家から繋がりをたどる散歩の入口として作られている。</p>
+</section>
+
+<section class="ai-summary"><h2>このツールについて</h2><p>世界各地の宗教家4,935人を収録した名簿です。名前・宗教・宗派で検索でき、年代スライダーで「その年に生きていた宗教家」を絞り込めます。地図のピンは各人の出生地（座標が判明している人のみ）で、一覧と同じ絞り込みに連動します。詳細では生没年・出生地・宗教・宗派・階位・布教先エリア・家族・死因などを表示し、分からない項目は推測で埋めず「不明」と表示します。家族が本名簿や統治者名簿に載っている場合は、それぞれの詳細へリンクします。処理はブラウザ内で完結し、入力データを外部送信しません。</p></section>
+
+<footer>
+<p>当サイトの内容の無断転載・埋め込みリンク・プログラムの複製転用を禁止します（リンクは自由です）。© 2026 andy（わんこ堂）</p>
+<p>制作：andy（わんこ堂）× 熊八 🐾（Muse Spark）</p>
+  <p class="pp-footer"><button type="button" class="pp-link" data-pp-open>プライバシーポリシー</button></p>
+</footer>
+
+<script src="leaflet.js"></script>
+<script src="religion-data.js"></script>
+<script>
+"use strict";
+/* ============================================================
+宗教家名簿 本実装
+データは religion-data.js の FIGURES（build_religion.py が
+religion-raw.json から生成。全件・間引きなし）。
+宗派・布教先エリア・パトロン・友人はデータ側に項目が無いため
+null / 空配列で届き、ここでは「不明」と表示する（推測で埋めない）。
+家族は {n, link} 形式：link="religion" は本名簿内への #人物名 リンク、
+link="ruler" は rulers.html#人物名 リンク。
+============================================================ */
+const $ = s => document.querySelector(s);
+function esc(s){
+return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function yearOf(d){
+if(!d) return null;
+const s = d.date;
+if(s.charAt(0) === "-") return -parseInt(s.slice(1).split("-")[0],10);
+return parseInt(s.split("-")[0],10);
+}
+function fmtYear(y){ return y < 0? "紀元前" + Math.abs(y) + "年": y + "年";}
+function fmtDate(d){
+if(!d) return null;
+const y = yearOf(d);
+if(d.precision === "century"){
+if(y < 0) return "紀元前" + (Math.floor((Math.abs(y) - 1) / 100) + 1) + "世紀頃";
+return (Math.floor((y - 1) / 100) + 1) + "世紀頃";
+}
+if(d.precision === "decade") return fmtYear(y) + "頃";
+if(d.precision === "year") return fmtYear(y) + "頃";
+const parts = d.date.replace(/^-/,"").split("-").map(Number);
+const ys = y < 0? "紀元前" + Math.abs(y) + "年": y + "年";
+if(d.precision === "month") return ys + parts[1] + "月頃";
+return ys + parts[1] + "月" + parts[2] + "日";
+}
+/* 死亡日データが無い人の扱い：1900年以降生まれは「存命」とみなし、
+それ以前は「不明」（没年不詳）とする */
+function isLiving(a){
+if(a.death) return false;
+const by = yearOf(a.birth);
+return by !== null && by >= 1900;
+}
+function frameStyle(i){
+const tones = [[42,14,88],[46,12,86],[40,10,90],[44,16,84],[38,12,87],[48,10,89],[42,18,85],[45,13,88]];
+const t = tones[i % tones.length];
+return "background:linear-gradient(165deg,"
++ "hsl(" + t[0] + "," + t[1] + "%," + t[2] + "%),"
++ "hsl(" + t[0] + "," + t[1] + "%," + (t[2]-6) + "%));";
+}
+function lifeLabel(a){
+const b = yearOf(a.birth), d = yearOf(a.death);
+const fb = b === null? "生年不明": (b < 0? "紀元前" + Math.abs(b): b);
+const fd = d === null? (isLiving(a)? "存命": ""): (d < 0? "紀元前" + Math.abs(d): d);
+return fd? fb + " – " + fd: fb;
+}
+
+/* ---------- 絞り込みと一覧描画（120件ずつの段階表示） ---------- */
+const BATCH = 120;
+const state = { q:"", year:null };
+let currentList = [];
+let shownCount = 0;
+function filtered(){
+return FIGURES.filter(a => {
+if(state.year !== null){
+const b = yearOf(a.birth), d = yearOf(a.death);
+if(b === null || b > state.year) return false;
+if(d !== null && d < state.year) return false;
+/* 没年不明の人は享年120を上限として、それより後の時代には出さない */
+if(d === null && !isLiving(a) && b < state.year - 120) return false;
+}
+if(state.q){
+const hay = [a.name, a.nameEn || "", a.religion || "", a.sect || "", a.rank || "", a.birthPlace || ""].join(" ").toLowerCase();
+if(!hay.includes(state.q.toLowerCase())) return false;
+}
+return true;
+});
+}
+function cardHTML(a, i){
+return '<div class="frame" style="' + (a.img? "": frameStyle(i)) + '">'
++ (a.img
+? '<img src="' + esc(a.img) + '" alt="' + esc(a.name) + '" loading="lazy" onerror="this.remove()">'
+: '<div class="p-initial">' + esc(a.name.charAt(0)) + '</div><div class="p-religion">' + esc(a.religion || "") + '</div>')
++ '</div>'
++ '<div class="meta">'
++ '<div class="a-name">' + esc(a.name) + '</div>'
++ '<div class="a-en">' + esc(a.nameEn || "") + '</div>'
++ '<div class="a-years">' + esc(lifeLabel(a)) + '</div>'
++ '<div class="a-sect">' + esc(a.sect || a.religion || "") + '</div>'
++ '</div>';
+}
+function renderBatch(){
+const grid = $("#grid");
+const frag = document.createDocumentFragment();
+const upto = Math.min(shownCount + BATCH, currentList.length);
+for(let i = shownCount; i < upto; i++){
+const a = currentList[i];
+const card = document.createElement("button");
+card.type = "button";
+card.className = "card";
+card.style.animationDelay = Math.min((i % BATCH) * 0.03, 1.2) + "s";
+card.innerHTML = cardHTML(a, i);
+card.addEventListener("click", () => openDetail(a, true));
+frag.appendChild(card);
+}
+shownCount = upto;
+grid.appendChild(frag);
+$("#moreWrap").style.display = shownCount < currentList.length? "block": "none";
+}
+function renderList(){
+currentList = filtered();
+shownCount = 0;
+$("#grid").innerHTML = "";
+renderBatch();
+$("#empty").style.display = currentList.length? "none": "block";
+$("#count").textContent = currentList.length + " 名";
+renderPins();
+}
+$("#moreBtn").addEventListener("click", renderBatch);
+
+/* ---------- 地図（Leaflet + 同梱 land.geojson、外部タイルなし） ---------- */
+let map = null, pinLayer = null, landLayer = null;
+function initMap(){
+map = L.map("map", { worldCopyJump:true, minZoom:2, maxZoom:9, zoomSnap:0.5, renderer:L.canvas() });
+map.fitBounds([[-58,-180],[84,180]]);
+pinLayer = L.layerGroup().addTo(map);
+fetch("land.geojson").then(res => res.json()).then(j => {
+landLayer = L.geoJSON(j, { style:{ fillColor:"#ded2b4", fillOpacity:1, color:"rgba(154,125,67,.4)", weight:0.6 } }).addTo(map);
+landLayer.bringToBack();
+renderPins();
+}).catch(() => {});
+}
+function renderPins(){
+if(!map || !pinLayer) return;
+pinLayer.clearLayers();
+currentList.forEach(a => {
+if(a.birthLat === null || a.birthLat === undefined) return;
+const mk = L.circleMarker([a.birthLat, a.birthLng], {
+radius:5, color:"#7c6530", weight:1, fillColor:"#9a7d43", fillOpacity:0.75
+});
+mk.bindTooltip(esc(a.name), { direction:"top", offset:[0,-6] });
+mk.on("click", () => openDetail(a, true));
+mk.addTo(pinLayer);
+});
+}
+
+/* ---------- 詳細描画 ---------- */
+function val(v){
+return (v === null || v === undefined || v === "" || (Array.isArray(v) && v.length === 0))
+? '<span class="unknown">不明</span>': v;
+}
+function personList(arr){
+if(!Array.isArray(arr) || !arr.length) return null;
+return arr.map(p => {
+if(p.link === "religion")
+return '<a class="person-link" href="#' + encodeURIComponent(p.n) + '">' + esc(p.n) + '</a>';
+if(p.link === "ruler")
+return '<a class="person-link" href="rulers.html#' + encodeURIComponent(p.n) + '">' + esc(p.n) + '</a><span class="tag-ruler">統治者</span>';
+return esc(p.n);
+}).join("、");
+}
+function row(label, content){ return '<div class="row"><dt>' + label + '</dt><dd>' + val(content) + '</dd></div>';}
+
+let currentDetail = null;
+function openDetail(a, setHash){
+currentDetail = a;
+const living = isLiving(a);
+const rows = [
+row("名前", esc(a.name) + (a.nameEn? "（" + esc(a.nameEn) + "）": "")),
+row("生年月日", fmtDate(a.birth)),
+row("出生地", a.birthPlace? esc(a.birthPlace): null),
+row("宗教", a.religion? esc(a.religion): null),
+row("宗派", a.sect? esc(a.sect): null),
+row("階位", a.rank? esc(a.rank): null),
+row("布教先エリア", a.missionArea? esc(a.missionArea): null),
+row("死亡日", living? "存命": fmtDate(a.death)),
+row("享年", living? "存命": (a.age !== null && a.age !== undefined? a.age + "歳": null)),
+row("死因", living? "存命": (a.cause? esc(a.cause): null)),
+row("配偶者", personList(a.spouses)),
+row("父", personList(a.father)),
+row("母", personList(a.mother)),
+row("兄弟姉妹", personList(a.siblings)),
+row("子", personList(a.children)),
+row("パトロン", personList(a.patrons)),
+row("宗教家の友人", personList(a.friends))
+].join("");
+
+$("#detail").innerHTML =
+'<button type="button" class="close-btn" id="closeBtn" aria-label="閉じる">×</button>'
++ '<div class="d-head">'
++ (a.img
+? '<img class="d-portrait" src="' + esc(a.img) + '" alt="' + esc(a.name) + '" onerror="this.outerHTML=\'<div class=&quot;d-portrait&quot;>' + esc(a.name.charAt(0)) + '</div>\'">'
+: '<div class="d-portrait">' + esc(a.name.charAt(0)) + '</div>')
++ '<div class="d-name">' + esc(a.name) + '</div>'
++ '<div class="d-en">' + esc(a.nameEn || "") + '</div>'
++ '<div class="d-life">' + (fmtDate(a.birth) || "生年不明") + " – " + (living? "存命": (fmtDate(a.death) || "没年不明")) + '</div>'
++ '</div>'
++ '<div class="d-rule"></div>'
++ '<dl class="profile">' + rows + '</dl>'
++ '<div class="d-links">'
++ (a.isRuler? '<a href="rulers.html#' + encodeURIComponent(a.name) + '">統治者名簿でも見る</a>': "")
++ (a.wiki? '<a href="' + esc(a.wiki) + '" target="_blank" rel="noopener">Wikipedia で読む</a>': "")
++ '</div>';
+$("#overlay").classList.add("open");
+document.body.style.overflow = "hidden";
+$("#overlay").scrollTop = 0;
+$("#closeBtn").addEventListener("click", closeDetail);
+if(setHash){
+history.replaceState(null, "", "#" + encodeURIComponent(a.name));
+}
+}
+function closeDetail(){
+$("#overlay").classList.remove("open");
+document.body.style.overflow = "";
+currentDetail = null;
+history.replaceState(null, "", location.pathname + location.search);
+}
+document.addEventListener("keydown", e => { if(e.key === "Escape") closeDetail(); });
+$("#overlay").addEventListener("click", e => { if(e.target.id === "overlay") closeDetail(); });
+
+/* #人物名 ハッシュで詳細を直接開く（名簿内リンク・外部からの直リンク用）。
+同名の人物が複数いる場合は、生年の早い方（配列の先頭）を開く。 */
+function openFromHash(){
+const h = location.hash.replace(/^#/, "");
+if(!h) return;
+let name;
+try{ name = decodeURIComponent(h); }catch(e){ return; }
+const a = FIGURES.find(f => f.name === name);
+if(a && a !== currentDetail) openDetail(a, false);
+}
+window.addEventListener("hashchange", openFromHash);
+
+/* ---------- 操作 ---------- */
+$("#q").addEventListener("input", e => { state.q = e.target.value.trim(); renderList(); });
+const era = $("#era"), eraYear = $("#eraYear"), eraAll = $("#eraAll");
+/* スライダーの範囲はデータの生年レンジに合わせる */
+(function(){
+let minY = 2026;
+FIGURES.forEach(a => { const y = yearOf(a.birth); if(y !== null && y < minY) minY = y; });
+era.min = String(minY);
+era.max = "2026";
+era.value = "2026";
+})();
+era.addEventListener("input", () => {
+state.year = parseInt(era.value, 10);
+eraYear.innerHTML = fmtYear(state.year) + "<small>この年に生きていた人</small>";
+eraAll.classList.remove("on");
+renderList();
+});
+eraAll.addEventListener("click", () => {
+state.year = null;
+eraYear.textContent = "すべての時代";
+eraAll.classList.add("on");
+renderList();
+});
+
+initMap();
+renderList();
+openFromHash();
+</script>
+<div class="pp-overlay" data-pp-overlay>
+  <div class="pp-dialog privacy-policy" role="dialog" aria-modal="true" aria-labelledby="ppTitle">
+    <div class="pp-scroll">
+      <h2 id="ppTitle">プライバシーポリシー</h2>
+      <p>当サイト「歴史系ツール集」は、個人を特定する情報を収集しません。</p>
+      <p><strong>入力データについて：</strong>ツールに入力した内容は、お使いの端末のブラウザの中だけで処理され、サーバーへ送信されることはありません。ツールによっては、入力内容や設定を、お使いのブラウザの localStorage にのみ保存する場合があります。</p>
+      <p><strong>広告について：</strong>当サイトは、第三者配信の広告サービス（Google AdSense）を利用する場合があります。広告配信事業者は、ユーザーの興味に応じた広告を表示するため Cookie を使用することがあります。パーソナライズ広告は、Google の「広告設定」から無効にできます。</p>
+      <p><strong>アクセス解析について：</strong>当サイトは、アクセス解析ツール「Google アナリティクス」を使用しています。Google アナリティクスは Cookie を使用してサイトの利用状況を収集しますが、個人を特定する情報は含まれません。</p>
+      <p><strong>免責事項：</strong>計算結果や占い結果は目安・娯楽であり、実際の料金や判断は各事業者・専門家の公式情報をご確認ください。当サイトの利用によって生じた損害について、運営者は責任を負いません。</p>
+      <p><strong>お問い合わせ：</strong>当サイトは個人運営のツールサイトです。</p>
+      <p>制定日：2026年11月15日</p>
+    </div>
+    <div class="pp-actions">
+      <div class="pp-btn-row">
+        <button type="button" class="pp-close-btn" data-pp-close>閉じる</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="policy-snippet.js"></script>
+</body>
+</html>

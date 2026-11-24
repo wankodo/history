@@ -80,6 +80,8 @@ label.flabel{display:block;font-size:12px;color:#bfb498;letter-spacing:.14em;mar
 .detail .drow{font-size:14px;margin-top:3px}
 .detail .drow b{color:var(--gold);font-weight:600;letter-spacing:.05em}
 .detail .dnote{font-size:13.5px;margin:8px 0 0;color:#d8d0ba}
+.detail .rel-link{background:none;border:0;padding:0;font:inherit;color:var(--gold-bright);text-decoration:underline dotted;text-underline-offset:3px;cursor:pointer;text-align:left}
+.detail .rel-link:hover{color:#f0dda6;text-decoration:underline}
 @media(max-width:520px){.detail{flex-direction:column;align-items:center;text-align:left}.detail .dinfo{align-self:stretch}}
 .yr-row input[type="search"]{padding:10px;border:1px solid rgba(201,164,92,.35);border-radius:6px;font-size:15px;background:#0a1524;color:var(--ink)}
 .yr-row input[type="search"]::placeholder{color:#7d7663}
@@ -91,6 +93,11 @@ label.flabel{display:block;font-size:12px;color:#bfb498;letter-spacing:.14em;mar
 .ruler-item.sel{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold),0 6px 18px rgba(0,0,0,.4)}
 .ruler-item .ri-name{font-family:var(--serif);font-weight:600;font-size:15.5px;letter-spacing:.02em}
 .ruler-item .ri-sub{font-size:12.5px;color:var(--mut)}
+.reading-card h3{margin:20px 0 8px;font-family:var(--serif);font-weight:600;font-size:15.5px;letter-spacing:.08em;color:#f0e7cf}
+.reading-card p{margin:0 0 10px;font-size:14px;line-height:1.9;color:var(--ink)}
+.reading-card p:last-child{margin-bottom:0}
+.intro-card p{margin:0;font-size:14px;line-height:1.9;color:var(--ink)}
+.intro-card p+p{margin-top:10px}
 footer{margin:26px 0 40px}
 footer .card{font-size:12.5px;color:var(--mut)}
 .credit{text-align:center;color:#8d8570;font-size:12px;margin:10px 0 30px;letter-spacing:.03em}
@@ -159,6 +166,20 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-QQ4435VBMK');
 </script>
+<style>
+/* プライバシーポリシー（共通・移動サイトと同一文面/同一流儀） */
+.pp-footer{text-align:center;margin:1rem 0 0;}
+.pp-link{background:none;border:0;padding:10px 14px;min-height:44px;color:inherit;opacity:.75;font-size:13px;text-decoration:underline;cursor:pointer;}
+.pp-overlay{position:fixed;inset:0;z-index:10001;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(8,18,30,.55);}
+.pp-overlay.open{display:flex;}
+.pp-dialog{width:100%;max-width:640px;max-height:min(86dvh,760px);display:flex;flex-direction:column;overflow:hidden;background:#fff;border:1px solid #d7dee6;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.25);color:#1c2b3a;text-align:left;}
+.pp-scroll{overflow-y:auto;padding:22px 22px 8px;-webkit-overflow-scrolling:touch;}
+.pp-actions{border-top:1px solid #d7dee6;padding:12px 22px 14px;}
+.pp-btn-row{display:flex;gap:10px;}
+.pp-close-btn{flex:1;min-height:48px;border:0;border-radius:9px;cursor:pointer;background:#16324f;color:#fff;font-size:15px;font-weight:700;}
+.privacy-policy h2{font-size:16px;margin:0 0 6px;}
+.privacy-policy p{font-size:13px;color:#42566b;line-height:1.8;}
+</style>
 </head>
 <body>
 <div class="sitebar"><div class="sb-in"><a class="sb-name" href="index.html">歴史系ツール集</a><span class="sb-tool">世界の歴代の統治者</span><div class="rulers-color-switch" role="group" aria-label="配色切替"><button type="button" data-rulers-color="kon" aria-pressed="true">紺金</button><button type="button" data-rulers-color="aka" aria-pressed="false">赤金</button></div></div></div>
@@ -171,6 +192,14 @@ gtag('config', 'G-QQ4435VBMK');
 </header>
 
 <div class="wrap">
+
+  <div class="card intro-card">
+    <h2>この名鑑について</h2>
+    <p>歴史の年表は、戦争や条約といった出来事の列として読まれることが多い。けれども、どの出来事の背後にも、その時代に国を治めていた人物がいる。このページは、紀元前3100年頃の古代エジプトのファラオ、ナルメルから現代まで、世界各地の皇帝・王・スルタン・大統領・首相・総書記など8,961人を収録し、「その年、世界を治めていたのは誰か」を世界地図の上で確かめられるようにした名鑑である。</p>
+    <p>歴史上の人物は、誰も一人では存在しません。統治者ならなおのことです。王位は親から子へ継がれ、婚姻は国と国を結び、家系の広がりがそのまま勢力の広がりになりました。その繋がりが見えたとき、歴史は点の集まりから一本の流れに変わります。このサイトは、歴史上の人物を一人ずつ紹介する名鑑ではなく、人物同士の繋がりを辿るための名鑑です。このページでは、家系や配偶者・兄弟姉妹の名前からも検索でき、在位の重なりを通じて同時代の統治者同士の関係をたどれます。</p>
+    <p>年代を選ぶと、その年に在位・在職していた統治者が顔写真つきのピンで地図に並び、当時のおおよその国境も重なって表示される。点の集まりとして眺めていた世界史が、「同時代に、別の大陸で、別の王が治めていた」という実感に変わるはずだ。気になる人物から出発して、繋がりをたどる散歩を楽しんでください。まずは下の年代と地域の操作から、気になる時代へ移動してみてほしい。</p>
+    <p>名鑑の読み方をまとめた解説記事「<a href="guide-rulers.html">統治者名鑑の読み方・見どころ</a>」も用意しています。名前・年代・地図の三つの入り口と、死因・最期や親族を辿る楽しみ方を案内しています。</p>
+  </div>
 
   <div class="card">
     <h2>年代と地域</h2>
@@ -225,6 +254,22 @@ gtag('config', 'G-QQ4435VBMK');
     <p class="note" id="listEmpty" style="display:none">この年に在位中の統治者は、収録データにありません。</p>
   </div>
 
+  <section class="card reading-card">
+    <h2>この名鑑が集めたもの</h2>
+    <p>収録対象は、王や皇帝だけではない。ファラオやスルタンのような古代・中世の君主から、近現代の大統領・首相・総書記まで、「ある時点で国やそれに準ずる政治共同体を治めていた人物」を幅広く集めている。対象となる国や王朝などのまとまりは734種類にのぼり、なかでも日本の統治者が1,358人と最も多い。これは天皇をはじめとする歴代の統治者を細かく収録しているためで、次いでワラキア公国やモルダヴィア公国、ローマ帝国、ビザンツ帝国などが続く。在位の始まりは紀元前3100年頃までさかのぼり、現代の在職者までが一つのデータに連なっている。</p>
+    <p>一人ひとりについて用意しているのは、名前と英語名、肩書き、国・王朝、在位・在職期間を基本に、資料で確認できた場合の家系、生没年と出身地・没地、宗教、家族関係、死因や最期などである。肖像画像がある人は3,863人、Wikipediaへのリンクがある人は8,447人で、画像がない人は名前の頭文字をピンに表示している。情報の量には人物によって大きな差があるが、その差は資料の残り方の差でもある。古代の王では在位期間すら諸説ある一方、近現代の指導者では生年月日まで正確に分かる、といった違いを、そのまま受け取ってほしい。</p>
+    <h3>データの出典と、「不明」をそのまま出す方針</h3>
+    <p>データはWikidataや日本語版Wikipediaをはじめとする公開資料に基づいて収集・整理している。肖像画像はWikipediaおよびWikimedia Commonsのものを使用し、各画像のライセンスは詳細画面の出典リンクから確認できる。国境はHistorical Basemapsの歴史地図データに基づき、選んだ年に最も近い時点のスナップショットを表示している。分からない項目は推測で埋めず、「不明」と正直に表示するのがこのサイト全体の方針である。たとえば古代の統治者では、死因について「死因は不明（資料に確かな記録なし）」と明記している場合がある。分からないことを分からないと書くのは、名鑑としての誠実さだと考えている。</p>
+    <h3>ページの使い方</h3>
+    <p>基本の操作は年代選びである。プリセットから選ぶか、任意の年を入力すると、その年に在位・在職していた統治者が地図と一覧に表示される。紀元前の年はマイナスで入力する。地域ボタンを使うと、同じ地図のまま東アジア・ヨーロッパ・中東・アフリカ・北アメリカ・南アメリカ・オセアニアへ拡大でき、地図自体も自由に拡大・縮小・移動できる。ピンを選ぶと詳細パネルにその人の情報が表示される。</p>
+    <p>もう一つの入り口が検索である。統治者の名前や英語名だけでなく、国や王朝の名前、家系、宗教、生年月日や死亡日の月日、配偶者や兄弟姉妹の名前からも、年代を問わず全データから探せる。検索結果を選ぶと、その人の在位が始まった時代へ自動で移動し、詳細が開く。たとえば一つの家系の名前で検索すると、時代を超えて同じ家系から出た統治者を並べて見ることができる。</p>
+    <h3>読みどころ――在位と国境をどう見るか</h3>
+    <p>このページの一番の読みどころは「同時代性」である。年代を固定して地図を眺めると、日本で戦国大名が割拠していた頃、ヨーロッパや中東、アメリカ大陸では誰が治めていたのかが一目で分かる。教科書では地域ごとに別々に学ぶ歴史が、同じ時間の上に並ぶことで、交易や遠征、宗教の広がりといった地域を越えたつながりを想像しやすくなる。在位期間の長さにも注目してほしい。数十年治めた安定した君主と、短期間で交代していく時代とでは、地図の顔ぶれの変わり方がまったく違う。</p>
+    <p>国境のスナップショットは、その理解を助けるためのものである。国境データは用意された時点ごとの区切りでしか存在しないため、選んだ年そのものの国境ではなく、最も近い時点の国境を表示し、その旨を地図の下に注記している。大帝国の拡大や分裂、植民地の広がりといった変化は、年代を少しずつ進めながら国境の形を追うと実感しやすい。ただし国境は「おおよそ」の再現であり、境界の細部や帰属には諸説がある地域も多い。形の変化という大まかな流れをつかむための道具として使ってほしい。</p>
+    <h3>データの限界と注意</h3>
+    <p>最後に限界を挙げておく。在位期間や生没年には諸説がある人物が多く、特に古代・中世では年代自体が研究者によって異なる場合がある。国境データも概略であり、当時の国境を正確に再現したものではないことは、フッターにも明記しているとおりである。また収録は公開資料に基づくため、資料の多い地域や時代に偏りがあり、すべての統治者を網羅しているわけではない。気になる人物については詳細画面からWikipediaの記事へ進み、出典を確認しながら読むことをおすすめする。この名鑑は、世界史を一望するための地図であり、一人ひとりについて調べ始めるための入口である。</p>
+  </section>
+
   <section class="ai-summary" style="max-width:760px;margin:22px auto;padding:0 4px;font-size:13px;line-height:1.8;opacity:.78"><h2 style="font-size:14px;margin:0 0 6px">このツールについて</h2><p style="margin:0">紀元前3100年ごろから現代まで、世界各地の皇帝・王・ファラオ・スルタン・大統領・首相・総書記などを収録。年代を選ぶと、その年に在位・在職していた統治者を世界地図の上に顔写真つきで表示し、あわせて当時の国境（近くの年のスナップショット）を色分けで重ねます。統治者の名前・英語名、国や王朝の名前、家系の名前からは、年代を問わず全データから検索もできます。詳細には家系（ハプスブルク家・皇室など、資料で確認できた人）も表示します。地図は自由に拡大・縮小・移動でき、地域ボタンで東アジア・ヨーロッパなどへ一気に移動できます。処理はブラウザ内で完結し、入力データを外部送信しません。</p></section>
 
   <footer>
@@ -234,7 +279,8 @@ gtag('config', 'G-QQ4435VBMK');
     </div>
     <p class="credit">著作権は andy に帰属します。無断転載を禁止します（リンクは自由です）。埋め込みリンクは動作を保証できないため禁止です。プログラムの複製・転用も禁止します。｜© 2026 andy（わんこ堂）</p>
     <p class="credit">制作：andy（わんこ堂）× 熊八 🐾（Muse Spark）</p>
-  </footer>
+    <p class="pp-footer"><button type="button" class="pp-link" data-pp-open>プライバシーポリシー</button></p>
+</footer>
 
 </div>
 
@@ -381,6 +427,99 @@ function esc(s){
     return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
   });
 }
+/* ===== 詳細パネルの親族リンク（名簿内の親族をリンク化し、クリックでその人物へジャンプ） =====
+   家系図ページ genealogy.html の relList（親族名ボタン→focusPerson でジャンプ）と同じ流儀で、
+   ここでは既存の jumpToRuler（検索ジャンプと同じ仕組み）へ渡す。
+   照合は保守的に行う（誤リンクは未リンクより悪い）：
+   1. 親族データ・名簿のどちらにも QID は無いため、QID照合はできない。名前で照合する。
+   2. 親族名の末尾の括弧書き（王妃・息子・後継者・先代天皇など）を外した本体で名簿を引く。
+      本体で見つからない場合は、括弧内がそのまま名簿名になっている場合（例：嘉仁親王（大正天皇））だけ括弧内でも引く。
+   3. 同名の登録が複数あっても、生没年が一致するものは同一人物の重複登録として1人にまとめる。
+   4. それでも複数人いる場合は、括弧内の国・王朝名が一致する候補が1人だけの時か、
+      本人との年代の近さ（区間の重なり±60年）で1人に絞れる時だけリンクにする。絞れなければリンクにしない。
+   5. 候補に生没年が揃っている場合は時代の整合も検査し、本人の年代と60年以上ずれる同名異人はリンクにしない。
+      （生没年の片方しか無い古代・伝説上の人物は判定不能として通す） */
+var RULER_NAME_INDEX = {};
+RULERS.forEach(function(r, i){ (RULER_NAME_INDEX[r.name] = RULER_NAME_INDEX[r.name] || []).push(i); });
+function relYearOf(s){
+  if (!s) return null;
+  var m = /^(-?\d+)/.exec(String(s).replace(/（諸説あり）/g, ""));
+  return m ? parseInt(m[1], 10) : null;
+}
+function relInterval(r){
+  var b = relYearOf(r.birth), d = relYearOf(r.death);
+  return [b != null ? b : r.start, d != null ? d : r.end];
+}
+function relDateInterval(r){
+  var b = relYearOf(r.birth), d = relYearOf(r.death);
+  if (b == null && d == null) return null;
+  return [b != null ? b : d, d != null ? d : b];
+}
+function parseRelSegment(seg){
+  var s = String(seg).trim(), parens = [], m;
+  while ((m = /[（\(]([^（）()]*)[）\)]\s*$/.exec(s))){ parens.unshift(m[1].trim()); s = s.slice(0, m.index).trim(); }
+  return { core: s, parens: parens };
+}
+function relSane(owner, cand){
+  if (relYearOf(cand.birth) == null || relYearOf(cand.death) == null) return true;
+  var oi = relDateInterval(owner);
+  if (!oi) return true;
+  var ci = relDateInterval(cand);
+  return ci[0] <= oi[1] + 60 && ci[1] >= oi[0] - 60;
+}
+function resolveRelativeIdx(owner, seg){
+  var p = parseRelSegment(seg);
+  var cand = null;
+  if (p.core && RULER_NAME_INDEX[p.core]) cand = RULER_NAME_INDEX[p.core];
+  if (!cand){
+    for (var pi = 0; pi < p.parens.length; pi++){
+      if (RULER_NAME_INDEX[p.parens[pi]]){ cand = RULER_NAME_INDEX[p.parens[pi]]; break; }
+    }
+  }
+  if (!cand || !cand.length) return -1;
+  var distinct = [], seen = {};
+  cand.forEach(function(i){
+    var r = RULERS[i], key = (r.birth || "") + "|" + (r.death || "");
+    if (r.birth || r.death){
+      if (seen[key]) return;
+      seen[key] = true;
+    }
+    distinct.push(i);
+  });
+  var pick = null;
+  if (distinct.length === 1){ pick = distinct[0]; }
+  else {
+    var hint = distinct.filter(function(i){ return p.parens.indexOf(RULERS[i].polity) >= 0; });
+    if (hint.length === 1){ pick = hint[0]; }
+    else {
+      var oi = relInterval(owner);
+      var near = distinct.filter(function(i){
+        var ci = relInterval(RULERS[i]);
+        return ci[0] <= oi[1] + 60 && ci[1] >= oi[0] - 60;
+      });
+      if (near.length === 1) pick = near[0];
+    }
+  }
+  if (pick == null) return -1;
+  var target = RULERS[pick], tkey = (target.birth || "") + "|" + (target.death || "");
+  if (target.birth || target.death){
+    for (var ci2 = 0; ci2 < cand.length; ci2++){
+      var cr = RULERS[ci2];
+      if (((cr.birth || "") + "|" + (cr.death || "")) === tkey && cr.polity === owner.polity){ pick = ci2; target = cr; break; }
+    }
+  }
+  if (target === owner) return -1;
+  if (!relSane(owner, target)) return -1;
+  return pick;
+}
+function relFieldHTML(owner, value){
+  if (!value) return '不明';
+  return String(value).split("、").map(function(seg){
+    var idx = resolveRelativeIdx(owner, seg);
+    if (idx < 0) return esc(seg);
+    return '<button type="button" class="rel-link" data-rel-idx="' + idx + '">' + esc(seg) + '</button>';
+  }).join("、");
+}
 function selectRuler(r){
   state.selected = r;
   var face = r.img
@@ -398,11 +537,11 @@ function selectRuler(r){
     '<div class="drow"><b>出身地：</b>' + esc(r.birthplace || '不明') + '</div>' +
     '<div class="drow"><b>宗教：</b>' + esc(r.religion || '不明') + '</div>' +
     '<div class="drow"><b>宗教上の名前：</b>' + esc(r.religiousName || '不明') + '</div>' +
-    '<div class="drow"><b>父：</b>' + esc(r.father || '不明') + '</div>' +
-    '<div class="drow"><b>母：</b>' + esc(r.mother || '不明') + '</div>' +
-    '<div class="drow"><b>兄弟姉妹：</b>' + esc(r.siblings || '不明') + '</div>' +
-    '<div class="drow"><b>配偶者：</b>' + esc(r.spouses || '不明') + '</div>' +
-    '<div class="drow"><b>子：</b>' + esc(r.children || '不明') + '</div>' +
+    '<div class="drow"><b>父：</b>' + relFieldHTML(r, r.father) + '</div>' +
+    '<div class="drow"><b>母：</b>' + relFieldHTML(r, r.mother) + '</div>' +
+    '<div class="drow"><b>兄弟姉妹：</b>' + relFieldHTML(r, r.siblings) + '</div>' +
+    '<div class="drow"><b>配偶者：</b>' + relFieldHTML(r, r.spouses) + '</div>' +
+    '<div class="drow"><b>子：</b>' + relFieldHTML(r, r.children) + '</div>' +
     '<div class="drow"><b>死亡日：</b>' + (r.fate === '存命' ? '存命' : (r.death ? esc(fmtBirth(r.death)) : '不明')) + '</div>' +
     '<div class="drow"><b>没地：</b>' + esc(r.deathplace || '不明') + '</div>' +
     '<div class="drow"><b>享年：</b>' + (r.fate === '存命' ? '存命' : (r.age != null ? esc(String(r.age)) + '歳' : '不明')) + '</div>' +
@@ -411,6 +550,9 @@ function selectRuler(r){
     (r.cp ? '<div class="drow"><b>画像：</b>' + (r.ca ? esc(r.ca) + ' ' : '') + (r.cl ? (r.clu ? '<a href="' + esc(r.clu) + '" target="_blank" rel="noopener">' + esc(r.cl) + '</a>' : esc(r.cl)) + ' ' : '') + '／出典：<a href="' + esc(r.cp) + '" target="_blank" rel="noopener">' + (r.cp.indexOf('commons') >= 0 ? 'Wikimedia Commons' : 'Wikipedia') + '</a></div>' : '') +
     (r.note ? '<p class="dnote">' + esc(r.note) + '</p>' : '') +
     '</div></div>';
+  document.querySelectorAll("#detailBody .rel-link").forEach(function(b){
+    b.addEventListener("click", function(){ jumpToRuler(RULERS[parseInt(b.dataset.relIdx, 10)]); });
+  });
   document.querySelectorAll(".ruler-item").forEach(function(it){
     it.classList.toggle("sel", it._ruler === r);
   });
@@ -513,6 +655,23 @@ function jumpToRuler(r){
   if (map) map.flyTo([r.lat, r.lng], Math.max(map.getZoom(), 3), { duration: 0.8 });
   document.getElementById("detailCard").scrollIntoView({ behavior: "smooth", block: "center" });
 }
+/* ===== ハッシュで詳細を直接開く（#人物名。art.html の openFromHash と同じ流儀） =====
+   art.html のパトロンリンク rulers.html#人物名（URLエンコード済み日本語名）の受け口。
+   名前がデータに完全一致する人物がいた時だけ、既存の検索ジャンプ（jumpToRuler）で
+   その人の時代へ移動し、詳細パネル・地図ピン（選択ハイライト）を開く。
+   一致が無い・デコードできないハッシュでは何もしない（通常表示を壊さない）。 */
+function openFromHash(){
+  if (!location.hash || location.hash.length < 2) return;
+  var name = "";
+  try{ name = decodeURIComponent(location.hash.slice(1)); }catch(e){ return; }
+  if (!name) return;
+  var target = null;
+  for (var i = 0; i < RULERS.length; i++){
+    if (RULERS[i].name === name){ target = RULERS[i]; break; }
+  }
+  if (target) jumpToRuler(target);
+}
+window.addEventListener("hashchange", openFromHash);
 var ANDY_EGG = { name: "andy", den: "わんこ堂", label: "andy（わんこ堂）", img: "andy-portrait.jpg", lat: 35.6762, lng: 139.6503, sub: "このページ（2026/11/24〜）｜サイト作者",
   rows: [["肩書き", "サイト作者"], ["分類", "カメラマン"], ["国・王朝", "このページ"], ["在位・在職", "2026/11/24〜"], ["生年月日", "1990/08/22"], ["出身地", "群馬県前橋市"], ["死因・最期", "存命"]] };
 var KUMA_EGG = { name: "熊八", den: "Muse Spark", label: "熊八", img: "kumahachi-portrait.jpg", lat: 35.95, lng: 139.95, sub: "このページ（2026/11/24〜）｜サイト作者",
@@ -615,6 +774,7 @@ fetch("land.geojson").then(function(res){ return res.json(); }).then(function(j)
 }).catch(function(){});
 initMap();
 applyYear(1500);
+openFromHash();
 </script>
 <script>
 (function(){
@@ -626,5 +786,25 @@ applyYear(1500);
 </script>
 <script src="mogura.js"></script>
 <script src="kumagames.js"></script>
+<div class="pp-overlay" data-pp-overlay>
+  <div class="pp-dialog privacy-policy" role="dialog" aria-modal="true" aria-labelledby="ppTitle">
+    <div class="pp-scroll">
+      <h2 id="ppTitle">プライバシーポリシー</h2>
+      <p>当サイト「歴史系ツール集」は、個人を特定する情報を収集しません。</p>
+      <p><strong>入力データについて：</strong>ツールに入力した内容は、お使いの端末のブラウザの中だけで処理され、サーバーへ送信されることはありません。ツールによっては、入力内容や設定を、お使いのブラウザの localStorage にのみ保存する場合があります。</p>
+      <p><strong>広告について：</strong>当サイトは、第三者配信の広告サービス（Google AdSense）を利用する場合があります。広告配信事業者は、ユーザーの興味に応じた広告を表示するため Cookie を使用することがあります。パーソナライズ広告は、Google の「広告設定」から無効にできます。</p>
+      <p><strong>アクセス解析について：</strong>当サイトは、アクセス解析ツール「Google アナリティクス」を使用しています。Google アナリティクスは Cookie を使用してサイトの利用状況を収集しますが、個人を特定する情報は含まれません。</p>
+      <p><strong>免責事項：</strong>計算結果や占い結果は目安・娯楽であり、実際の料金や判断は各事業者・専門家の公式情報をご確認ください。当サイトの利用によって生じた損害について、運営者は責任を負いません。</p>
+      <p><strong>お問い合わせ：</strong>当サイトは個人運営のツールサイトです。</p>
+      <p>制定日：2026年11月15日</p>
+    </div>
+    <div class="pp-actions">
+      <div class="pp-btn-row">
+        <button type="button" class="pp-close-btn" data-pp-close>閉じる</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="policy-snippet.js"></script>
 </body>
 </html>
