@@ -19,6 +19,7 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://wankodo.github.io/history/ogp.png?v=2">
+<link rel="stylesheet" href="leaflet.css">
 <style>
 :root{
   --navy:#12283f; --navy2:#0b1a2c; --amber:#f2a007; --amber-d:#c77f02;
@@ -47,7 +48,20 @@ label.flabel{display:block;font-size:12.5px;color:var(--mut);margin:10px 0 3px}
 .btn{background:var(--navy);color:#fff;border:0;border-radius:8px;padding:11px 20px;font-size:15px;font-weight:700;cursor:pointer}
 .btn:hover{background:var(--amber-d)}
 .mapbox{border:1px solid var(--line);border-radius:10px;overflow:hidden;line-height:0}
-.mapbox canvas{display:block;width:100%;cursor:pointer}
+#map{height:560px;width:100%;background:#d7e6ef}
+@media(max-width:640px){#map{height:430px}}
+.leaflet-container{font:inherit}
+.pin-wrap{background:none;border:none}
+.pin{position:relative;display:flex;flex-direction:column;align-items:center;width:110px}
+.pin-face{position:relative;border-radius:50%;overflow:hidden;border-style:solid;border-width:2px;flex:none;display:block;box-shadow:0 1px 4px rgba(0,0,0,.35);background:#888}
+.pin.sel .pin-face{border-width:3.5px}
+.pin-letter{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:16px}
+.pin.sel .pin-letter{font-size:24px}
+.pin-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.pin-name{margin-top:2px;font-size:10.5px;font-weight:600;white-space:nowrap;line-height:1.25}
+.pin.sel .pin-name{font-size:12.5px;font-weight:800}
+.pin-pulse{position:absolute;left:50%;top:27px;width:54px;height:54px;margin:-27px 0 0 -27px;border:3px solid;border-radius:50%;animation:pinPulse 1.6s ease-out infinite;pointer-events:none;z-index:-1}
+@keyframes pinPulse{0%{transform:scale(.6);opacity:.85}100%{transform:scale(1.55);opacity:0}}
 .detail{display:flex;gap:16px;align-items:flex-start}
 .detail .dface{flex:none}
 .detail .dface img{width:110px;height:110px;object-fit:cover;border-radius:50%;border:3px solid var(--amber);display:block}
@@ -154,7 +168,7 @@ gtag('config', 'G-QQ4435VBMK');
 <header>
   <div class="wrap">
     <h1>世界の <span class="accent">歴代の統治者</span></h1>
-    <p>年代を選ぶと、その時代に世界中で国を治めていた王・皇帝・大統領・首相などを、世界地図の上に顔写真つきで表示します。当時の国境の色分けと、地域ごとの拡大表示つきです。</p>
+    <p>年代を選ぶと、その時代に世界中で国を治めていた王・皇帝・大統領・首相などを、世界地図の上に顔写真つきで表示します。当時の国境の色分けつきで、地図は自由に拡大・縮小・移動できます。</p>
   </div>
 </header>
 
@@ -203,7 +217,7 @@ gtag('config', 'G-QQ4435VBMK');
 
   <div class="card">
     <h2 id="mapTitle">1500年ごろの世界の統治者</h2>
-    <div class="mapbox"><canvas id="mapCanvas"></canvas></div>
+    <div class="mapbox"><div id="map"></div></div>
     <p class="note" id="snapNote" style="margin:8px 0 0">国境データを読み込んでいます…</p>
   </div>
 
@@ -218,12 +232,12 @@ gtag('config', 'G-QQ4435VBMK');
     <p class="note" id="listEmpty" style="display:none">この年に在位中の統治者は、収録データにありません。</p>
   </div>
 
-  <section class="ai-summary" style="max-width:760px;margin:22px auto;padding:0 4px;font-size:13px;line-height:1.8;opacity:.78"><h2 style="font-size:14px;margin:0 0 6px">このツールについて</h2><p style="margin:0">紀元前3100年ごろから現代まで、世界各地の王・皇帝・ファラオ・スルタン・大統領・首相・総書記など約1,740人を収録。年代を選ぶと、その年に在位・在職していた統治者を世界地図の上に顔写真つきで表示し、あわせて当時の国境（近くの年のスナップショット）を色分けで重ねます。地域ボタンで東アジア・ヨーロッパなどに拡大できます。処理はブラウザ内で完結し、入力データを外部送信しません。</p></section>
+  <section class="ai-summary" style="max-width:760px;margin:22px auto;padding:0 4px;font-size:13px;line-height:1.8;opacity:.78"><h2 style="font-size:14px;margin:0 0 6px">このツールについて</h2><p style="margin:0">紀元前3100年ごろから現代まで、世界各地の王・皇帝・ファラオ・スルタン・大統領・首相・総書記など約1,740人を収録。年代を選ぶと、その年に在位・在職していた統治者を世界地図の上に顔写真つきで表示し、あわせて当時の国境（近くの年のスナップショット）を色分けで重ねます。地図は自由に拡大・縮小・移動でき、地域ボタンで東アジア・ヨーロッパなどへ一気に移動できます。処理はブラウザ内で完結し、入力データを外部送信しません。</p></section>
 
   <footer>
     <div class="card">
       このツールは非公式の個人ツールです。在位期間・国境は公開資料に基づく概略で、年代や境界には諸説あります。<br>
-      出典：肖像画像は <a href="https://www.wikipedia.org/" target="_blank" rel="noopener">Wikipedia</a>／<a href="https://commons.wikimedia.org/" target="_blank" rel="noopener">Wikimedia Commons</a> のものを使用しています（各画像のライセンスはリンク先ページで確認してください）。国境データは <a href="https://github.com/aourednik/historical-basemaps" target="_blank" rel="noopener">Historical Basemaps（André Ourednik、GPLv3）</a>、陸地データは <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a> を使用しています。
+      出典：肖像画像は <a href="https://www.wikipedia.org/" target="_blank" rel="noopener">Wikipedia</a>／<a href="https://commons.wikimedia.org/" target="_blank" rel="noopener">Wikimedia Commons</a> のものを使用しています（各画像のライセンスはリンク先ページで確認してください）。国境データは <a href="https://github.com/aourednik/historical-basemaps" target="_blank" rel="noopener">Historical Basemaps（André Ourednik、GPLv3）</a>、陸地データは <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a>、地図ライブラリは <a href="https://leafletjs.com/" target="_blank" rel="noopener">Leaflet</a>（BSDライセンス）を使用しています。
     </div>
     <p class="credit">著作権は andy に帰属します。無断転載を禁止します（リンクは自由です）。埋め込みリンクは動作を保証できないため禁止です。プログラムの複製・転用も禁止します。｜© 2026 andy（わんこ堂）</p>
     <p class="credit">制作：andy（わんこ堂）× 熊八 🐾（Muse Spark）</p>
@@ -232,45 +246,39 @@ gtag('config', 'G-QQ4435VBMK');
 </div>
 
 <script src="rulers-data.js"></script>
+<script src="leaflet.js"></script>
 <script>
 var SNAP_YEARS = [-3000,-2000,-1500,-1000,-700,-500,-400,-323,-300,-200,-100,-1,100,200,300,400,500,600,700,800,900,1000,1100,1200,1279,1300,1400,1492,1500,1530,1600,1650,1700,1715,1783,1800,1815,1878,1880,1900,1914,1920,1930,1938,1945,1960,1994,2000,2010];
-var REGIONS = {
-  world:    { lng0: -180, lng1: 180, latC: 18,  ratio: 0.5 },
-  eastasia: { lng0: 72,   lng1: 152, latC: 32,  ratio: 0.62 },
-  europe:   { lng0: -13,  lng1: 46,  latC: 47,  ratio: 0.8 },
-  mideast:  { lng0: -22,  lng1: 66,  latC: 10,  ratio: 0.8 },
-  namerica: { lng0: -172, lng1: -28, latC: 40,  ratio: 0.55 },
-  samerica: { lng0: -88,  lng1: -28, latC: -15, ratio: 1.05 },
-  oceania:  { lng0: 90,   lng1: 180, latC: -24, ratio: 0.62 }
+var REGION_BOUNDS = {
+  world:    [[-58, -180], [84, 180]],
+  eastasia: [[13, 72], [55, 152]],
+  europe:   [[34, -13], [63, 46]],
+  mideast:  [[-36, -22], [44, 66]],
+  namerica: [[9, -172], [71, -28]],
+  samerica: [[-56, -88], [13, -28]],
+  oceania:  [[-50, 90], [6, 180]]
 };
 var state = { year: 1500, region: "world", snapYear: null, selected: null };
-var canvas = document.getElementById("mapCanvas");
-var ctx = canvas.getContext("2d");
 var landData = null, borderData = null;
 var borderCache = {};
-var imgCache = {};
-var pins = [];
-var rafPending = false;
-var pulsePhase = 0, pulseTimer = null;
-function startPulse(){
-  if (pulseTimer) return;
-  pulseTimer = setInterval(function(){
-    if (!state.selected){ stopPulse(); return; }
-    pulsePhase = (pulsePhase + 0.06) % 1;
-    draw();
-  }, 60);
-}
-function stopPulse(){
-  if (pulseTimer){ clearInterval(pulseTimer); pulseTimer = null; }
-}
+var map = null, landLayer = null, borderLayer = null, markerLayer = null;
 
 function fmtYear(y){
   if (y < 0) return "紀元前" + (-y) + "年";
   if (y === 0) return "紀元前1年";
   return y + "年";
 }
+function fmtDate(s, y){
+  if (!s) return fmtYear(y);
+  var m = /^(-?\d+)-(\d{2})-(\d{2})$/.exec(s);
+  if (!m) return fmtYear(y);
+  var yr = parseInt(m[1], 10);
+  var ys = yr < 0 ? "紀元前" + (-yr) + "年" : yr + "年";
+  return ys + parseInt(m[2], 10) + "月" + parseInt(m[3], 10) + "日";
+}
 function reignText(r){
-  return fmtYear(r.start) + "〜" + (r.end >= 2026 ? "現在" : fmtYear(r.end));
+  var e = (r.end >= 2026 && !r.ed) ? "現在" : fmtDate(r.ed, r.end);
+  return fmtDate(r.sd, r.start) + "〜" + e;
 }
 function snapFor(y){
   var s = SNAP_YEARS[0];
@@ -288,201 +296,82 @@ function palette(){
   }
   return { ocean: "#d7e6ef", land: "#eae3cf", landStroke: "rgba(120,110,85,.35)", label: "#1d2733", halo: "rgba(255,255,255,.85)", ring: "#12283f", sel: "#c77f02" };
 }
-function viewGeom(){
-  var r = REGIONS[state.region];
-  var W = canvas.clientWidth || 300;
-  var H = Math.max(180, Math.round(W * r.ratio));
-  var span = r.lng1 - r.lng0;
-  var latSpan = span * (H / W);
-  return { W: W, H: H, lng0: r.lng0, span: span, latTop: r.latC + latSpan / 2, latSpan: latSpan };
-}
-function fitCanvas(g){
-  var dpr = Math.min(2, window.devicePixelRatio || 1);
-  canvas.style.height = g.H + "px";
-  var pw = Math.round(g.W * dpr), ph = Math.round(g.H * dpr);
-  if (canvas.width !== pw || canvas.height !== ph){ canvas.width = pw; canvas.height = ph; }
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-}
-function projX(lng, g){ return (lng - g.lng0) / g.span * g.W; }
-function projY(lat, g){ return (g.latTop - lat) / g.latSpan * g.H; }
-function ringPath(ring, g){
-  var started = false, prevX = 0;
-  for (var i = 0; i < ring.length; i++){
-    var x = projX(ring[i][0], g), y = projY(ring[i][1], g);
-    if (!started || Math.abs(x - prevX) > g.W / 2){ ctx.moveTo(x, y); started = true; }
-    else ctx.lineTo(x, y);
-    prevX = x;
-  }
-  ctx.closePath();
-}
-function geomPath(geom, g){
-  if (!geom) return;
-  var i, j;
-  if (geom.type === "Polygon"){
-    for (i = 0; i < geom.coordinates.length; i++) ringPath(geom.coordinates[i], g);
-  } else if (geom.type === "MultiPolygon"){
-    for (i = 0; i < geom.coordinates.length; i++)
-      for (j = 0; j < geom.coordinates[i].length; j++) ringPath(geom.coordinates[i][j], g);
-  }
-}
 function currentRulers(){
   return RULERS.filter(function(r){ return r.start <= state.year && r.end >= state.year; });
 }
-function pinRadius(g){
-  if (g.span >= 300) return 11;
-  if (g.span >= 120) return 13;
-  if (g.span >= 70) return 15;
-  return 17;
-}
-function getImg(url){
-  var im = imgCache[url];
-  if (!im){
-    im = new Image();
-    im.crossOrigin = "anonymous";
-    im.onload = function(){ requestDraw(); };
-    im.src = url;
-    imgCache[url] = im;
-  }
-  return im;
-}
-function requestDraw(){
-  if (rafPending) return;
-  rafPending = true;
-  requestAnimationFrame(function(){ rafPending = false; draw(); });
-}
-function draw(){
-  var g = viewGeom();
-  fitCanvas(g);
+function landStyle(){
   var pal = palette();
-  ctx.fillStyle = pal.ocean;
-  ctx.fillRect(0, 0, g.W, g.H);
-  if (landData){
-    ctx.beginPath();
-    landData.features.forEach(function(f){ geomPath(f.geometry, g); });
-    ctx.fillStyle = pal.land;
-    ctx.fill("evenodd");
-    ctx.strokeStyle = pal.landStroke;
-    ctx.lineWidth = 0.6;
-    ctx.stroke();
-  }
-  if (borderData){
-    borderData.features.forEach(function(f){
-      var nm = f.properties && f.properties.NAME;
-      if (!nm) return;
-      var hue = hashHue(nm);
-      ctx.beginPath();
-      geomPath(f.geometry, g);
-      ctx.fillStyle = "hsla(" + hue + ",55%,55%,0.45)";
-      ctx.fill("evenodd");
-      ctx.strokeStyle = "hsla(" + hue + ",45%,32%,0.5)";
-      ctx.lineWidth = 0.7;
-      ctx.stroke();
-    });
-  }
-  drawPins(g, pal);
+  return { fillColor: pal.land, fillOpacity: 1, color: pal.landStroke, weight: 0.6 };
 }
-function drawPins(g, pal){
+function borderStyle(f){
+  var hue = hashHue((f.properties && f.properties.NAME) || "");
+  return { fillColor: "hsl(" + hue + ",55%,55%)", fillOpacity: 0.45, color: "hsla(" + hue + ",45%,32%,0.5)", weight: 0.7 };
+}
+function setBorders(j){
+  borderData = j;
+  if (!map) return;
+  if (!borderLayer){
+    borderLayer = L.geoJSON(j, { style: borderStyle }).addTo(map);
+  } else {
+    borderLayer.clearLayers();
+    borderLayer.addData(j);
+  }
+  borderLayer.bringToFront();
+}
+function applyMapTheme(){
+  var pal = palette();
+  if (map) map.getContainer().style.background = pal.ocean;
+  if (landLayer) landLayer.setStyle(landStyle());
+  if (borderLayer) borderLayer.setStyle(borderStyle);
+  renderMarkers();
+}
+function initMap(){
+  map = L.map("map", { worldCopyJump: true, minZoom: 2, maxZoom: 9, zoomSnap: 0.5 });
+  map.fitBounds(REGION_BOUNDS.world);
+  markerLayer = L.layerGroup().addTo(map);
+  if (landData && !landLayer){
+    landLayer = L.geoJSON(landData, { style: landStyle }).addTo(map);
+    landLayer.bringToBack();
+  }
+  if (borderData) setBorders(borderData);
+  applyMapTheme();
+}
+function pinLatLng(r, j){
+  if (!j) return [r.lat, r.lng];
+  var ang = j * 2.399963, dist = 2.0 * Math.sqrt(j);
+  return [r.lat + Math.sin(ang) * dist * 0.7, r.lng + Math.cos(ang) * dist];
+}
+function pinIcon(r, isSel){
+  var pal = palette();
+  var size = isSel ? 54 : 36;
+  var letter = '<span class="pin-letter" style="background:hsl(' + hashHue(r.polity + r.name) + ',45%,52%)">' + esc(r.name.charAt(0)) + '</span>';
+  var face = r.img
+    ? letter + '<img class="pin-img" src="' + esc(r.img) + '" alt="" onerror="this.remove()">'
+    : letter;
+  var html = '<div class="pin' + (isSel ? ' sel' : '') + '">' +
+    (isSel ? '<span class="pin-pulse" style="border-color:' + pal.sel + '"></span>' : '') +
+    '<span class="pin-face" style="border-color:' + (isSel ? pal.sel : pal.ring) + ';width:' + size + 'px;height:' + size + 'px">' + face + '</span>' +
+    '<span class="pin-name" style="color:' + (isSel ? pal.sel : pal.label) + ';text-shadow:0 0 3px ' + pal.halo + ',0 0 3px ' + pal.halo + ',0 0 3px ' + pal.halo + '">' + esc(r.name) + '</span></div>';
+  return L.divIcon({ className: 'pin-wrap', html: html, iconSize: [110, 84], iconAnchor: [55, size / 2] });
+}
+function renderMarkers(){
+  if (!map || !markerLayer) return;
+  markerLayer.clearLayers();
   var list = currentRulers();
-  var R = pinRadius(g);
   var groups = {}, order = [];
   list.forEach(function(r){
     var k = r.lat.toFixed(2) + "," + r.lng.toFixed(2);
     if (!groups[k]){ groups[k] = []; order.push(k); }
     groups[k].push(r);
   });
-  pins = [];
   order.forEach(function(k){
     groups[k].forEach(function(r, j){
-      var cx = projX(r.lng, g), cy = projY(r.lat, g);
-      var dx = 0, dy = 0;
-      if (j > 0){
-        var ang = j * 2.399963, rad = R * 1.25 * Math.sqrt(j);
-        dx = Math.cos(ang) * rad; dy = Math.sin(ang) * rad;
-      }
-      pins.push({ x: cx + dx, y: cy + dy, r: R, ruler: r });
+      var isSel = state.selected === r;
+      var mk = L.marker(pinLatLng(r, j), { icon: pinIcon(r, isSel), zIndexOffset: isSel ? 1000 : 0, keyboard: false });
+      mk.on("click", function(){ selectRuler(r); });
+      mk.addTo(markerLayer);
     });
   });
-  function onScreen(p){ return p.x >= -60 && p.x <= g.W + 60 && p.y >= -60 && p.y <= g.H + 60; }
-  function paintPin(p){
-    var r = p.ruler;
-    var isSel = state.selected === r;
-    var rr = isSel ? p.r * 1.55 : p.r;
-    if (isSel){
-      ctx.save();
-      ctx.globalAlpha = 0.35 * (1 - pulsePhase);
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, rr + 3 + pulsePhase * 13, 0, 6.28319);
-      ctx.strokeStyle = pal.sel;
-      ctx.lineWidth = 3;
-      ctx.stroke();
-      ctx.restore();
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, rr + 5, 0, 6.28319);
-      ctx.fillStyle = pal.sel;
-      ctx.globalAlpha = 0.22;
-      ctx.fill();
-      ctx.restore();
-    }
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, rr, 0, 6.28319);
-    ctx.clip();
-    var drawn = false;
-    if (r.img){
-      var im = getImg(r.img);
-      if (im.complete && im.naturalWidth > 0){
-        var s = Math.min(im.naturalWidth, im.naturalHeight);
-        var sx = (im.naturalWidth - s) / 2, sy = (im.naturalHeight - s) * 0.2;
-        ctx.drawImage(im, sx, sy, s, s, p.x - rr, p.y - rr, rr * 2, rr * 2);
-        drawn = true;
-      }
-    }
-    if (!drawn){
-      ctx.fillStyle = "hsl(" + hashHue(r.polity + r.name) + ",45%,52%)";
-      ctx.fillRect(p.x - rr, p.y - rr, rr * 2, rr * 2);
-      ctx.fillStyle = "#fff";
-      ctx.font = "800 " + Math.round(rr * 1.05) + "px sans-serif";
-      ctx.textAlign = "center"; ctx.textBaseline = "middle";
-      ctx.fillText(r.name.charAt(0), p.x, p.y + 1);
-    }
-    ctx.restore();
-    ctx.save();
-    if (isSel){ ctx.shadowColor = pal.sel; ctx.shadowBlur = 16; }
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, rr, 0, 6.28319);
-    ctx.strokeStyle = isSel ? pal.sel : pal.ring;
-    ctx.lineWidth = isSel ? 4 : 1.6;
-    ctx.stroke();
-    ctx.restore();
-    p._rr = rr;
-  }
-  var selPin = null;
-  pins.forEach(function(p){
-    if (!onScreen(p)) return;
-    if (state.selected === p.ruler){ selPin = p; return; }
-    paintPin(p);
-  });
-  if (selPin) paintPin(selPin);
-  pins.forEach(function(p){
-    if (!onScreen(p) || p === selPin) return;
-    ctx.font = "600 10.5px 'Hiragino Kaku Gothic ProN',sans-serif";
-    ctx.textAlign = "center"; ctx.textBaseline = "top";
-    ctx.lineWidth = 3; ctx.strokeStyle = pal.halo;
-    var ly = p.y + p.r + 2;
-    ctx.strokeText(p.ruler.name, p.x, ly);
-    ctx.fillStyle = pal.label;
-    ctx.fillText(p.ruler.name, p.x, ly);
-  });
-  if (selPin){
-    ctx.font = "800 13px 'Hiragino Kaku Gothic ProN',sans-serif";
-    ctx.textAlign = "center"; ctx.textBaseline = "top";
-    ctx.lineWidth = 4; ctx.strokeStyle = pal.halo;
-    var sly = selPin.y + (selPin._rr || selPin.r) + 3;
-    ctx.strokeText(selPin.ruler.name, selPin.x, sly);
-    ctx.fillStyle = pal.sel;
-    ctx.fillText(selPin.ruler.name, selPin.x, sly);
-  }
 }
 function esc(s){
   return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
@@ -491,14 +380,13 @@ function esc(s){
 }
 function selectRuler(r){
   state.selected = r;
-  startPulse();
   var face = r.img
     ? '<img src="' + esc(r.img) + '" alt="' + esc(r.name) + 'の肖像">'
     : '<div class="dph" style="background:hsl(' + hashHue(r.polity + r.name) + ',45%,52%)">' + esc(r.name.charAt(0)) + '</div>';
   document.getElementById("detailBody").innerHTML =
     '<div class="detail"><div class="dface">' + face + '</div><div class="dinfo">' +
     '<div class="dname">' + esc(r.name) + '<span class="den">' + esc(r.nameEn) + '</span></div>' +
-    '<div class="drow"><b>肩書き：</b>' + esc(r.title) + '</div>' +
+    '<div class="drow"><b>肩書き：</b>' + esc(r.title) + (r.tc ? '（' + esc(r.tc) + '）' : '') + '</div>' +
     '<div class="drow"><b>分類：</b>' + esc(r.kind || '王族') + '</div>' +
     '<div class="drow"><b>国・王朝：</b>' + esc(r.polity) + '</div>' +
     '<div class="drow"><b>在位・在職：</b>' + esc(reignText(r)) + '</div>' +
@@ -507,7 +395,7 @@ function selectRuler(r){
   document.querySelectorAll(".ruler-item").forEach(function(it){
     it.classList.toggle("sel", it._ruler === r);
   });
-  draw();
+  renderMarkers();
 }
 function renderList(){
   var list = currentRulers().slice().sort(function(a, b){
@@ -528,7 +416,8 @@ function renderList(){
     b.querySelector(".ri-sub").textContent = r.polity + "（" + reignText(r) + "）";
     b.addEventListener("click", function(){
       selectRuler(r);
-      canvas.scrollIntoView({ behavior: "smooth", block: "center" });
+      document.getElementById("map").scrollIntoView({ behavior: "smooth", block: "center" });
+      if (map) map.flyTo([r.lat, r.lng], Math.max(map.getZoom(), 3), { duration: 0.8 });
     });
     el.appendChild(b);
   });
@@ -537,11 +426,10 @@ function loadBorders(y){
   state.snapYear = y;
   var noteEl = document.getElementById("snapNote");
   noteEl.textContent = "国境は" + fmtYear(y) + "時点のデータ（おおよそ）です。当時の国境を正確に再現したものではありません。";
-  if (borderCache[y]){ borderData = borderCache[y]; draw(); return; }
-  borderData = null;
+  if (borderCache[y]){ setBorders(borderCache[y]); return; }
   fetch("borders/world_" + y + ".geojson").then(function(res){ return res.json(); }).then(function(j){
     borderCache[y] = j;
-    if (state.snapYear === y){ borderData = j; draw(); }
+    if (state.snapYear === y){ setBorders(j); }
   }).catch(function(){
     if (state.snapYear === y){
       noteEl.textContent = "国境データを読み込めませんでした（陸地と統治者のピンのみ表示しています）。国境は" + fmtYear(y) + "時点のデータ（おおよそ）を使う予定でした。";
@@ -553,7 +441,6 @@ function applyYear(y){
   y = Math.max(-3200, Math.min(2026, Math.round(y)));
   state.year = y;
   state.selected = null;
-  stopPulse();
   document.getElementById("detailBody").innerHTML = '<p class="note">地図のピン、または下の一覧をタップすると、ここに詳細を表示します。</p>';
   document.getElementById("yearInput").value = y;
   document.getElementById("eraSel").value = String(y);
@@ -562,7 +449,7 @@ function applyYear(y){
   document.getElementById("listTitle").textContent = fmtYear(y) + "に在位中の統治者一覧";
   renderList();
   loadBorders(snapFor(y));
-  draw();
+  renderMarkers();
 }
 document.getElementById("eraSel").addEventListener("change", function(){ applyYear(parseInt(this.value, 10)); });
 document.getElementById("yearBtn").addEventListener("click", function(){
@@ -576,29 +463,18 @@ document.querySelectorAll("#regionSeg button").forEach(function(b){
     document.querySelectorAll("#regionSeg button").forEach(function(x){ x.classList.remove("on"); });
     b.classList.add("on");
     state.region = b.dataset.region;
-    draw();
+    if (map) map.flyToBounds(REGION_BOUNDS[state.region], { duration: 0.8 });
   });
 });
-canvas.addEventListener("click", function(e){
-  var rect = canvas.getBoundingClientRect();
-  var mx = e.clientX - rect.left, my = e.clientY - rect.top;
-  var best = null, bestD = 1e9;
-  pins.forEach(function(p){
-    var dx = p.x - mx, dy = p.y - my, d = Math.sqrt(dx * dx + dy * dy);
-    if (d <= p.r + 5 && d < bestD){ best = p; bestD = d; }
-  });
-  if (best) selectRuler(best.ruler);
-});
-var resizeTimer = null;
-window.addEventListener("resize", function(){
-  clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(draw, 150);
-});
-new MutationObserver(function(){ draw(); }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+new MutationObserver(function(){ applyMapTheme(); }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 fetch("land.geojson").then(function(res){ return res.json(); }).then(function(j){
   landData = j;
-  draw();
+  if (map && !landLayer){
+    landLayer = L.geoJSON(j, { style: landStyle }).addTo(map);
+    landLayer.bringToBack();
+  }
 }).catch(function(){});
+initMap();
 applyYear(1500);
 </script>
 <script>
