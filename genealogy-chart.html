@@ -122,8 +122,28 @@ main{flex:1; display:flex; gap:0; max-width:1400px; width:100%; margin:0 auto; m
 .block-band{fill:var(--accent-soft); stroke:var(--panel-line); stroke-width:1.2}
 .block-label{font-family:var(--serif); font-size:15px; font-weight:700; letter-spacing:.14em; fill:var(--ink)}
 .block-sub{font-size:11px; fill:var(--mut)}
-.block-toggle{font-size:11.5px; font-weight:700; fill:var(--accent)}
+.block-toggle{font-size:11.5px; font-weight:700; fill:var(--accent); text-anchor:end}
 .block-head{cursor:pointer}
+.hit{fill:transparent}
+.node .avring{fill:none; stroke:var(--accent); stroke-width:1}
+#edges line.edge-spouse{stroke:var(--edge); stroke-width:1.1}
+.hlrect{fill:none; stroke:var(--highlight); stroke-width:2.6; pointer-events:none; animation:hlpulse 1.05s ease-in-out infinite}
+#legend .lg{display:flex; align-items:center; gap:8px; margin:2.5px 0}
+#legend .sw{display:inline-block; width:26px; flex:none}
+#legend .sw.line{border-top:2px solid var(--edge)}
+#legend .sw.dbl{height:5px; border-top:1.6px solid var(--edge); border-bottom:1.6px solid var(--edge)}
+#legend .sw.frame{height:13px; border:1.2px solid var(--panel-line); background:rgba(128,105,40,.055); border-radius:3px}
+#legend .sw.chipsw{height:13px; border:1.3px solid var(--accent); border-radius:7px; background:var(--panel)}
+aside dl{margin:0}
+aside dt{font-family:var(--serif); font-size:12px; font-weight:600; color:var(--mut); letter-spacing:.06em; margin:9px 0 0}
+aside dd{margin:2px 0 0; padding:0 0 8px; font-size:13.5px; line-height:1.55; border-bottom:1px solid var(--panel-line)}
+aside .blkrow{margin:0; padding:4px 0; border-bottom:1px solid var(--panel-line); font-size:13px}
+aside .relrow{margin:0; padding:5px 0; border-bottom:1px solid var(--panel-line); font-size:13px; line-height:1.55}
+aside .relchip{display:inline-block; font-size:10.5px; font-weight:700; letter-spacing:.05em; padding:0 7px; border:1px solid; border-radius:999px; margin-right:7px; white-space:nowrap}
+aside .altbox{border-left:3px solid var(--mut); padding:5px 0 5px 10px; margin:7px 0; font-size:12.5px; line-height:1.7}
+aside .altbox p{margin:4px 0 0}
+aside .alt-src{display:inline-block; font-size:10.5px; font-weight:700; letter-spacing:.05em; color:#fff; padding:0 7px; border-radius:999px; margin-right:7px; white-space:nowrap}
+aside p a{color:var(--accent)}
 .frame-rect{fill:rgba(128,105,40,.055); stroke:var(--panel-line); stroke-width:1.2}
 .frame-label{
   font-family:var(--serif); font-size:12.5px; font-weight:700; letter-spacing:.12em; fill:var(--accent);
@@ -5711,7 +5731,8 @@ var CHART_CLANS = [
     "totori": "ookuninushi",
     "mizokuihime": "kotoshironushi"
    }
-  }
+  },
+  "short": "日本神話"
  },
  {
   "id": "genji",
@@ -10474,7 +10495,8 @@ var CHART_CLANS = [
    },
    "splitChildren": {},
    "attach": {}
-  }
+  },
+  "short": "源氏"
  },
  {
   "id": "heike",
@@ -14580,7 +14602,8 @@ var CHART_CLANS = [
    },
    "splitChildren": {},
    "attach": {}
-  }
+  },
+  "short": "平家"
  }
 ];
 /*__CHART_DATA_END__*/
@@ -14936,8 +14959,8 @@ function render(){
     var b = bb.def, closed = !!collapsedBlocks[b.id];
     bh += '<g class="block-band"><rect x="' + bb.x + '" y="' + bb.y + '" width="' + bb.w + '" height="' + bb.h + '" rx="12"/></g>';
     bh += '<g class="block-head" data-block="' + esc(b.id) + '"><rect class="hit" x="' + bb.x + '" y="' + bb.y + '" width="' + bb.w + '" height="' + BLOCKHEAD + '"/>' +
-      '<text class="bl" x="' + (bb.x + 14) + '" y="' + (bb.y + 26) + '">' + esc(b.label) + (b.sub ? '　' + esc(b.sub) : "") + '</text>' +
-      '<text class="bc" x="' + (bb.x + bb.w - 14) + '" y="' + (bb.y + 25) + '">' + (blockCounts[b.id] || 0) + '名　' + (closed ? "開く ▸" : "閉じる ▾") + '</text></g>';
+      '<text class="block-label" x="' + (bb.x + 14) + '" y="' + (bb.y + 26) + '">' + esc(b.label) + (b.sub ? '　' + esc(b.sub) : "") + '</text>' +
+      '<text class="block-toggle" x="' + (bb.x + bb.w - 14) + '" y="' + (bb.y + 25) + '">' + (blockCounts[b.id] || 0) + '名　' + (closed ? "開く ▸" : "閉じる ▾") + '</text></g>';
   });
   document.getElementById("blocks").innerHTML = bh;
   /* グループ枠 */
@@ -15014,10 +15037,10 @@ function render(){
     var sub = m.title || m.kana || "";
     var fs = m.name.length >= 10 ? ' style="font-size:10.5px"' : (m.name.length >= 8 ? ' style="font-size:12px"' : "");
     nh += '<g class="' + cls + '" data-id="' + esc(m.id) + '" transform="translate(' + p.x + "," + p.y + ')">' +
-      '<rect width="' + NW + '" height="' + NH + '" rx="7"/>' +
-      '<g transform="translate(17,26)">' + (m.img ? '<image href="' + esc(m.img) + '" x="-11" y="-11" width="22" height="22" clip-path="url(#avclip)" preserveAspectRatio="xMidYMid slice"/><circle class="avring" r="11"/>' : '<circle class="av" r="11"/><text class="avi" y="4">' + esc(m.name.charAt(0)) + "</text>") + "</g>" +
+      '<rect class="card" width="' + NW + '" height="' + NH + '" rx="7"/>' +
+      '<g transform="translate(17,26)">' + (m.img ? '<image href="' + esc(m.img) + '" x="-11" y="-11" width="22" height="22" clip-path="url(#avclip)" preserveAspectRatio="xMidYMid slice"/><circle class="avring" r="11"/>' : '<circle class="avc" r="11"/><text class="avt" y="4">' + esc(m.name.charAt(0)) + "</text>") + "</g>" +
       '<text class="nm" x="34" y="24"' + fs + ">" + esc(m.name) + "</text>" +
-      '<text class="sb" x="34" y="40">' + esc(sub.length > 13 ? sub.slice(0, 12) + "…" : sub) + "</text></g>";
+      '<text class="yr" x="34" y="40">' + esc(sub.length > 13 ? sub.slice(0, 12) + "…" : sub) + "</text></g>";
   });
   document.getElementById("nodes").innerHTML = nh;
   /* クリック配線 */
@@ -15062,16 +15085,16 @@ function renderDetail(m){
   if (!m){
     var cnt = clan.members.filter(function(x){ return x.core !== false; }).length;
     var portraitCnt = clan.members.filter(function(x){ return x.img; }).length;
-    panel.innerHTML = '<div class="crestbox">' + crestSVG(clan.theme.crest) + "</div>" +
+    panel.innerHTML = '<div class="intro-crest">' + crestSVG(clan.theme.crest) + "</div>" +
       "<h2>" + esc(clan.full) + "</h2>" +
-      '<p class="lead">' + esc(clan.desc) + "</p>" +
-      '<div class="stat">主要 ' + cnt + "名／全 " + clan.members.length + "名・肖像あり " + portraitCnt + "名</div>" +
-      '<p class="hint">系図モード試作：直交配線＋グループ枠。ブロック見出しや枠のラベルで折り畳みでき、チップを押すと別のブロックやグループへ移動します。人物をクリックすると詳細が出ます。</p>' +
+      '<p class="note">' + esc(clan.desc) + "</p>" +
+      '<p class="sub">主要 ' + cnt + "名／全 " + clan.members.length + "名・肖像あり " + portraitCnt + "名</p>" +
+      '<p class="sub">系図モード試作：直交配線＋グループ枠。ブロック見出しや枠のラベルで折り畳みでき、チップを押すと別のブロックやグループへ移動します。人物をクリックすると詳細が出ます。</p>' +
       "<h3>系図ブロック</h3>" + clan.chart.blocks.map(function(b){ return '<p class="blkrow"><button class="rel" data-block="' + esc(b.id) + '">' + esc(b.label) + "</button>（" + (blockCounts[b.id] || 0) + "名）</p>"; }).join("");
     panel.querySelectorAll("[data-block]").forEach(function(b){ b.addEventListener("click", function(){ gotoPortal(b.dataset.block, null); }); });
     return;
   }
-  var crest = m.crest ? '<div class="crestbox">' + crestSVG(m.crest) + "</div>" : "";
+  var crest = m.crest ? '<div class="intro-crest">' + crestSVG(m.crest) + "</div>" : "";
   var portrait = "";
   if (m.img){
     portrait = '<img class="portrait" src="' + esc(m.img) + '" alt="' + esc(m.name) + 'の肖像">';
@@ -15086,7 +15109,7 @@ function renderDetail(m){
   var bid = memberBlock[m.id];
   var h = crest + portrait + av + "<h2>" + esc(m.name) + "</h2>" +
     (m.title ? '<p class="ttl">' + esc(m.title) + "</p>" : "") +
-    (bid ? '<p class="hint">系図ブロック：' + esc(blockLabelOf(bid)) + "</p>" : "") +
+    (bid ? '<p class="sub">系図ブロック：' + esc(blockLabelOf(bid)) + "</p>" : "") +
     "<dl>" +
     (m.kana ? "<dt>読み</dt><dd>" + esc(m.kana) + "</dd>" : "") +
     ((m.aliases && m.aliases.length) ? "<dt>別名・異称</dt><dd>" + m.aliases.map(esc).join("、") + "</dd>" : "") +
@@ -15126,7 +15149,9 @@ function buildLegend(){
   ];
   var seen = {};
   (clan.relations || []).forEach(function(r){ var st = relStyleOf(r); var key = st.cls + "|" + (r.sourceAlt || ""); if (!seen[key]){ seen[key] = 1; items.push('<span class="lg"><span class="sw" style="border-top:3px dashed ' + st.color + '"></span>' + esc(r.label || "関係") + (r.sourceAlt ? "（" + esc(r.sourceAlt) + "）" : "") + "</span>"); } });
-  document.getElementById("legend").innerHTML = items.join("");
+  var lg = document.getElementById("legend");
+  lg.innerHTML = items.join("");
+  lg.hidden = false;
 }
 
 /* ========= 検索（通常版と同じ正規化） ========= */
@@ -15148,7 +15173,7 @@ function updateCandidates(){
   var hits = [];
   CLANS.forEach(function(c){ c.members.forEach(function(m){ if (nameMatches(m, q)) hits.push({clan: c, m: m}); }); });
   candBox.innerHTML = hits.slice(0, 14).map(function(h){
-    return '<button class="cand" data-clan="' + esc(h.clan.id) + '" data-id="' + esc(h.m.id) + '"><span class="cn">' + esc(h.m.name) + '</span><span class="ck">' + esc(h.m.kana || "") + '</span><span class="cc">' + esc(h.clan.short) + "</span></button>";
+    return '<button class="cand" data-clan="' + esc(h.clan.id) + '" data-id="' + esc(h.m.id) + '"><span class="cn">' + esc(h.m.name) + '</span><span class="cm">' + esc(h.m.kana || "") + '</span><span class="cm">' + esc(h.clan.short || h.clan.name) + "</span></button>";
   }).join("") + (hits.length > 14 ? '<div class="more">ほか ' + (hits.length - 14) + " 件</div>" : "");
   candBox.querySelectorAll(".cand").forEach(function(b){ b.addEventListener("click", function(){ candBox.innerHTML = ""; if (b.dataset.clan !== clan.id) setClan(b.dataset.clan); focusPerson(b.dataset.id); }); });
 }
@@ -15249,7 +15274,7 @@ function setClan(id){
   fitView(false);
 }
 var tabsBox = document.getElementById("clanTabs");
-tabsBox.insertAdjacentHTML("beforeend", CLANS.map(function(c){ return '<button class="clantab" type="button" data-clan="' + esc(c.id) + '">' + esc(c.short) + "</button>"; }).join(""));
+tabsBox.insertAdjacentHTML("beforeend", CLANS.map(function(c){ return '<button class="clantab" type="button" data-clan="' + esc(c.id) + '">' + esc(c.short || c.name) + "</button>"; }).join(""));
 tabsBox.querySelectorAll(".clantab").forEach(function(t){ t.addEventListener("click", function(){ setClan(t.dataset.clan); }); });
 setClan("kami");
 </script>
