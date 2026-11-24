@@ -404,6 +404,16 @@ function selectRuler(r){
     '<div class="drow"><b>国・王朝：</b>' + esc(r.polity) + '</div>' +
     (r.house ? '<div class="drow"><b>家系：</b>' + esc(r.house) + '</div>' : '') +
     '<div class="drow"><b>在位・在職：</b>' + esc(reignText(r)) + '</div>' +
+    (r.birth ? '<div class="drow"><b>生年月日：</b>' + esc(fmtBirth(r.birth)) + '</div>' : '') +
+    (r.birthplace ? '<div class="drow"><b>出身地：</b>' + esc(r.birthplace) + '</div>' : '') +
+    (r.religion ? '<div class="drow"><b>宗教：</b>' + esc(r.religion) + '</div>' : '') +
+    (r.religiousName ? '<div class="drow"><b>宗教上の名前：</b>' + esc(r.religiousName) + '</div>' : '') +
+    (r.father ? '<div class="drow"><b>父：</b>' + esc(r.father) + '</div>' : '') +
+    (r.mother ? '<div class="drow"><b>母：</b>' + esc(r.mother) + '</div>' : '') +
+    (r.spouses ? '<div class="drow"><b>配偶者：</b>' + esc(r.spouses) + '</div>' : '') +
+    (r.children ? '<div class="drow"><b>子：</b>' + esc(r.children) + '</div>' : '') +
+    (r.deathplace ? '<div class="drow"><b>没地：</b>' + esc(r.deathplace) + '</div>' : '') +
+    (r.fate ? '<div class="drow"><b>死因・最期：</b>' + esc(r.fate) + '</div>' : '') +
     (r.note ? '<p class="dnote">' + esc(r.note) + '</p>' : '') +
     '</div></div>';
   document.querySelectorAll(".ruler-item").forEach(function(it){
