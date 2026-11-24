@@ -334,7 +334,14 @@ color:rgba(28,27,24,.55);
 border:1px solid rgba(28,27,24,.16);
 outline:5px solid transparent;
 box-shadow:0 0 0 6px var(--paper),0 0 0 7px rgba(28,27,24,.14);
-object-fit:cover;
+}
+/* 肖像画像は切り取らず、縦横比のまま全体を表示する（枠は画像に追随） */
+img.d-portrait{
+display:block;
+width:auto;height:auto;
+max-width:min(300px,100%);
+max-height:72vh;
+object-fit:contain;
 }
 /* 肖像プレースホルダ（頭文字）は反転時に明度を寄せる */
 html[data-theme="dark"] .d-portrait{
