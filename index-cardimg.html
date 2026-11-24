@@ -4,7 +4,7 @@
 <script>try{var _t=localStorage.getItem("ido_theme_v1");if(_t==="andy"||_t==="kuma")document.documentElement.dataset.theme=_t;}catch(e){}</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>歴史系ツール集（カード背景画像・試作）</title>
+<title>歴史系ツール集（カード背景・試作）</title>
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link rel="icon" type="image/png" sizes="512x512" href="favicon.png">
@@ -89,32 +89,32 @@ footer .wrap{max-width:980px;margin:0 auto;padding:18px 12px}
 footer .note{color:#9fb0c1}
 footer .credit{margin:8px 0 0;font-size:13px;color:#fff}
 
-/* ===== 試作：カード背景画像 ===== */
+/* ===== 試作：カード背景の色分けグラデーション =====
+   統一レシピ：120deg の斜めグラデーション。
+   左上＝テーマ色を濃いめ（約20%）→ 中央＝同色を薄く（約6〜7%）→ 右下＝テーマ色または相方色（約13〜18%）。
+   地色は var(--card) と混ぜるので、DEF／HUD どちらのテーマでも破綻しない。 */
 .tool-card{position:relative;overflow:hidden;isolation:isolate;min-height:148px}
 .tool-card.has-bg::before{
   content:"";position:absolute;inset:0;z-index:-1;
-  background-image:linear-gradient(100deg,var(--card) 24%,color-mix(in srgb,var(--card) 60%,transparent) 60%,color-mix(in srgb,var(--card) 28%,transparent) 100%),var(--bgimg,none);
-  background-size:cover;background-position:center;background-repeat:no-repeat;
+  background-image:var(--bggrad,none);
 }
-.bg-rulers{--bgimg:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20450%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22bg%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23f4f6f9%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23dde5ee%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22450%22%20fill%3D%22url%28%23bg%29%22%2F%3E%3Cg%20transform%3D%22translate%28-16%2C0%29%22%3E%3Cg%20stroke%3D%22%23a87f0a%22%20stroke-width%3D%2210%22%20stroke-linejoin%3D%22round%22%20stroke-linecap%3D%22round%22%3E%3Cpath%20d%3D%22M478%2C296%20L478%2C182%20L548%2C244%20L632%2C132%20L716%2C244%20L786%2C182%20L786%2C296%20Z%22%20fill%3D%22%23c9a227%22%20fill-opacity%3D%220.20%22%2F%3E%3Cline%20x1%3D%22478%22%20y1%3D%22296%22%20x2%3D%22786%22%20y2%3D%22296%22%2F%3E%3Cline%20x1%3D%22478%22%20y1%3D%22330%22%20x2%3D%22786%22%20y2%3D%22330%22%2F%3E%3Cline%20x1%3D%22478%22%20y1%3D%22296%22%20x2%3D%22478%22%20y2%3D%22330%22%2F%3E%3Cline%20x1%3D%22786%22%20y1%3D%22296%22%20x2%3D%22786%22%20y2%3D%22330%22%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%22%23c9a227%22%20stroke%3D%22%23a87f0a%22%20stroke-width%3D%227%22%3E%3Ccircle%20cx%3D%22478%22%20cy%3D%22158%22%20r%3D%2215%22%2F%3E%3Ccircle%20cx%3D%22632%22%20cy%3D%22106%22%20r%3D%2217%22%2F%3E%3Ccircle%20cx%3D%22786%22%20cy%3D%22158%22%20r%3D%2215%22%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%22%2312283f%22%20opacity%3D%220.75%22%3E%3Ccircle%20cx%3D%22556%22%20cy%3D%22313%22%20r%3D%229%22%2F%3E%3Ccircle%20cx%3D%22632%22%20cy%3D%22313%22%20r%3D%229%22%2F%3E%3Ccircle%20cx%3D%22708%22%20cy%3D%22313%22%20r%3D%229%22%2F%3E%3C%2Fg%3E%3Cpath%20d%3D%22M632%2C150%20L632%2C236%22%20stroke%3D%22%23a87f0a%22%20stroke-width%3D%226%22%20opacity%3D%220.55%22%2F%3E%3Cpath%20d%3D%22M556%2C262%20L580%2C214%20M708%2C262%20L684%2C214%22%20stroke%3D%22%23a87f0a%22%20stroke-width%3D%226%22%20opacity%3D%220.55%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")}
-.bg-guiderulers{--bgimg:url("ogp-top.png")}
-.bg-guideart{--bgimg:url("ogp-top.png")}
-.bg-guidekami{--bgimg:url("ogp-top.png")}
-.tool-card.bg-guiderulers::before{
-  background-image:linear-gradient(100deg,var(--card) 34%,color-mix(in srgb,var(--card) 74%,transparent) 66%,color-mix(in srgb,var(--card) 48%,transparent) 100%),linear-gradient(color-mix(in srgb,var(--card) 34%,transparent),color-mix(in srgb,var(--card) 34%,transparent)),var(--bgimg,none);
-  background-position:center,center,center 32%;
-}
-.tool-card.bg-guideart::before{
-  background-image:linear-gradient(rgba(160,60,49,.15),rgba(160,60,49,.15)),linear-gradient(100deg,var(--card) 34%,color-mix(in srgb,var(--card) 74%,transparent) 66%,color-mix(in srgb,var(--card) 48%,transparent) 100%),linear-gradient(color-mix(in srgb,var(--card) 34%,transparent),color-mix(in srgb,var(--card) 34%,transparent)),url("ogp-top.png");
-  background-position:center,center,center,center 15%;
-}
-.tool-card.bg-guidekami::before{
-  background-image:linear-gradient(rgba(154,125,67,.18),rgba(154,125,67,.18)),linear-gradient(100deg,var(--card) 34%,color-mix(in srgb,var(--card) 74%,transparent) 66%,color-mix(in srgb,var(--card) 48%,transparent) 100%),linear-gradient(color-mix(in srgb,var(--card) 34%,transparent),color-mix(in srgb,var(--card) 34%,transparent)),url("ogp-top.png");
-  background-position:center,center,center,center 85%;
-}
-.bg-art{--bgimg:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20450%22%3E%3Crect%20width%3D%22800%22%20height%3D%22450%22%20fill%3D%22%23f6f1e7%22%2F%3E%3Cpath%20d%3D%22M448%2C388%20C545%2C352%20648%2C404%20782%2C356%22%20fill%3D%22none%22%20stroke%3D%22%2326221f%22%20stroke-width%3D%2217%22%20stroke-linecap%3D%22round%22%20opacity%3D%220.5%22%2F%3E%3Cpath%20d%3D%22M470%2C352%20C560%2C326%20668%2C364%20770%2C328%22%20fill%3D%22none%22%20stroke%3D%22%23a03c31%22%20stroke-width%3D%228%22%20stroke-linecap%3D%22round%22%20opacity%3D%220.45%22%2F%3E%3Cg%20transform%3D%22rotate%2822%20640%20205%29%22%3E%3Ccircle%20cx%3D%22640%22%20cy%3D%2242%22%20r%3D%227%22%20fill%3D%22none%22%20stroke%3D%22%237c2d23%22%20stroke-width%3D%225%22%2F%3E%3Crect%20x%3D%22625%22%20y%3D%2252%22%20width%3D%2230%22%20height%3D%22142%22%20rx%3D%2214%22%20fill%3D%22%23a03c31%22%20opacity%3D%220.9%22%2F%3E%3Crect%20x%3D%22625%22%20y%3D%2276%22%20width%3D%2230%22%20height%3D%227%22%20fill%3D%22%23f6f1e7%22%20opacity%3D%220.5%22%2F%3E%3Crect%20x%3D%22621%22%20y%3D%22194%22%20width%3D%2238%22%20height%3D%2230%22%20rx%3D%224%22%20fill%3D%22%233a3a3a%22%20opacity%3D%220.92%22%2F%3E%3Cpath%20d%3D%22M621%2C224%20L659%2C224%20C657%2C276%20650%2C318%20640%2C350%20C630%2C318%20623%2C276%20621%2C224%20Z%22%20fill%3D%22%2326221f%22%20opacity%3D%220.94%22%2F%3E%3Cpath%20d%3D%22M640%2C232%20C638%2C272%20638%2C308%20640%2C338%22%20fill%3D%22none%22%20stroke%3D%22%23f6f1e7%22%20stroke-width%3D%223%22%20opacity%3D%220.28%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")}
-.bg-religion{--bgimg:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20450%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23f3ecd9%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23c9c4b8%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22450%22%20fill%3D%22url%28%23g%29%22%2F%3E%3C%21--%20rosary%20--%3E%3Cg%3E%3Ccircle%20cx%3D%22512%22%20cy%3D%22228%22%20r%3D%2280%22%20fill%3D%22none%22%20stroke%3D%22%235d4a26%22%20stroke-width%3D%2212%22%20stroke-dasharray%3D%220.1%2016.76%22%20stroke-linecap%3D%22round%22%20opacity%3D%220.85%22%2F%3E%3Ccircle%20cx%3D%22512%22%20cy%3D%22312%22%20r%3D%229%22%20fill%3D%22%239a7d43%22%2F%3E%3Cpath%20d%3D%22M512%2C324%20L512%2C376%20M492%2C342%20L532%2C342%22%20stroke%3D%22%237a6234%22%20stroke-width%3D%229%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22%2F%3E%3C%2Fg%3E%3C%21--%20shakujo%20--%3E%3Cg%20stroke%3D%22%239a7d43%22%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M706%2C16%20C719%2C38%20721%2C50%20706%2C66%20C691%2C50%20693%2C38%20706%2C16%20Z%22%20fill%3D%22%239a7d43%22%20stroke%3D%22none%22%20opacity%3D%220.9%22%2F%3E%3Ccircle%20cx%3D%22706%22%20cy%3D%22102%22%20r%3D%2237%22%20stroke-width%3D%229%22%2F%3E%3Ccircle%20cx%3D%22706%22%20cy%3D%22102%22%20r%3D%2216%22%20stroke-width%3D%225%22%2F%3E%3Cline%20x1%3D%22652%22%20y1%3D%22146%22%20x2%3D%22760%22%20y2%3D%22146%22%20stroke-width%3D%228%22%20stroke-linecap%3D%22round%22%2F%3E%3Cline%20x1%3D%22706%22%20y1%3D%22146%22%20x2%3D%22706%22%20y2%3D%22398%22%20stroke-width%3D%229%22%2F%3E%3Cg%20stroke-width%3D%225.5%22%3E%3Ccircle%20cx%3D%22664%22%20cy%3D%22172%22%20r%3D%2211.5%22%2F%3E%3Ccircle%20cx%3D%22664%22%20cy%3D%22202%22%20r%3D%2211.5%22%2F%3E%3Ccircle%20cx%3D%22664%22%20cy%3D%22232%22%20r%3D%2211.5%22%2F%3E%3Ccircle%20cx%3D%22748%22%20cy%3D%22172%22%20r%3D%2211.5%22%2F%3E%3Ccircle%20cx%3D%22748%22%20cy%3D%22202%22%20r%3D%2211.5%22%2F%3E%3Ccircle%20cx%3D%22748%22%20cy%3D%22232%22%20r%3D%2211.5%22%2F%3E%3C%2Fg%3E%3Cpath%20d%3D%22M706%2C398%20L697%2C420%20L715%2C420%20Z%22%20fill%3D%22%239a7d43%22%20stroke%3D%22none%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")}
-.bg-genealogy{--bgimg:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20450%22%3E%3Crect%20width%3D%22800%22%20height%3D%22450%22%20fill%3D%22%23eef0ea%22%2F%3E%3Cg%20transform%3D%22translate%28630%2C206%29%20scale%280.74%29%20translate%28-630%2C-225%29%22%3E%3C%21--%20eboshi%20--%3E%3Cg%3E%3Cpath%20d%3D%22M552%2C282%20C544%2C198%20556%2C138%20590%2C100%20C612%2C74%20644%2C62%20670%2C74%20C698%2C86%20706%2C120%20700%2C160%20C694%2C202%20698%2C244%20704%2C282%20Z%22%20fill%3D%22%231e2a44%22%20opacity%3D%220.9%22%2F%3E%3Cpath%20d%3D%22M562%2C148%20C604%2C124%20656%2C122%20694%2C140%22%20fill%3D%22none%22%20stroke%3D%22%23eef0ea%22%20stroke-width%3D%225%22%20opacity%3D%220.5%22%2F%3E%3Cpath%20d%3D%22M572%2C282%20C564%2C306%20556%2C320%20546%2C332%22%20fill%3D%22none%22%20stroke%3D%22%231e2a44%22%20stroke-width%3D%227%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M684%2C282%20C692%2C306%20700%2C320%20710%2C332%22%20fill%3D%22none%22%20stroke%3D%22%231e2a44%22%20stroke-width%3D%227%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fg%3E%3C%21--%20sword%20%28tachi%29%20--%3E%3Cg%3E%3Cpath%20d%3D%22M512%2C382%20C596%2C344%20688%2C306%20776%2C266%20L784%2C280%20C696%2C322%20602%2C362%20518%2C396%20Z%22%20fill%3D%22%23a7b0ba%22%20opacity%3D%220.95%22%2F%3E%3Cpath%20d%3D%22M524%2C386%20C602%2C350%20690%2C312%20772%2C274%22%20fill%3D%22none%22%20stroke%3D%22%2378818c%22%20stroke-width%3D%223%22%2F%3E%3Cellipse%20cx%3D%22506%22%20cy%3D%22390%22%20rx%3D%2211%22%20ry%3D%2221%22%20transform%3D%22rotate%28-26%20506%20390%29%22%20fill%3D%22%23b8860b%22%20stroke%3D%22%238a6508%22%20stroke-width%3D%222%22%2F%3E%3Cpath%20d%3D%22M496%2C374%20L512%2C398%20L458%2C434%20L442%2C410%20Z%22%20fill%3D%22%2323262b%22%2F%3E%3Cpath%20d%3D%22M486%2C384%20L470%2C410%20M498%2C396%20L482%2C422%22%20stroke%3D%22%23b8860b%22%20stroke-width%3D%223%22%2F%3E%3Cpath%20d%3D%22M446%2C424%20C430%2C436%20420%2C448%20416%2C460%22%20fill%3D%22none%22%20stroke%3D%22%2327436e%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E")}
+/* 統治者：深紺×シャンパンゴールド（#c9a45c → #10233c） */
+.bg-rulers{--bggrad:linear-gradient(120deg,color-mix(in srgb,#c9a45c 22%,var(--card)) 0%,color-mix(in srgb,#c9a45c 7%,var(--card)) 45%,color-mix(in srgb,#10233c 18%,var(--card)) 100%)}
+/* 美術家：朱 #a03c31 → 墨 #26221f */
+.bg-art{--bggrad:linear-gradient(120deg,color-mix(in srgb,#a03c31 19%,var(--card)) 0%,color-mix(in srgb,#a03c31 6%,var(--card)) 45%,color-mix(in srgb,#26221f 11%,var(--card)) 100%)}
+/* 宗教家：鈍い金 #9a7d43 → 薄墨 #8a8578 */
+.bg-religion{--bggrad:linear-gradient(120deg,color-mix(in srgb,#9a7d43 20%,var(--card)) 0%,color-mix(in srgb,#9a7d43 7%,var(--card)) 45%,color-mix(in srgb,#8a8578 16%,var(--card)) 100%)}
+/* 家系図：紺 #27436e → 金 #a37f36 */
+.bg-genealogy{--bggrad:linear-gradient(120deg,color-mix(in srgb,#27436e 19%,var(--card)) 0%,color-mix(in srgb,#27436e 6%,var(--card)) 45%,color-mix(in srgb,#a37f36 13%,var(--card)) 100%)}
+/* 解説記事3本は親ツールの色分けに合わせる */
+.bg-guiderulers{--bggrad:linear-gradient(120deg,color-mix(in srgb,#c9a45c 22%,var(--card)) 0%,color-mix(in srgb,#c9a45c 7%,var(--card)) 45%,color-mix(in srgb,#10233c 18%,var(--card)) 100%)}
+.bg-guideart{--bggrad:linear-gradient(120deg,color-mix(in srgb,#a03c31 19%,var(--card)) 0%,color-mix(in srgb,#a03c31 6%,var(--card)) 45%,color-mix(in srgb,#26221f 11%,var(--card)) 100%)}
+.bg-guidekami{--bggrad:linear-gradient(120deg,color-mix(in srgb,#a37f36 20%,var(--card)) 0%,color-mix(in srgb,#a37f36 7%,var(--card)) 45%,color-mix(in srgb,#27436e 14%,var(--card)) 100%)}
+/* 検索で出る他サイトのカードも、サイト色のグラデーションで統一する */
+.bg-site-mob{--bggrad:linear-gradient(120deg,color-mix(in srgb,#12283f 18%,var(--card)) 0%,color-mix(in srgb,#12283f 6%,var(--card)) 45%,color-mix(in srgb,#12283f 13%,var(--card)) 100%)}
+.bg-site-money{--bggrad:linear-gradient(120deg,color-mix(in srgb,#f2a007 20%,var(--card)) 0%,color-mix(in srgb,#f2a007 7%,var(--card)) 45%,color-mix(in srgb,#f2a007 14%,var(--card)) 100%)}
+.bg-site-uranai{--bggrad:linear-gradient(120deg,color-mix(in srgb,#6d28d9 17%,var(--card)) 0%,color-mix(in srgb,#6d28d9 6%,var(--card)) 45%,color-mix(in srgb,#6d28d9 12%,var(--card)) 100%)}
+.bg-site-ins{--bggrad:linear-gradient(120deg,color-mix(in srgb,#0f766e 18%,var(--card)) 0%,color-mix(in srgb,#0f766e 6%,var(--card)) 45%,color-mix(in srgb,#0f766e 13%,var(--card)) 100%)}
 .proto-note{max-width:980px;margin:10px auto 0;padding:0 12px}
 .proto-note p{background:#fff7d6;border:1px solid #e3cf7a;border-radius:8px;padding:8px 12px;font-size:13px;margin:0}
 html[data-theme="andy"] .proto-note p{background:#0a1e30;color:#d8f1f6;border-color:rgba(110,205,230,.4)}
@@ -223,7 +223,7 @@ gtag('config', 'G-QQ4435VBMK');
     <p>年代を選ぶと、その時代に世界中で国を治めていた皇帝・王・大統領・首相などを世界地図の上に顔写真つきで表示する「世界の歴代の統治者」など、歴史まわりの「その時代、誰が治めていた？」に答えるツールを集めました。どれも無料・登録なしで使えます。</p>
   </div>
 </header>
-<div class="proto-note"><p>【試作ページ】トップの各カードに、そのツールの特色を表す画像（OGP／家紋モチーフ等）を背景に当てる実験中です。本番のトップページはまだ変更していません。</p></div>
+<div class="proto-note"><p>【試作ページ】トップの各カードを、そのツールのテーマ色を使った薄いグラデーションで色分けする実験中です。本番のトップページはまだ変更していません。</p></div>
 
 <div class="wrap">
   <div class="searchbox">
@@ -415,12 +415,6 @@ var TOOLS = [
     keywords: "統治者名鑑 読み方 見どころ 解説 ガイド 王 皇帝" }
 ];
 
-var SITEOGP = {
-  mob: "https://wankodo.github.io/mobility-simulator/ogp.png",
-  money: "https://wankodo.github.io/money-tools/ogp.png",
-  uranai: "https://wankodo.github.io/uranai/ogp.png",
-  ins: "https://wankodo.github.io/insurance/ogp.png"
-};
 var cardsEl = document.getElementById("cards");
 var infoEl = document.getElementById("searchInfo");
 var noResultEl = document.getElementById("noResult");
@@ -451,7 +445,7 @@ function render(list){
     var a = document.createElement("a");
     a.className = "tool-card";
     if (t.bg) { a.classList.add("has-bg", "bg-" + t.bg); }
-    else if (SITEOGP[t.site]) { a.classList.add("has-bg"); a.style.setProperty("--bgimg", "url('" + SITEOGP[t.site] + "')"); }
+    else { a.classList.add("has-bg", "bg-site-" + t.site); }
     a.href = t.url;
     var badge = badgeHtml(t.site);
     a.innerHTML = '<div class="tc-head"><h2></h2>' + badge + '</div>'
