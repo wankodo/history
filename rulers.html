@@ -415,6 +415,7 @@ function selectRuler(r){
     (r.deathplace ? '<div class="drow"><b>没地：</b>' + esc(r.deathplace) + '</div>' : '') +
     (r.fate ? '<div class="drow"><b>死因・最期：</b>' + esc(r.fate) + '</div>' : '') +
     (r.wiki ? '<div class="drow"><b>Wikipedia：</b><a href="' + esc(r.wiki) + '" target="_blank" rel="noopener">Wikipediaで見る</a></div>' : '') +
+    (r.cp ? '<div class="drow"><b>画像：</b>' + (r.ca ? esc(r.ca) + ' ' : '') + (r.cl ? (r.clu ? '<a href="' + esc(r.clu) + '" target="_blank" rel="noopener">' + esc(r.cl) + '</a>' : esc(r.cl)) + ' ' : '') + '／出典：<a href="' + esc(r.cp) + '" target="_blank" rel="noopener">' + (r.cp.indexOf('commons') >= 0 ? 'Wikimedia Commons' : 'Wikipedia') + '</a></div>' : '') +
     (r.note ? '<p class="dnote">' + esc(r.note) + '</p>' : '') +
     '</div></div>';
   document.querySelectorAll(".ruler-item").forEach(function(it){
