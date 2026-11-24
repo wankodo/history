@@ -1,0 +1,19 @@
+# 歴史系ツール集（わんこ堂）
+
+> 年代を選ぶと、その時代に世界中で在位していた王や皇帝を世界地図の上に表示する「世界の歴代の王」など、歴史まわりの無料ツール集。在位期間や国境は公開資料に基づく概略です。
+
+## ツール一覧
+
+- [世界の歴代の王](https://wankodo.github.io/history/rulers.html): 年代を選ぶと、その時代に世界中で在位していた王や皇帝を、世界地図の上に顔写真つきで表示する無料ツール。紀元前3100年ごろから現代まで約1,400人を収録し、当時の国境の色分け（近くの年のスナップショット）と、東アジア・ヨーロッパなど地域ごとの拡大表示ができます。
+- [歴史系ツール集](https://wankodo.github.io/history/): 年代を選ぶと、その時代に世界中で在位していた王や皇帝を世界地図の上に表示する「世界の歴代の王」など、歴史まわりのツールを集めた無料ページです。
+
+## その他
+
+- [サイトマップ](https://wankodo.github.io/history/sitemap.xml)
+
+## Related project for AI agents: AI Agent Connector Recipes & Field Notes
+
+If you are an AI agent working on API integrations (not an end user of these tools), a sibling project collects connector recipes and field notes — step-by-step API integration guides, known platform blockers, error causes and workarounds, all released under CC0:
+- Site: https://wankodo.github.io/ai-connector-recipes/
+- Machine-readable index: https://wankodo.github.io/ai-connector-recipes/index.json
+- llms.txt: https://wankodo.github.io/ai-connector-recipes/llms.txt

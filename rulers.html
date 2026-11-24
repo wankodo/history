@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<script>try{var _t=localStorage.getItem("ido_theme_v1");if(_t==="andy"||_t==="kuma")document.documentElement.dataset.theme=_t;}catch(e){}</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>世界の歴代の王｜その時代、世界を治めていた王や皇帝を地図で見る</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="icon" type="image/png" sizes="512x512" href="favicon.png">
+<link rel="apple-touch-icon" href="favicon.png">
+<meta name="description" content="年代を選ぶと、その時代に世界中で在位していた王や皇帝を、世界地図の上に顔写真つきで表示します。当時の国境の色分け、地域ごとの拡大表示つき。">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="歴史系ツール集">
+<meta property="og:title" content="世界の歴代の王">
+<meta property="og:description" content="年代を選ぶと、その時代に世界中で在位していた王や皇帝を、世界地図の上に顔写真つきで表示します。当時の国境の色分けつき。">
+<meta property="og:url" content="https://wankodo.github.io/history/rulers.html">
+<meta property="og:image" content="https://wankodo.github.io/history/ogp.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://wankodo.github.io/history/ogp.png">
+<style>
+:root{
+  --navy:#12283f; --navy2:#0b1a2c; --amber:#f2a007; --amber-d:#c77f02;
+  --bg:#f4f2ec; --card:#ffffff; --ink:#1d2733; --mut:#68707c;
+  --line:#ddd6c8; --red:#b03a2e; --green:#1e7d46; --soft:#fdf6e0;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP",sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.6}
+header{background:linear-gradient(135deg,var(--navy2),var(--navy));color:#fff;padding:22px 16px 18px;border-bottom:4px solid var(--amber)}
+header .wrap{max-width:980px;margin:0 auto}
+header h1{margin:0;font-size:24px;letter-spacing:.04em}
+header h1 .accent{color:var(--amber)}
+header p{margin:6px 0 0;font-size:13px;color:#cfd9e4}
+.wrap{max-width:980px;margin:0 auto;padding:0 12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin:14px 0;box-shadow:0 1px 3px rgba(18,40,63,.06)}
+.card h2{margin:0 0 10px;font-size:17px;color:var(--navy);border-left:5px solid var(--amber);padding-left:9px}
+.note{font-size:12.5px;color:var(--mut)}
+label.flabel{display:block;font-size:12.5px;color:var(--mut);margin:10px 0 3px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{flex:1;min-width:64px;background:#e9e4d8;border:1px solid var(--line);border-radius:8px;padding:10px 8px;font-size:14.5px;cursor:pointer;color:var(--ink)}
+.seg button.on{background:var(--navy);color:#fff;font-weight:700;border-color:var(--navy)}
+.yr-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.yr-row select,.yr-row input[type="number"]{padding:10px;border:1.5px solid var(--line);border-radius:8px;font-size:15px;background:#fff;color:var(--ink)}
+.yr-row input[type="number"]{width:130px}
+.btn{background:var(--navy);color:#fff;border:0;border-radius:8px;padding:11px 20px;font-size:15px;font-weight:700;cursor:pointer}
+.btn:hover{background:var(--amber-d)}
+.mapbox{border:1px solid var(--line);border-radius:10px;overflow:hidden;line-height:0}
+.mapbox canvas{display:block;width:100%;cursor:pointer}
+.detail{display:flex;gap:16px;align-items:flex-start}
+.detail .dface{flex:none}
+.detail .dface img{width:110px;height:110px;object-fit:cover;border-radius:50%;border:3px solid var(--amber);display:block}
+.detail .dph{width:110px;height:110px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:800;color:#fff}
+.detail .dname{font-size:21px;font-weight:800;color:var(--navy)}
+.detail .den{font-size:13px;color:var(--mut);font-weight:400;margin-left:6px}
+.detail .drow{font-size:14px;margin-top:3px}
+.detail .drow b{color:var(--navy)}
+.detail .dnote{font-size:13.5px;margin:8px 0 0}
+@media(max-width:520px){.detail{flex-direction:column;align-items:center;text-align:left}.detail .dinfo{align-self:stretch}}
+.ruler-list{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:640px){.ruler-list{grid-template-columns:1fr}}
+.ruler-item{text-align:left;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:9px 11px;cursor:pointer;font:inherit;color:var(--ink);width:100%}
+.ruler-item:hover{border-color:var(--amber)}
+.ruler-item.sel{border-color:var(--amber);box-shadow:0 0 0 2px var(--amber)}
+.ruler-item .ri-name{font-weight:700;font-size:15px}
+.ruler-item .ri-sub{font-size:12.5px;color:var(--mut)}
+footer{margin:26px 0 40px}
+footer .card{font-size:12.5px;color:var(--mut)}
+.credit{text-align:center;color:var(--mut);font-size:12px;margin:10px 0 30px}
+a{color:var(--navy)}
+.sitebar{background:var(--navy2);border-bottom:2px solid var(--amber)}
+.sitebar .sb-in{max-width:980px;margin:0 auto;padding:7px 12px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.sitebar a{color:#fff;text-decoration:none;font-size:13px}
+.sitebar a:hover{color:var(--amber)}
+.sitebar .sb-name{font-weight:700;letter-spacing:.03em}
+.sitebar .sb-tool{color:#b9c8d8;font-size:13px}
+</style>
+<style id="hud-theme-style">
+/* ===== DEF/HUD テーマ切替（共通） ===== */
+.ido-theme-switch{position:relative;z-index:1;display:flex;gap:4px;padding:4px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.07);flex:none}
+.ido-theme-switch button{border:0;border-radius:999px;padding:6px 13px;background:transparent;box-shadow:none;color:#cfe2f3;font:inherit;font-size:12.5px;font-weight:800;line-height:1.25;cursor:pointer}
+.ido-theme-switch button[aria-pressed="true"]{background:linear-gradient(180deg,#ffc44d,var(--amber));color:#14273c}
+html[data-theme="andy"] .ido-theme-switch button[aria-pressed="true"]{background:linear-gradient(180deg,#8ff2ff,#46d9ec);color:#03222e;box-shadow:0 0 16px rgba(70,217,236,.55)}
+:root[data-theme="andy"]{color-scheme:dark;--navy:#1d4568;--navy2:#02070d;--amber:#46d9ec;--amber-d:#8ff2ff;--bg:#04090f;--card:#081623;--ink:#d8f1f6;--mut:#a9c9d9;--line:rgba(110,205,230,.32);--red:#ff6b61;--green:#3ddc97;--soft:rgba(70,217,236,.10);--good:#3ddc97;--bad:#ff6b61;--sat:#7cc7ff;--sun:#ff6b61}
+html[data-theme="andy"]{background:#04090f}
+html[data-theme="andy"] body{background:radial-gradient(900px 480px at 85% -120px,rgba(70,217,236,.13),rgba(70,217,236,0) 60%),repeating-linear-gradient(0deg,rgba(140,230,255,.022) 0 1px,transparent 1px 4px),linear-gradient(rgba(110,205,230,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(110,205,230,.045) 1px,transparent 1px),linear-gradient(180deg,#030a12,#04090f);background-size:auto,auto,52px 52px,52px 52px,auto}
+html[data-theme="andy"] a{color:#ffcf4d}
+html[data-theme="andy"] .sitebar a{color:#fff}
+/* 濃色文字（--navy）を担う見出し・数値類は明色に固定 */
+html[data-theme="andy"] :is(.card h2,.card h3,.tool-card h2,.today .word,.today.word,.result .word,.sumcard .val,.sumcard.white.val,.count,.date-line,.plan .pname,.plan.pname,.pname .pn,.prod .pname,.prod h4,.vs h3,.total3 h3,.bar-row .b-lab,.bar-row .bar-head .cat,.penline .amt,.bd-fixed,.stone .sname,.plabel,details summary,.adv-row .a-lab,.cal-title,.compat .ctext,.detail-rk,.detail-word,.dir-cell .d-dir,.dir-cell .d-star,.dnav .dlabel,.fortune-name,.grade,.kv dt,.lp-line .lp b,.person h3,.pos-name,.rank .bt,.read-head .pname,.result-word,.rname,.star-row .s-lab,.star-row .s-name,.sumline b,.detail .dname,.detail .drow b){color:#d8f1f6}
+/* 白・淡色の面は背景と文字色をセットでダークパネル化 */
+html[data-theme="andy"] :is(.suggest,.chip,.plan,.rank li,.dir-cell,.hexbox.sub,.result .action,.checks label,.badges span,.rank-num,.prod .cond,.prod .nodatabox,.chips button,.tabs button,.cal-nav button,.btn-ghost,.btn.ghost,.presets button,.lp-line .lp,button.dbtn,.plan.dim,.ruler-item){background:#0a1e30;color:#d8f1f6;border-color:rgba(110,205,230,.32)}
+html[data-theme="andy"] .btn-del{background:#0a1e30;border-color:rgba(110,205,230,.32)}
+html[data-theme="andy"] .sumcard.white{background:#0a1e30;color:#d8f1f6}
+html[data-theme="andy"] .seg button{background:#0a1e30;color:#d8f1f6;border-color:rgba(110,205,230,.32)}
+html[data-theme="andy"] .seg button.active{background:#1d4568;color:#fff}
+html[data-theme="andy"] :is(th,table.anchors th){background:#0d2a42;color:#d8f1f6}
+html[data-theme="andy"] table.cal td{background:#0a1e30;color:#d8f1f6}
+html[data-theme="andy"] table.cal td.empty{background:#060f18;color:#a9c9d9}
+html[data-theme="andy"] tr.total td{background:rgba(70,217,236,.12)}
+html[data-theme="andy"] :is(.bar-track,.bar-row .b-track){background:rgba(110,205,230,.15)}
+html[data-theme="andy"] :is(.warn,.sumcard.alert,.chip.unknown){background:rgba(255,82,82,.13)}
+html[data-theme="andy"] :is(.total3 .plan.win,.vs .side.win){background:rgba(61,220,151,.12)}
+html[data-theme="andy"] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),html[data-theme="andy"] select,html[data-theme="andy"] textarea{background-color:#0a1a29;color:#d8f1f6;border-color:rgba(110,205,230,.42)}
+/* アンバー地に白文字だったバッジ類は濃色文字に */
+html[data-theme="andy"] :is(.badge,.best-b,.birthday-banner,.rank-num.top,.chip.active,button.draw,.mini.kyo,.mini.kichi){color:#03222e}
+html[data-theme="andy"] .rank-num.top{background:var(--amber)}
+/* サイコロの目は白いままにする */
+html[data-theme="andy"] .die{background:#eef3f8;color:#1d2733}
+/* 色付きバッジ変種は白文字に戻す／淡色バッジ変種はダーク化する */
+html[data-theme="andy"] :is(.badge.badge-ins,.badge.badge-uranai,.badge.badge-mob,.badge.badge-hist,.badge.na,.badge.agency){color:#fff}
+html[data-theme="andy"] .badge.mid{background:#6b6557;color:#fff}
+html[data-theme="andy"] .badge.t1{background:rgba(255,82,82,.16);color:#ff9d94;border-color:rgba(255,82,82,.4)}
+html[data-theme="andy"] .badge.t2{background:#0d2a42;color:#d8f1f6;border-color:rgba(110,205,230,.32)}
+html[data-theme="andy"] .badge.t3{background:rgba(61,220,151,.14);color:#3ddc97;border-color:rgba(61,220,151,.4)}
+html[data-theme="andy"] .badges span.best-b{background:var(--amber);color:#03222e}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "url": "https://wankodo.github.io/history/rulers.html",
+  "name": "世界の歴代の王",
+  "description": "年代を選ぶと、その時代に世界中で在位していた王や皇帝を、世界地図の上に顔写真つきで表示します。当時の国境の色分け、地域ごとの拡大表示つき。",
+  "applicationCategory": "EducationApplication",
+  "operatingSystem": "Webブラウザ",
+  "inLanguage": "ja",
+  "isFree": true,
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isPartOf": {
+    "@type": "WebSite",
+    "url": "https://wankodo.github.io/history/",
+    "name": "歴史系ツール集"
+  }
+}
+</script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QQ4435VBMK"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-QQ4435VBMK');
+</script>
+</head>
+<body>
+<div class="sitebar"><div class="sb-in"><a class="sb-name" href="index.html">歴史系ツール集</a><span class="sb-tool">世界の歴代の王</span><div class="ido-theme-switch" role="group" aria-label="表示モード切替"><button type="button" data-ido-theme="kuma" aria-pressed="true">DEF</button><button type="button" data-ido-theme="andy" aria-pressed="false">HUD</button></div></div></div>
+
+<header>
+  <div class="wrap">
+    <h1>世界の <span class="accent">歴代の王</span></h1>
+    <p>年代を選ぶと、その時代に世界中で在位していた王や皇帝を、世界地図の上に顔写真つきで表示します。当時の国境の色分けと、地域ごとの拡大表示つきです。</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="card">
+    <h2>年代と地域</h2>
+    <label class="flabel">年代（プリセット）</label>
+    <div class="yr-row">
+      <select id="eraSel" aria-label="年代プリセット">
+        <option value="-1000">紀元前1000年</option>
+        <option value="-500">紀元前500年</option>
+        <option value="-100">紀元前100年</option>
+        <option value="1">1年</option>
+        <option value="500">500年</option>
+        <option value="800">800年</option>
+        <option value="1000">1000年</option>
+        <option value="1200">1200年</option>
+        <option value="1400">1400年</option>
+        <option value="1500" selected>1500年</option>
+        <option value="1600">1600年</option>
+        <option value="1700">1700年</option>
+        <option value="1800">1800年</option>
+        <option value="1850">1850年</option>
+        <option value="1900">1900年</option>
+        <option value="1950">1950年</option>
+        <option value="2026">現代</option>
+      </select>
+    </div>
+    <label class="flabel">任意の年（紀元前は -500 のようにマイナスで入力）</label>
+    <div class="yr-row">
+      <input type="number" id="yearInput" value="1500" step="1" aria-label="任意の年">
+      <button type="button" class="btn" id="yearBtn">表示</button>
+    </div>
+    <label class="flabel">地域（同じ地図のまま拡大します）</label>
+    <div class="seg" id="regionSeg">
+      <button type="button" data-region="world" class="on">世界</button>
+      <button type="button" data-region="eastasia">東アジア</button>
+      <button type="button" data-region="europe">ヨーロッパ</button>
+      <button type="button" data-region="mideast">中東・アフリカ</button>
+      <button type="button" data-region="namerica">北アメリカ</button>
+      <button type="button" data-region="samerica">南アメリカ</button>
+      <button type="button" data-region="oceania">オセアニア</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 id="mapTitle">1500年ごろの世界の王</h2>
+    <div class="mapbox"><canvas id="mapCanvas"></canvas></div>
+    <p class="note" id="snapNote" style="margin:8px 0 0">国境データを読み込んでいます…</p>
+  </div>
+
+  <div class="card" id="detailCard">
+    <h2>王の詳細</h2>
+    <div id="detailBody"><p class="note">地図のピン、または下の一覧をタップすると、ここに詳細を表示します。</p></div>
+  </div>
+
+  <div class="card">
+    <h2 id="listTitle">この年の王一覧</h2>
+    <div class="ruler-list" id="rulerList"></div>
+    <p class="note" id="listEmpty" style="display:none">この年に在位中の王は、収録データにありません。</p>
+  </div>
+
+  <section class="ai-summary" style="max-width:760px;margin:22px auto;padding:0 4px;font-size:13px;line-height:1.8;opacity:.78"><h2 style="font-size:14px;margin:0 0 6px">このツールについて</h2><p style="margin:0">紀元前3100年ごろから現代まで、世界各地の王・皇帝・ファラオ・スルタンなど約1,400人を収録。年代を選ぶと、その年に在位していた君主を世界地図の上に顔写真つきで表示し、あわせて当時の国境（近くの年のスナップショット）を色分けで重ねます。地域ボタンで東アジア・ヨーロッパなどに拡大できます。処理はブラウザ内で完結し、入力データを外部送信しません。</p></section>
+
+  <footer>
+    <div class="card">
+      このツールは非公式の個人ツールです。在位期間・国境は公開資料に基づく概略で、年代や境界には諸説あります。<br>
+      出典：肖像画像は <a href="https://www.wikipedia.org/" target="_blank" rel="noopener">Wikipedia</a>／<a href="https://commons.wikimedia.org/" target="_blank" rel="noopener">Wikimedia Commons</a> のものを使用しています（各画像のライセンスはリンク先ページで確認してください）。国境データは <a href="https://github.com/aourednik/historical-basemaps" target="_blank" rel="noopener">Historical Basemaps（André Ourednik、GPLv3）</a>、陸地データは <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a> を使用しています。
+    </div>
+    <p class="credit">著作権は andy に帰属します。無断転載を禁止します（リンクは自由です）。埋め込みリンクは動作を保証できないため禁止です。プログラムの複製・転用も禁止します。｜© 2026 andy（わんこ堂）</p>
+    <p class="credit">制作：andy（わんこ堂）× 熊八 🐾（Muse Spark）</p>
+  </footer>
+
+</div>
+
+<script src="rulers-data.js"></script>
+<script>
+var SNAP_YEARS = [-3000,-2000,-1500,-1000,-700,-500,-400,-323,-300,-200,-100,-1,100,200,300,400,500,600,700,800,900,1000,1100,1200,1279,1300,1400,1492,1500,1530,1600,1650,1700,1715,1783,1800,1815,1878,1880,1900,1914,1920,1930,1938,1945,1960,1994,2000,2010];
+var REGIONS = {
+  world:    { lng0: -180, lng1: 180, latC: 18,  ratio: 0.5 },
+  eastasia: { lng0: 72,   lng1: 152, latC: 32,  ratio: 0.62 },
+  europe:   { lng0: -13,  lng1: 46,  latC: 47,  ratio: 0.8 },
+  mideast:  { lng0: -22,  lng1: 66,  latC: 10,  ratio: 0.8 },
+  namerica: { lng0: -172, lng1: -28, latC: 40,  ratio: 0.55 },
+  samerica: { lng0: -88,  lng1: -28, latC: -15, ratio: 1.05 },
+  oceania:  { lng0: 90,   lng1: 180, latC: -24, ratio: 0.62 }
+};
+var state = { year: 1500, region: "world", snapYear: null, selected: null };
+var canvas = document.getElementById("mapCanvas");
+var ctx = canvas.getContext("2d");
+var landData = null, borderData = null;
+var borderCache = {};
+var imgCache = {};
+var pins = [];
+var rafPending = false;
+
+function fmtYear(y){
+  if (y < 0) return "紀元前" + (-y) + "年";
+  if (y === 0) return "紀元前1年";
+  return y + "年";
+}
+function reignText(r){
+  return fmtYear(r.start) + "〜" + (r.end >= 2026 ? "現在" : fmtYear(r.end));
+}
+function snapFor(y){
+  var s = SNAP_YEARS[0];
+  for (var i = 0; i < SNAP_YEARS.length; i++){ if (SNAP_YEARS[i] <= y) s = SNAP_YEARS[i]; }
+  return s;
+}
+function hashHue(name){
+  var h = 0;
+  for (var i = 0; i < name.length; i++){ h = (h * 31 + name.charCodeAt(i)) | 0; }
+  return ((h % 360) + 360) % 360;
+}
+function palette(){
+  if (document.documentElement.dataset.theme === "andy"){
+    return { ocean: "#071626", land: "#132c46", landStroke: "rgba(140,200,230,.28)", label: "#eaf7ff", halo: "rgba(4,12,20,.8)", ring: "#8fd8ef", sel: "#ffd94d" };
+  }
+  return { ocean: "#d7e6ef", land: "#eae3cf", landStroke: "rgba(120,110,85,.35)", label: "#1d2733", halo: "rgba(255,255,255,.85)", ring: "#12283f", sel: "#c77f02" };
+}
+function viewGeom(){
+  var r = REGIONS[state.region];
+  var W = canvas.clientWidth || 300;
+  var H = Math.max(180, Math.round(W * r.ratio));
+  var span = r.lng1 - r.lng0;
+  var latSpan = span * (H / W);
+  return { W: W, H: H, lng0: r.lng0, span: span, latTop: r.latC + latSpan / 2, latSpan: latSpan };
+}
+function fitCanvas(g){
+  var dpr = Math.min(2, window.devicePixelRatio || 1);
+  canvas.style.height = g.H + "px";
+  var pw = Math.round(g.W * dpr), ph = Math.round(g.H * dpr);
+  if (canvas.width !== pw || canvas.height !== ph){ canvas.width = pw; canvas.height = ph; }
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+function projX(lng, g){ return (lng - g.lng0) / g.span * g.W; }
+function projY(lat, g){ return (g.latTop - lat) / g.latSpan * g.H; }
+function ringPath(ring, g){
+  var started = false, prevX = 0;
+  for (var i = 0; i < ring.length; i++){
+    var x = projX(ring[i][0], g), y = projY(ring[i][1], g);
+    if (!started || Math.abs(x - prevX) > g.W / 2){ ctx.moveTo(x, y); started = true; }
+    else ctx.lineTo(x, y);
+    prevX = x;
+  }
+  ctx.closePath();
+}
+function geomPath(geom, g){
+  if (!geom) return;
+  var i, j;
+  if (geom.type === "Polygon"){
+    for (i = 0; i < geom.coordinates.length; i++) ringPath(geom.coordinates[i], g);
+  } else if (geom.type === "MultiPolygon"){
+    for (i = 0; i < geom.coordinates.length; i++)
+      for (j = 0; j < geom.coordinates[i].length; j++) ringPath(geom.coordinates[i][j], g);
+  }
+}
+function currentRulers(){
+  return RULERS.filter(function(r){ return r.start <= state.year && r.end >= state.year; });
+}
+function pinRadius(g){
+  if (g.span >= 300) return 11;
+  if (g.span >= 120) return 13;
+  if (g.span >= 70) return 15;
+  return 17;
+}
+function getImg(url){
+  var im = imgCache[url];
+  if (!im){
+    im = new Image();
+    im.crossOrigin = "anonymous";
+    im.onload = function(){ requestDraw(); };
+    im.src = url;
+    imgCache[url] = im;
+  }
+  return im;
+}
+function requestDraw(){
+  if (rafPending) return;
+  rafPending = true;
+  requestAnimationFrame(function(){ rafPending = false; draw(); });
+}
+function draw(){
+  var g = viewGeom();
+  fitCanvas(g);
+  var pal = palette();
+  ctx.fillStyle = pal.ocean;
+  ctx.fillRect(0, 0, g.W, g.H);
+  if (landData){
+    ctx.beginPath();
+    landData.features.forEach(function(f){ geomPath(f.geometry, g); });
+    ctx.fillStyle = pal.land;
+    ctx.fill("evenodd");
+    ctx.strokeStyle = pal.landStroke;
+    ctx.lineWidth = 0.6;
+    ctx.stroke();
+  }
+  if (borderData){
+    borderData.features.forEach(function(f){
+      var nm = f.properties && f.properties.NAME;
+      if (!nm) return;
+      var hue = hashHue(nm);
+      ctx.beginPath();
+      geomPath(f.geometry, g);
+      ctx.fillStyle = "hsla(" + hue + ",55%,55%,0.45)";
+      ctx.fill("evenodd");
+      ctx.strokeStyle = "hsla(" + hue + ",45%,32%,0.5)";
+      ctx.lineWidth = 0.7;
+      ctx.stroke();
+    });
+  }
+  drawPins(g, pal);
+}
+function drawPins(g, pal){
+  var list = currentRulers();
+  var R = pinRadius(g);
+  var groups = {}, order = [];
+  list.forEach(function(r){
+    var k = r.lat.toFixed(2) + "," + r.lng.toFixed(2);
+    if (!groups[k]){ groups[k] = []; order.push(k); }
+    groups[k].push(r);
+  });
+  pins = [];
+  order.forEach(function(k){
+    groups[k].forEach(function(r, j){
+      var cx = projX(r.lng, g), cy = projY(r.lat, g);
+      var dx = 0, dy = 0;
+      if (j > 0){
+        var ang = j * 2.399963, rad = R * 1.25 * Math.sqrt(j);
+        dx = Math.cos(ang) * rad; dy = Math.sin(ang) * rad;
+      }
+      pins.push({ x: cx + dx, y: cy + dy, r: R, ruler: r });
+    });
+  });
+  function onScreen(p){ return p.x >= -40 && p.x <= g.W + 40 && p.y >= -40 && p.y <= g.H + 40; }
+  pins.forEach(function(p){
+    if (!onScreen(p)) return;
+    var r = p.ruler;
+    var isSel = state.selected === r;
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, 6.28319);
+    ctx.clip();
+    var drawn = false;
+    if (r.img){
+      var im = getImg(r.img);
+      if (im.complete && im.naturalWidth > 0){
+        var s = Math.min(im.naturalWidth, im.naturalHeight);
+        var sx = (im.naturalWidth - s) / 2, sy = (im.naturalHeight - s) * 0.2;
+        ctx.drawImage(im, sx, sy, s, s, p.x - p.r, p.y - p.r, p.r * 2, p.r * 2);
+        drawn = true;
+      }
+    }
+    if (!drawn){
+      ctx.fillStyle = "hsl(" + hashHue(r.polity + r.name) + ",45%,52%)";
+      ctx.fillRect(p.x - p.r, p.y - p.r, p.r * 2, p.r * 2);
+      ctx.fillStyle = "#fff";
+      ctx.font = "800 " + Math.round(p.r * 1.05) + "px sans-serif";
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText(r.name.charAt(0), p.x, p.y + 1);
+    }
+    ctx.restore();
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, 6.28319);
+    ctx.strokeStyle = isSel ? pal.sel : pal.ring;
+    ctx.lineWidth = isSel ? 3.5 : 1.6;
+    ctx.stroke();
+  });
+  pins.forEach(function(p){
+    if (!onScreen(p)) return;
+    ctx.font = "600 10.5px 'Hiragino Kaku Gothic ProN',sans-serif";
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    ctx.lineWidth = 3; ctx.strokeStyle = pal.halo;
+    var ly = p.y + p.r + 2;
+    ctx.strokeText(p.ruler.name, p.x, ly);
+    ctx.fillStyle = pal.label;
+    ctx.fillText(p.ruler.name, p.x, ly);
+  });
+}
+function esc(s){
+  return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+  });
+}
+function selectRuler(r){
+  state.selected = r;
+  var face = r.img
+    ? '<img src="' + esc(r.img) + '" alt="' + esc(r.name) + 'の肖像">'
+    : '<div class="dph" style="background:hsl(' + hashHue(r.polity + r.name) + ',45%,52%)">' + esc(r.name.charAt(0)) + '</div>';
+  document.getElementById("detailBody").innerHTML =
+    '<div class="detail"><div class="dface">' + face + '</div><div class="dinfo">' +
+    '<div class="dname">' + esc(r.name) + '<span class="den">' + esc(r.nameEn) + '</span></div>' +
+    '<div class="drow"><b>肩書き：</b>' + esc(r.title) + '</div>' +
+    '<div class="drow"><b>国・王朝：</b>' + esc(r.polity) + '</div>' +
+    '<div class="drow"><b>在位：</b>' + esc(reignText(r)) + '</div>' +
+    (r.note ? '<p class="dnote">' + esc(r.note) + '</p>' : '') +
+    '</div></div>';
+  document.querySelectorAll(".ruler-item").forEach(function(it){
+    it.classList.toggle("sel", it._ruler === r);
+  });
+  draw();
+}
+function renderList(){
+  var list = currentRulers().slice().sort(function(a, b){
+    var c = a.polity.localeCompare(b.polity, "ja");
+    if (c) return c;
+    return (a.start - b.start) || a.name.localeCompare(b.name, "ja");
+  });
+  var el = document.getElementById("rulerList");
+  el.innerHTML = "";
+  document.getElementById("listEmpty").style.display = list.length ? "none" : "block";
+  list.forEach(function(r){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "ruler-item" + (state.selected === r ? " sel" : "");
+    b._ruler = r;
+    b.innerHTML = '<span class="ri-name"></span><br><span class="ri-sub"></span>';
+    b.querySelector(".ri-name").textContent = r.name;
+    b.querySelector(".ri-sub").textContent = r.polity + "（" + reignText(r) + "）";
+    b.addEventListener("click", function(){
+      selectRuler(r);
+      document.getElementById("detailCard").scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
+    el.appendChild(b);
+  });
+}
+function loadBorders(y){
+  state.snapYear = y;
+  var noteEl = document.getElementById("snapNote");
+  noteEl.textContent = "国境は" + fmtYear(y) + "時点のデータ（おおよそ）です。当時の国境を正確に再現したものではありません。";
+  if (borderCache[y]){ borderData = borderCache[y]; draw(); return; }
+  borderData = null;
+  fetch("borders/world_" + y + ".geojson").then(function(res){ return res.json(); }).then(function(j){
+    borderCache[y] = j;
+    if (state.snapYear === y){ borderData = j; draw(); }
+  }).catch(function(){
+    if (state.snapYear === y){
+      noteEl.textContent = "国境データを読み込めませんでした（陸地と王のピンのみ表示しています）。国境は" + fmtYear(y) + "時点のデータ（おおよそ）を使う予定でした。";
+    }
+  });
+}
+function applyYear(y){
+  if (isNaN(y)) return;
+  y = Math.max(-3200, Math.min(2026, Math.round(y)));
+  state.year = y;
+  state.selected = null;
+  document.getElementById("detailBody").innerHTML = '<p class="note">地図のピン、または下の一覧をタップすると、ここに詳細を表示します。</p>';
+  document.getElementById("yearInput").value = y;
+  document.getElementById("eraSel").value = String(y);
+  var list = currentRulers();
+  document.getElementById("mapTitle").textContent = fmtYear(y) + "ごろの世界の王（" + list.length + "人）";
+  document.getElementById("listTitle").textContent = fmtYear(y) + "に在位中の王一覧";
+  renderList();
+  loadBorders(snapFor(y));
+  draw();
+}
+document.getElementById("eraSel").addEventListener("change", function(){ applyYear(parseInt(this.value, 10)); });
+document.getElementById("yearBtn").addEventListener("click", function(){
+  applyYear(parseInt(document.getElementById("yearInput").value, 10));
+});
+document.getElementById("yearInput").addEventListener("keydown", function(e){
+  if (e.key === "Enter") applyYear(parseInt(this.value, 10));
+});
+document.querySelectorAll("#regionSeg button").forEach(function(b){
+  b.addEventListener("click", function(){
+    document.querySelectorAll("#regionSeg button").forEach(function(x){ x.classList.remove("on"); });
+    b.classList.add("on");
+    state.region = b.dataset.region;
+    draw();
+  });
+});
+canvas.addEventListener("click", function(e){
+  var rect = canvas.getBoundingClientRect();
+  var mx = e.clientX - rect.left, my = e.clientY - rect.top;
+  var best = null, bestD = 1e9;
+  pins.forEach(function(p){
+    var dx = p.x - mx, dy = p.y - my, d = Math.sqrt(dx * dx + dy * dy);
+    if (d <= p.r + 5 && d < bestD){ best = p; bestD = d; }
+  });
+  if (best) selectRuler(best.ruler);
+});
+var resizeTimer = null;
+window.addEventListener("resize", function(){
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(draw, 150);
+});
+new MutationObserver(function(){ draw(); }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+fetch("land.geojson").then(function(res){ return res.json(); }).then(function(j){
+  landData = j;
+  draw();
+}).catch(function(){});
+applyYear(1500);
+</script>
+<script>
+(function(){
+  var btns=document.querySelectorAll("[data-ido-theme]");
+  function sync(){var cur=document.documentElement.dataset.theme||"kuma";btns.forEach(function(b){b.setAttribute("aria-pressed",String(b.dataset.idoTheme===cur));});}
+  btns.forEach(function(b){b.addEventListener("click",function(){document.documentElement.dataset.theme=b.dataset.idoTheme;try{localStorage.setItem("ido_theme_v1",b.dataset.idoTheme);}catch(e){}sync();});});
+  sync();
+})();
+</script>
+<script src="mogura.js"></script>
+</body>
+</html>
