@@ -61,11 +61,23 @@ html[data-theme="dark"]{
 *,*::before,*::after{
 transition:background-color .8s ease,border-color .8s ease,color .8s ease,box-shadow .8s ease;
 }
+/* 地のグラデーションは transition できない（background-image は即切替になる）ため、
+明・暗2層の固定レイヤーで持ち、切替時は opacity をクロスフェードさせる。
+土台の単色背景＋全称 transition という仕組みは art.html と同じ。
+レイヤーの色は変数でなく実色で持つ（変数だと切替と同時に中身が変わってしまうため）。
+生成り層＝現行の明グラデーション、薄墨層＝ダーク側の --paper→--paper-deep。 */
+body::before,body::after{
+content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+transition:opacity .8s ease;
+}
+body::before{background:linear-gradient(180deg,#f5f2ea 0%,#ede8dc 100%);opacity:1;}
+body::after{background:linear-gradient(180deg,#171410 0%,#100e0a 100%);opacity:0;}
+html[data-theme="dark"] body::before{opacity:0;}
+html[data-theme="dark"] body::after{opacity:1;}
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
 body{
-background:linear-gradient(180deg,var(--paper) 0%,var(--paper-deep) 100%);
-background-attachment:fixed;
+background:var(--paper);
 color:var(--ink);
 font-family:var(--sans);
 font-weight:300;
@@ -354,13 +366,23 @@ transition:color .8s ease,border-color .8s ease;
 /* ---------- 詳細パネル ---------- */
 .overlay{
 position:fixed;inset:0;z-index:1200;
-background:linear-gradient(180deg,var(--paper) 0%,var(--paper-deep) 100%);
+background:var(--paper);
 overflow-y:auto;
 opacity:0;pointer-events:none;
 transition:opacity 1s ease;
 }
+/* 詳細の地も body と同じ2層クロスフェード（グラデーション自体は遷移できないため） */
+.overlay::before,.overlay::after{
+content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+transition:opacity .8s ease;
+}
+.overlay::before{background:linear-gradient(180deg,#f5f2ea 0%,#ede8dc 100%);opacity:1;}
+.overlay::after{background:linear-gradient(180deg,#171410 0%,#100e0a 100%);opacity:0;}
+html[data-theme="dark"] .overlay::before{opacity:0;}
+html[data-theme="dark"] .overlay::after{opacity:1;}
 .overlay.open{opacity:1;pointer-events:auto;}
 .detail{
+position:relative;z-index:1;
 max-width:880px;margin:0 auto;
 padding:64px 32px 90px;
 animation:cardIn 1.2s ease both;
