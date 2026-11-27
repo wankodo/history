@@ -536,6 +536,12 @@ color:var(--ink-faint);margin-bottom:10px;text-align:center;
 .poem summary{font-size:11.5px;letter-spacing:.18em;color:var(--ink-soft);cursor:pointer;}
 .poem .p-fold{margin-top:10px;font-size:13.5px;line-height:2;color:var(--ink-soft);}
 .field-head{max-width:640px;margin:40px auto 0;text-align:center;font-size:11px;letter-spacing:.34em;color:var(--accent);}
+/* 前置きの折り畳み（続きを読む） */
+.fold{margin-top:20px;}
+.fold[hidden]{display:none;}
+.readmore-btn{display:block;margin:24px auto 0;font:inherit;font-size:12px;letter-spacing:.26em;background:none;border:1px solid var(--line);border-radius:999px;padding:10px 30px;color:var(--ink-soft);cursor:pointer;}
+.readmore-btn:hover{color:var(--accent);border-color:var(--accent);}
+.reading .readmore-btn{margin-top:0;}
 
 /* ---------- フッター ---------- */
 footer{
@@ -625,8 +631,11 @@ gtag('config', 'G-QQ4435VBMK');
 
 <section class="intro">
 <p>この名鑑は、美術・詩歌・小説・音楽・映画・写真の6分野で作品を作ってきた人たちを、一つの名簿に並べたページである。収録は重複を除いて30,198人と、音楽グループ2,808件。分野別では美術2,133人、詩歌5,026人、小説11,953人、音楽8,706人、映画6,943人、写真1,993人で、5,484人は複数の分野にまたがって収録されている。</p>
+<div class="fold" id="introMore" hidden>
 <p>職業はタグ方式で付けている。たとえば詩人であり映画監督でもある人は、詩歌と映画のどちらの分野フィルターでも現れる。本業かどうかで振り分けることはしない。分野フィルターは複数選択でき、「分けない」を選べば全分野が混ざって並ぶ。分野を選ぶと、その中での細分（画家・彫刻家などの職種、詩・和歌・俳句の形式、小説家・脚本家などの区分、アニメ監督かどうか、写真の専門分野など）でも絞り込める。</p>
 <p>載せているのは作り手本人だけである。美術史家や音楽評論家のような、作品について語る側の職業は収録していない（文芸評論は小説分野の細分としてのみ残している）。並び方や詳細の見せ方は美術家名簿の展示室の流儀をそのまま使い、検索・年代スライダー・出生地の地図で辿れるようにしている。</p>
+</div>
+<button type="button" class="readmore-btn" data-fold-btn="introMore" aria-expanded="false">続きを読む</button>
 </section>
 
 <div class="controls">
@@ -674,6 +683,8 @@ gtag('config', 'G-QQ4435VBMK');
 </div>
 
 <section class="reading">
+<button type="button" class="readmore-btn" data-fold-btn="readingMore" aria-expanded="false">続きを読む</button>
+<div class="fold" id="readingMore" hidden>
 <h2>この名鑑が集めたもの</h2>
 <p>収録しているのは、美術（画家・彫刻家・建築家など）、詩歌（詩人・歌人・俳人）、小説（小説家・劇作家・脚本家・ライトノベル作家など）、音楽（作曲家・歌手・演奏家・作詞家など）、映画（映画監督・アニメ監督）、写真（写真家・フォトジャーナリスト）の6分野の作り手である。全員に共通して用意しているのは、名前（日本語名と英語名）、生没年と出生地・没地、肖像画像への参照、そして日本語版Wikipediaへのリンクで、分野ごとに代表作や専門分野、所属、受賞歴などを付け足している。</p>
 <p>職業のタグは複数付く。一人の人物が複数の分野に現れるのは、この名鑑では仕様である。映画監督の撮影監督（いわゆるDP）は、職業分類の上では「カメラマン」に寄せて表示している。アニメの監督は「アニメ監督」として実写の映画監督とは別の細分に立て、アニメ映画はアニメ映画として扱う。</p>
@@ -684,6 +695,7 @@ gtag('config', 'G-QQ4435VBMK');
 <p>使い方は四つある。第一は分野フィルターである。分野を複数選んで横断的にも絞れるし、分野内の細分でも絞れる。第二は検索で、名前のほか分野・細分・出生地でも探せる。第三は年代スライダーで、任意の年を選ぶとその年に生きていた人だけが表示される。第四は出生地の地図で、ピンは各人の出生地、一覧の絞り込みに連動する。詳細画面では分野ごとに項目が切り替わり、所属グループのメンバーや友人など、人と人のつながりをリンクで辿れる。</p>
 <h2>データの限界と注意</h2>
 <p>この名鑑は公開資料に基づくため、資料の多い地域・時代・言語圏の人物に偏りがある。日本の作り手については分野ごとに収録基準を緩和して厚く集めているが、それでも日本語版Wikipediaに記事がない人は収録できていない。生没年には伝承や推定に基づく年も含まれる。気になる人物については、詳細画面からWikipediaの記事へ進み、出典を確認しながら読むことをおすすめする。</p>
+</div>
 </section>
 
 <section class="ai-summary"><h2>このツールについて</h2><p>美術・詩歌・小説・音楽・映画・写真の6分野のクリエイター30,198人と音楽グループ2,808件を収録した統合名鑑です。職業はタグ方式で、複数分野にまたがる人物は各分野に表示されます。分野フィルター（複数選択可）と分野内の細分、名前・出生地の検索、年代スライダー、出生地の地図で絞り込めます。詳細では分野ごとに代表作・専門分野・所属・受賞歴などを表示し、詩の本文はパブリックドメインの作品のみ、読み・現代語訳は折り畳みで表示します。処理はブラウザ内で完結し、入力データを外部送信しません。</p></section>
@@ -1396,5 +1408,17 @@ openFromHash();
   </div>
 </div>
 <script src="policy-snippet.js"></script>
+<script>
+document.querySelectorAll("[data-fold-btn]").forEach(function(btn){
+btn.addEventListener("click", function(){
+var t = document.getElementById(btn.getAttribute("data-fold-btn"));
+if(!t) return;
+var open = t.hidden;
+t.hidden = !open;
+btn.setAttribute("aria-expanded", open ? "true" : "false");
+btn.textContent = open ? "閉じる" : "続きを読む";
+});
+});
+</script>
 </body>
 </html>
