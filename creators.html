@@ -1038,7 +1038,7 @@ rows += row("師匠", nameList(x.photo.teachers));
 if(!isGroup){
 rows += row("死亡日", living ? "存命" : esc(fmtDate(a.death)));
 rows += row("没地", living ? "存命" : esc(a.deathPlace));
-rows += row("享年", living ? "存命" : (a.age !== null && a.age !== undefined ? a.age + "歳" : null));
+rows += row("享年", living ? "存命" : (typeof a.age === "number" && a.age > 0 && a.age <= 130 ? a.age + "歳" : null));
 rows += row("死因", living ? "存命" : esc(a.cause));
 rows += row("配偶者", nameList(a.spouses));
 rows += row("父", nameList(a.father));
