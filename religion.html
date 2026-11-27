@@ -453,6 +453,7 @@ padding-top:5px;
 }
 dl.profile dd{flex:1;letter-spacing:.05em;}
 dl.profile dd .unknown{color:var(--ink-faint);}
+dl.profile dd .age-note{display:block;font-size:10.5px;color:var(--ink-faint);margin-top:3px;letter-spacing:.05em;}
 a.person-link{
 text-decoration:none;
 border-bottom:1px solid var(--ink-faint);
@@ -885,7 +886,7 @@ row("宗派", a.sect? esc(a.sect): null),
 row("階位", a.rank? esc(a.rank): null),
 row("布教先エリア", a.missionArea? esc(a.missionArea): null),
 row("死亡日", living? "存命": fmtDate(a.death)),
-row("享年", living? "存命": (a.age !== null && a.age !== undefined? a.age + "歳": null)),
+row("享年", living? "存命": (a.age !== null && a.age !== undefined? a.age + "歳" + (a.age > 110? '<span class="age-note">※実際の歴史と異なる可能性があります</span>': ""): null)),
 row("死因", living? "存命": (a.cause? esc(a.cause): null)),
 row("配偶者", personList(a.spouses)),
 row("父", personList(a.father)),
