@@ -542,6 +542,13 @@ color:var(--ink-faint);margin-bottom:10px;text-align:center;
 .readmore-btn{display:block;margin:24px auto 0;font:inherit;font-size:12px;letter-spacing:.26em;background:none;border:1px solid var(--line);border-radius:999px;padding:10px 30px;color:var(--ink-soft);cursor:pointer;}
 .readmore-btn:hover{color:var(--accent);border-color:var(--accent);}
 .reading .readmore-btn{margin-top:0;}
+/* カード枠の画像：土台の max-height:100% は flex 子要素の % 解決が iOS WebKit で枠全体の高さ基準になり、縦長画像が枠の内線からはみ出す。絶対配置＋object-fit で枠内に固定する（見せ方は土台どおり全体を収める） */
+.card .frame img{
+position:absolute;inset:0;
+width:100%;height:100%;max-width:none;max-height:none;
+padding:28px;box-sizing:border-box;
+object-fit:contain;
+}
 
 /* ---------- フッター ---------- */
 footer{
