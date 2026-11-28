@@ -12,7 +12,7 @@ const EDITION = {
   lang: "ja",
   subLang: "en",
   paperName: "戦時日報", // 架空の紙名（2026-11-28、andy 決定で確定）
-  sectionLabels: { war: "戦況", economy: "経済", food: "食料・生活", tech: "技術" },
+  sectionLabels: { war: "戦況（War situation）", economy: "経済（Economy）", food: "食料・生活（Food & Home Front）", tech: "技術（Technology）" },
   extraLabel: "号外",
   warPeriod: "1937年7月〜1945年9月"
 };
