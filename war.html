@@ -7,11 +7,11 @@
 <title>戦争史｜歴史系ツール集</title>
 <link rel="icon" type="image/svg+xml" href="favicon-war.svg">
 <link rel="apple-touch-icon" href="favicon.png">
-<meta name="description" content="戦争と国を選ぶと、その国の目線で戦争を新聞として追えるコーナーです。戦況だけでなく経済・食料・技術の変化も、その国の公式資料をもとに報じます。第二次世界大戦の7か国編と第一次世界大戦の9か国編、日露戦争・日清戦争・南北戦争・普仏戦争・普墺戦争・米西戦争の各2か国編と、クリミア戦争の4か国編、ナポレオン戦争の5か国編、七年戦争・スペイン継承戦争の各3か国編、大阪の陣の日本編、元寇・百年戦争の各2か国編を公開中です。">
+<meta name="description" content="戦争と国を選ぶと、その国の目線で戦争を新聞として追えるコーナーです。戦況だけでなく経済・食料・技術の変化も、その国の公式資料をもとに報じます。第二次世界大戦の7か国編と第一次世界大戦の9か国編、日露戦争・日清戦争・南北戦争・普仏戦争・普墺戦争・米西戦争の各2か国編と、クリミア戦争の4か国編、ナポレオン戦争の5か国編、七年戦争・スペイン継承戦争の各3か国編、大阪の陣の日本編、元寇・百年戦争の各2か国編を公開中です。古代はペルシア戦争の2文明編を、文字ではなく絵で読む壁画・レリーフ風の形式で公開しています。">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="歴史系ツール集">
 <meta property="og:title" content="戦争史">
-<meta property="og:description" content="戦争と国を選ぶと、その国の目線で戦争を新聞として追えるコーナーです。戦況だけでなく経済・食料・技術の変化も、その国の公式資料をもとに報じます。第二次世界大戦の7か国編と第一次世界大戦の9か国編、日露戦争・日清戦争・南北戦争・普仏戦争・普墺戦争・米西戦争の各2か国編と、クリミア戦争の4か国編、ナポレオン戦争の5か国編、七年戦争・スペイン継承戦争の各3か国編、大阪の陣の日本編、元寇・百年戦争の各2か国編を公開中です。">
+<meta property="og:description" content="戦争と国を選ぶと、その国の目線で戦争を新聞として追えるコーナーです。戦況だけでなく経済・食料・技術の変化も、その国の公式資料をもとに報じます。第二次世界大戦の7か国編と第一次世界大戦の9か国編、日露戦争・日清戦争・南北戦争・普仏戦争・普墺戦争・米西戦争の各2か国編と、クリミア戦争の4か国編、ナポレオン戦争の5か国編、七年戦争・スペイン継承戦争の各3か国編、大阪の陣の日本編、元寇・百年戦争の各2か国編を公開中です。古代はペルシア戦争の2文明編を、文字ではなく絵で読む壁画・レリーフ風の形式で公開しています。">
 <meta property="og:url" content="https://wankodo.github.io/history/war.html">
 <meta property="og:image" content="https://wankodo.github.io/history/ogp-top.png">
 <meta property="og:image:width" content="1200">
@@ -138,6 +138,26 @@
   #refsBox{margin-top:12px;font-size:13px}
   #refsBox button{margin:2px 4px 2px 0}
   #srcLine{margin-top:14px;border-top:1px solid var(--rule);padding-top:6px;font-size:12px;color:var(--ink2);line-height:1.6}
+  /* ===== 古代ビジュアル形式（設計書 §10、SPEC「古代ビジュアル形式の運用」） =====
+     壁画・レリーフ風：場面（レジスター）を縦に積み、帯（フリーズ）で区切る。
+     絵は EDITION.parts の SVG 部品の組み合わせで描く。パレットは文明ごとに変える */
+  #paper.pf-gr{--wBg:#f1e9d4;--wGround:#dcc9a0;--wSky:#f7f0dc;--pInk:#37312a;--pA:#a63d22;--pB:#7a6a35;--pSea:#3e6b6f;--pHill:#8b7d63;--pSun:#c9922e}
+  #paper.pf-pe{--wBg:#efdfba;--wGround:#d8ba82;--wSky:#f5e6c1;--pInk:#2f2b33;--pA:#274b8f;--pB:#b98a2e;--pSea:#3e6b6f;--pHill:#97795a;--pSun:#c9922e}
+  #visualWall{margin-top:10px;border:1px solid var(--rule);background:var(--wBg,#efe7d3)}
+  #visualWall .register{padding:12px 14px 0;cursor:pointer}
+  #visualWall .register.cur{outline:3px solid var(--accent);outline-offset:-3px;background:rgba(255,255,255,.38)}
+  #visualWall .regHead{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+  #visualWall .regNo{font-size:12px;color:var(--accent);letter-spacing:.15em;font-weight:700;white-space:nowrap}
+  #visualWall .regTitle{font-size:19px;font-weight:700;letter-spacing:.04em}
+  #visualWall .sceneSvg{width:100%;height:auto;display:block}
+  #visualWall .regCap{font-size:13.5px;color:var(--ink2);line-height:1.7;padding:6px 2px 10px}
+  #visualWall .regBand{margin:0 -14px}
+  #paper.pf-gr #visualWall .regBand{height:8px;background:repeating-linear-gradient(90deg,var(--pA) 0 12px,transparent 12px 24px);border-top:2px solid var(--pInk);border-bottom:2px solid var(--pInk)}
+  #paper.pf-pe #visualWall .regBand{height:12px;background-image:radial-gradient(circle,var(--pB) 3px,transparent 4.5px);background-size:24px 12px;background-position:center;border-top:2px solid var(--pB);border-bottom:2px solid var(--pB)}
+  #visualWall .register:last-child .regBand{visibility:hidden}
+  #sceneExplain{margin-top:14px;border-top:3px double var(--rule);padding-top:10px}
+  #sceneExplain h3{margin:0 0 8px;font-size:17px}
+  #sceneExplain p{line-height:1.9;font-size:15px;margin:0 0 10px}
   /* パネル（週ハブ／同期再生／バックナンバー） */
   .panel{background:var(--ui);border:1px solid var(--uib);padding:12px;margin-top:14px}
   .panel h3{margin:0 0 8px;font-size:15px;letter-spacing:.1em}
@@ -213,7 +233,7 @@ footer .credit{margin:8px 0 0;font-size:13px;color:#fff}
 <div class="sitebar"><div class="sb-in"><a class="sb-name" href="index.html">歴史系ツール集</a><span style="display:flex;align-items:center;gap:12px;"><a href="https://wankodo.github.io/">よろず道具箱</a></span></div></div>
 <header class="site">
   <h1>戦争史</h1>
-  <span class="sub">戦争と国を選ぶと、その国の目線で戦争を追える新聞です ― 第二次世界大戦・第一次世界大戦・日露戦争・日清戦争・南北戦争・普仏戦争・普墺戦争・クリミア戦争・米西戦争・ナポレオン戦争・七年戦争・スペイン継承戦争・大阪の陣・元寇・百年戦争を公開中</span>
+  <span class="sub">戦争と国を選ぶと、その国の目線で戦争を追える新聞です ― 第二次世界大戦・第一次世界大戦・日露戦争・日清戦争・南北戦争・普仏戦争・普墺戦争・クリミア戦争・米西戦争・ナポレオン戦争・七年戦争・スペイン継承戦争・大阪の陣・元寇・百年戦争・ペルシア戦争（古代・絵で読む形式）を公開中</span>
 </header>
 <main>
   <!-- 状態1：戦争の選択 -->
@@ -278,6 +298,9 @@ footer .credit{margin:8px 0 0;font-size:13px;color:#fff}
         <figcaption><span id="photoCapH"></span><br><span class="credit" id="photoCreditH"></span></figcaption>
       </figure>
       <div id="bodyH" class="hidden"></div>
+      <!-- 古代ビジュアル形式：壁面（場面の連なり）と解説レイヤー -->
+      <div id="visualWall" class="hidden"></div>
+      <div id="sceneExplain" class="hidden"></div>
       <div id="noteBox"><span class="nt">注記</span>　<span id="noteText"></span></div>
       <div id="refsBox"></div>
       <div id="srcLine"></div>
@@ -300,7 +323,7 @@ footer .credit{margin:8px 0 0;font-size:13px;color:#fff}
   </section>
 </main>
 
-<script src="war-weeks.js?v=20261128s"></script>
+<script src="war-weeks.js?v=20261128t"></script>
 <script>
 "use strict";
 // ===== ビューア：戦争×国の編データは遅延読み込みする =====
@@ -321,6 +344,7 @@ const WARS = [
   { code:"osk", name:"大阪の陣", years:"1614–1615年", desc:"徳川幕府側の公式記録に基づく、瓦版風の読み物。", cnt:"日本編を公開中", gran:"month" },
   { code:"gk", name:"元寇", years:"1274–1281年", desc:"日本とモンゴル帝国、両国の公式記録で読む年代記。号ではなく「記」で数える。", cnt:"2か国編を公開中", gran:"year" },
   { code:"hyw", name:"百年戦争", years:"1337–1453年", desc:"イングランドとフランス、両国の公式記録で読む年代記。号ではなく「記」で数える。", cnt:"2か国編を公開中", gran:"year" },
+  { code:"pw", name:"ペルシア戦争", years:"紀元前499–449年", desc:"ギリシャとペルシア帝国、両文明の目線で追う。古代は文字ではなく絵で読む、壁画・レリーフ風の場面の連なり。", cnt:"2文明編を公開中（古代・試作）", gran:"scene" },
   { code:"ww1", name:"第一次世界大戦", years:"1914–1918年", desc:"9か国の新聞で読み比べる。", cnt:"9か国編を公開中（完結）", gran:"week" },
   { code:"ww2", name:"第二次世界大戦", years:"1939–1945年（日本・中国は1937年開始）", desc:"7か国の目線で追う。", cnt:"7か国編を公開中（完結）", gran:"week" }
 ];
@@ -379,6 +403,10 @@ COUNTRIES_BY_WAR.hyw = [
   { code:"gb", name:"イングランド", ready:true, period:"1337年〜1453年", catch:"クレシー、アジャンクールの栄光から大陸領の喪失までを読む年代記", cnt:"公開中：前史2記＋本編24記＋後日2記" },
   { code:"fr", name:"フランス", ready:true, period:"1337年〜1453年", catch:"度重なる敗北と内乱から、ジャンヌと王権の回復を読む年代記", cnt:"公開中：前史2記＋本編24記＋後日2記" }
 ];
+COUNTRIES_BY_WAR.pw = [
+  { code:"gr", name:"ギリシャ", ready:true, period:"紀元前499年〜紀元前449年", catch:"都市国家連合の目線で読む、ヘロドトスが伝えた戦争。壁画・レリーフ風の場面で辿る", cnt:"公開中：全7場面" },
+  { code:"pe", name:"ペルシア帝国", ready:true, period:"紀元前499年〜紀元前449年", catch:"大王の宮廷と帝国の目線で読む、もう一つの戦争。碑文の様式で辿る", cnt:"公開中：全7場面" }
+];
 COUNTRIES_BY_WAR.rj = [
   { code:"jp", name:"日本", ready:true, period:"1904年2月〜1905年9月", catch:"列強ロシアに挑み、国民総動員で戦った戦争の内側", cnt:"公開中：プロローグ2号＋本編28号＋エピローグ2号" },
   { code:"ru", name:"ロシア", ready:true, period:"1904年2月〜1905年9月", catch:"遠い極東の戦争と、帝国の威信が揺らぐ内側", cnt:"公開中：プロローグ2号＋本編26号＋エピローグ2号" }
@@ -408,7 +436,7 @@ let WEEKS = WAR_WEEKS.ww2;
 function COUNTRIES(){ return COUNTRIES_BY_WAR[curWar] || []; }
 function WAR_NAME(){ const w = WARS.find(x=>x.code===curWar); return w ? w.name : ""; }
 function gran(){ const w = WARS.find(x=>x.code===curWar); return (w && w.gran) || "week"; }
-function unitWord(){ const g = gran(); return g==="month" ? "月" : g==="year" ? "年" : "週"; }
+function unitWord(){ const g = gran(); return g==="month" ? "月" : g==="year" ? "年" : g==="scene" ? "場面" : "週"; }
 const EDITIONS = {};   // "ww2-jp" -> { EDITION, ISSUES }
 const LOADING = {};    // "ww2-jp" -> Promise
 let ED = null, ISS = null, curCode = "jp";
@@ -419,7 +447,7 @@ let timer = null, syncTimer = null;
 // 号データの読み込みには版数クエリを付ける：データファイルを差し替えてもブラウザの
 // キャッシュに残った旧版が表示される事故（欄名の旧表記が実機で出た等）を防ぐため。
 // データ側を変更したら、この版数を上げること（2026-11-28）。
-const DATA_VER = "20261128s";
+const DATA_VER = "20261128t";
 function loadEdition(war, code){
   const key = war + "-" + code;
   if (EDITIONS[key]) return Promise.resolve(EDITIONS[key]);
@@ -452,6 +480,11 @@ function issueNameIn(issues, idx, unit){
   const it = issues[idx], kind = it.kind || "normal";
   let n = 0;
   for (let i=0;i<=idx;i++) if ((issues[i].kind||"normal")===kind) n++;
+  if (unit==="場面"){
+    if (kind==="prologue") return "序・第"+n+"場面";
+    if (kind==="epilogue") return "結・第"+n+"場面";
+    return "第"+n+"場面";
+  }
   if (unit==="記"){
     if (kind==="prologue") return "前史・第"+n+"記";
     if (kind==="epilogue") return "後日・第"+n+"記";
@@ -675,6 +708,9 @@ function localMonthLabel(iso, lang){
 }
 function periodStartLabel(week){
   const iso = WEEKS[week], ds = dateStyle();
+  // 古代ビジュアル形式：期間マスターは日付ではなく転機ラベル（"bc<紀元前年>"）。
+  // 発行情報行には転機名＋紀元前年を出す（この行は二重線より下なので日本語でよい）
+  if (gran()==="scene") return esc(((ED.turnNames && ED.turnNames[week]) || "")+"（紀元前"+iso.replace("bc","")+"年）");
   const d = new Date(iso+"T00:00:00"), y = d.getFullYear();
   if (gran()==="month"){
     if (ds==="era") return warekiMonth(iso) + adYearSub(y, y);
@@ -696,6 +732,7 @@ function periodStartLabel(week){
 // 年表レイヤーの読み出し用（日本語UI側の期間表記）
 function fmtPeriodJa(week){
   const iso = WEEKS[week];
+  if (gran()==="scene") return "紀元前"+iso.replace("bc","")+"年";
   if (gran()==="month"){ const [y,m] = iso.split("-").map(Number); return y+"年"+m+"月"; }
   if (gran()==="year") return iso.split("-")[0]+"年";
   return weekRange(week);
@@ -785,6 +822,53 @@ function parenSub(s){
   return esc(m[1]) + `<span class="jaSub">${esc(m[2])}</span>`;
 }
 
+// ===== 古代ビジュアル形式の描画（設計書 §10、SPEC「古代ビジュアル形式の運用」） =====
+// 部品は EDITION.parts（100x100 の箱、底辺が地面）に定義し、場面データの配置指定で並べる。
+// 実在作品の図像は複製せず、様式のみを借りた新規描画とする。
+function partsDefs(){
+  const parts = ED.parts || {};
+  return `<svg width="0" height="0" style="position:absolute"><defs>${
+    Object.keys(parts).map(id=>`<symbol id="pt-${id}" viewBox="0 0 100 100">${parts[id]}</symbol>`).join("")
+  }</defs></svg>`;
+}
+function sceneBgSVG(bg){
+  let s = `<rect width="1000" height="320" fill="var(--wSky)"/>`;
+  if (bg==="sea"){
+    s += `<rect y="200" width="1000" height="120" fill="var(--pSea)" opacity=".30"/>` +
+      `<path d="M0 204 H1000" stroke="var(--pSea)" stroke-width="3"/>` +
+      `<path d="M60 236 q20-14 40 0 t40 0 M420 268 q20-14 40 0 t40 0 M760 232 q20-14 40 0 t40 0" stroke="var(--pSea)" stroke-width="3" fill="none" opacity=".6"/>`;
+  } else if (bg==="coast"){
+    s += `<rect y="238" width="620" height="82" fill="var(--pSea)" opacity=".30"/>` +
+      `<path d="M600 320 L1000 218 L1000 320 Z" fill="var(--wGround)"/>` +
+      `<path d="M40 268 q20-14 40 0 t40 0 M300 292 q20-14 40 0 t40 0" stroke="var(--pSea)" stroke-width="3" fill="none" opacity=".6"/>`;
+  } else if (bg==="court"){
+    s += `<rect y="252" width="1000" height="68" fill="var(--wGround)"/>` +
+      `<rect x="26" y="30" width="16" height="222" fill="var(--pHill)" opacity=".65"/>` +
+      `<rect x="958" y="30" width="16" height="222" fill="var(--pHill)" opacity=".65"/>` +
+      `<path d="M0 254 H1000" stroke="var(--pHill)" stroke-width="3"/>`;
+  } else { // land
+    s += `<rect y="252" width="1000" height="68" fill="var(--wGround)"/>` +
+      `<path d="M0 254 H1000" stroke="var(--pHill)" stroke-width="3"/>`;
+  }
+  return s;
+}
+function sceneSVG(it){
+  const uses = ((it.scene && it.scene.parts) || []).map(p=>{
+    const s = p.s || 1, f = p.f || 1;
+    return `<use href="#pt-${p.p}" width="100" height="100" transform="translate(${p.x} ${p.y==null?272:p.y}) scale(${f*s} ${s}) translate(-50 -100)"/>`;
+  }).join("");
+  return `<svg class="sceneSvg" viewBox="0 0 1000 320" preserveAspectRatio="xMidYMid meet">${sceneBgSVG(it.scene && it.scene.bg)}${uses}</svg>`;
+}
+function visualWallHTML(){
+  return partsDefs() + ISS.map((t,i)=>`
+    <div class="register${i===cur?" cur":""}" data-i="${i}">
+      <div class="regHead"><span class="regNo">${issueName(i)}</span><span class="regTitle">${esc(t.cover.headline)}${t.cover.headlineSub ? ` <span class="jaSub">（${esc(t.cover.headlineSub)}）</span>` : ""}</span></div>
+      ${sceneSVG(t)}
+      <div class="regCap">${esc((t.scene && t.scene.caption) || "")}</div>
+      <div class="regBand"></div>
+    </div>`).join("");
+}
+
 // ===== ビューア =====
 function openViewer(idx){ cur = idx; buildTimeline(); buildBackNumbers(); render(); syncUrl(); }
 
@@ -807,6 +891,9 @@ function render(){
   $("paper").classList.add("pf-" + ED.country);
   $("paper").classList.toggle("extra", !!it.extra);
   $("extraBand").innerHTML = parenSub(ED.extraLabel || "号外");
+  // 古代ビジュアル形式の要素は通常は隠す（ビジュアル分岐でだけ出す）
+  $("visualWall").classList.add("hidden");
+  $("sceneExplain").classList.add("hidden");
   // 発行情報行：日付は題字脇には置かず、二重線の下のこの行に一本化する（2026-11-28、andy 指示）
   // 日付は全編とも現地の年号・紀年法が主表記（日本＝元号／中国＝民國／WW2伊＝ファシスト紀元／
   // WW1露＝ユリウス暦／WW1オスマン＝ルミ暦）。紀年法のある編だけ西暦をカッコ字幕で添える。
@@ -816,7 +903,9 @@ function render(){
     if (gran()!=="week"){
       // 低解像度版：日付は期間（月／年）そのものを現地の紀年法で表示する
       range = periodStartLabel(it.week);
-      right = "戦争"+(it.week+1)+(gran()==="month" ? "か月目" : "年目");
+      right = gran()==="month" ? "戦争"+(it.week+1)+"か月目"
+            : gran()==="scene" ? "転機 "+(it.week+1)+" / "+WEEKS.length
+            : "戦争"+(it.week+1)+"年目";
     }
     else if (ds==="era"){ range = weekRangeEraSub(it.week); right = "戦争"+(it.week+1)+"週目"; }
     else if (ds==="minguo"){ range = weekRangeMinguoSub(it.week); right = "戦争"+(it.week+1)+"週目"; }
@@ -836,6 +925,34 @@ function render(){
     else pl = esc(periodLabelLocal(it.period, ED.lang));
     $("infoLeft").innerHTML = issueName(cur)+"　対象期間："+pl;
     $("infoRight").textContent = kind==="prologue" ? "ダイジェスト号（本編開始前）" : "ダイジェスト号（終戦後）";
+  }
+  // ===== 古代ビジュアル形式（壁画・レリーフ風）：本文欄の代わりに壁面と解説レイヤーを描く =====
+  if (ED.format==="visual"){
+    $("coverRowV").classList.add("hidden");
+    $("headlineSub").classList.add("hidden");
+    $("bodyV").classList.add("hidden");
+    $("hHead").classList.add("hidden");
+    $("headlineSubH").classList.add("hidden");
+    $("coverPhotoH").classList.add("hidden");
+    $("bodyH").classList.add("hidden");
+    $("paper").classList.remove("nophoto");
+    $("visualWall").classList.remove("hidden");
+    $("sceneExplain").classList.remove("hidden");
+    $("visualWall").innerHTML = visualWallHTML();
+    document.querySelectorAll("#visualWall .register").forEach(el=>{
+      el.addEventListener("click", ()=>{ const i = +el.dataset.i; if (i!==cur){ cur = i; render(); syncUrl(); } });
+    });
+    $("sceneExplain").innerHTML = "<h3>"+esc(issueName(cur))+" ― "+esc(it.cover.headlineSub||"")+"</h3>" +
+      (it.body.war||[]).map(p=>`<p>${esc(p)}</p>`).join("");
+    if (it.note){ $("noteBox").style.display="block"; $("noteText").textContent = it.note; }
+    else $("noteBox").style.display="none";
+    $("refsBox").innerHTML = "";
+    $("srcLine").textContent = "出典：" + (it.sources||[]).join("／");
+    buildHub(); buildSyncGrid(); updateTimelineCursor();
+    document.querySelectorAll("#backNumbers button").forEach((b,i)=>b.classList.toggle("cur", i===cur));
+    const curEl = document.querySelector("#visualWall .register.cur");
+    if (curEl) curEl.scrollIntoView({block:"nearest"});
+    return;
   }
   const L = ED.sectionLabels;
   const secs = [["war",L.war],["economy",L.economy],["food",L.food],["tech",L.tech]];
