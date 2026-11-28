@@ -78,6 +78,15 @@ header p{margin:6px 0 0;font-size:13px;color:#cfd9e4}
 .badge-uranai{background:#6d28d9;color:#fff}
 .badge-ins{background:#0f766e;color:#fff}
 .badge-hist{background:#92400e;color:#fff}
+/* 種別バッジ：ツール本体＝紺のベタ塗りで主役、楽しみ方（ガイド）＝淡い緑の控えめな札 */
+.badge-kind-tool{background:var(--navy);color:#fff}
+.badge-kind-guide{background:#edf4ee;color:var(--green);border:1px solid #9dbfa8;font-weight:600}
+/* カードの色分け：本体はアンバーの太い左帯、ガイドは淡い緑の帯＋ごく淡い地色で一段落とす */
+.tool-card.kind-tool{border-left:6px solid var(--amber)}
+.tool-card.kind-guide{border-left:6px solid #b9cdc0;background:#fafbf8}
+.tool-card.kind-guide h2{color:#4a5a50}
+.legend{display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:12.5px;color:var(--mut);margin:12px 2px 0}
+.legend .lg-item{display:inline-flex;gap:6px;align-items:center}
 .noresult{
   display:none;background:var(--card);border:1px solid var(--line);border-radius:10px;
   padding:22px 16px;margin:14px 0 20px;text-align:center;color:var(--mut);font-size:14.5px;
@@ -126,6 +135,14 @@ html[data-theme="andy"] .badge.t1{background:rgba(255,82,82,.16);color:#ff9d94;b
 html[data-theme="andy"] .badge.t2{background:#0d2a42;color:#d8f1f6;border-color:rgba(110,205,230,.32)}
 html[data-theme="andy"] .badge.t3{background:rgba(61,220,151,.14);color:#3ddc97;border-color:rgba(61,220,151,.4)}
 html[data-theme="andy"] .badges span.best-b{background:var(--amber);color:#03222e}
+</style>
+<style id="kind-color-hud">
+/* 種別色分けのHUD上書き：本体は明色紺＋シアンの帯で立たせ、ガイドは淡い緑で落とす */
+html[data-theme="andy"] .badge-kind-tool{background:#1d4568;color:#fff}
+html[data-theme="andy"] .badge-kind-guide{background:rgba(61,220,151,.10);color:#3ddc97;border-color:rgba(61,220,151,.45)}
+html[data-theme="andy"] .tool-card.kind-tool{border-left-color:var(--amber)}
+html[data-theme="andy"] .tool-card.kind-guide{border-left-color:rgba(61,220,151,.38);background:#07170f}
+html[data-theme="andy"] .tool-card.kind-guide h2{color:#a9c9b4}
 </style>
 <script type="application/ld+json">
 {
@@ -200,6 +217,7 @@ gtag('config', 'G-QQ4435VBMK');
     </div>
     <p class="searchinfo" id="searchInfo"></p>
     <p class="searchinfo">ここに表示されている以外のツールもあります。詳細は検索ボックスから</p>
+    <p class="legend"><span class="lg-item"><span class="badge badge-kind-tool">ツール</span>ツール本体</span><span class="lg-item"><span class="badge badge-kind-guide">楽しみ方</span>ガイド（解説記事）</span></p>
   </div>
 
   <div class="cards" id="cards"></div>
@@ -403,6 +421,16 @@ function badgeHtml(site){
   return '<span class="badge badge-money">お金</span>';
 }
 
+function isGuide(t){
+  return t.cat === "解説記事" || /(^|\/)guide-/.test(t.url);
+}
+
+function kindBadgeHtml(t){
+  return isGuide(t)
+    ? '<span class="badge badge-kind-guide">楽しみ方</span>'
+    : '<span class="badge badge-kind-tool">ツール</span>';
+}
+
 function matchTools(q){
   var tokens = q.split(/[\s　]+/).filter(function(s){ return s; }).map(function(s){ return s.toLowerCase(); });
   if (!tokens.length) return TOOLS.slice();
@@ -416,9 +444,9 @@ function render(list){
   cardsEl.innerHTML = "";
   list.forEach(function(t){
     var a = document.createElement("a");
-    a.className = "tool-card";
+    a.className = "tool-card " + (isGuide(t) ? "kind-guide" : "kind-tool");
     a.href = t.url;
-    var badge = badgeHtml(t.site);
+    var badge = badgeHtml(t.site) + kindBadgeHtml(t);
     a.innerHTML = '<div class="tc-head"><h2></h2>' + badge + '</div>'
       + '<div class="tc-cat"></div><p></p>';
     a.querySelector("h2").textContent = t.name;
@@ -457,7 +485,7 @@ function renderSuggest(){
     var a = document.createElement("a");
     a.className = "sug-item";
     a.href = t.url;
-    a.innerHTML = '<span class="sug-name"></span>' + badgeHtml(t.site);
+    a.innerHTML = '<span class="sug-name"></span>' + (isGuide(t) ? kindBadgeHtml(t) : "") + badgeHtml(t.site);
     a.querySelector(".sug-name").textContent = t.name;
     sugEl.appendChild(a);
   });
