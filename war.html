@@ -58,12 +58,13 @@
   .issuelabel{font-size:14px;font-weight:bold}
   /* 紙面 */
   #paper{background:var(--paper);border:1px solid var(--rule);box-shadow:0 2px 10px rgba(0,0,0,.18);padding:26px 30px;position:relative}
-  #paper .masthead{display:flex;align-items:flex-end;justify-content:space-between;border-bottom:4px double var(--ink);padding-bottom:8px;margin-bottom:6px}
-  #paper .papername{font-size:40px;letter-spacing:.35em;font-weight:700;text-align:center;flex:1}
+  #paper .masthead{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;border-bottom:4px double var(--ink);padding-bottom:8px;margin-bottom:6px}
+  /* 題字は横書き一行で締める（2026-11-28、andy 指示）。折り返しを禁止し、狭い幅では両脇を縮めて一行分の幅を確保する */
+  #paper .papername{font-size:40px;letter-spacing:.35em;font-weight:700;text-align:center;flex:1;white-space:nowrap}
   #paper .mastSide{font-size:11px;color:var(--ink2);line-height:1.7;min-width:92px}
   #paper .mastLeft{text-align:left}
   #paper .mastRight{text-align:right}
-  #paper .papername small{font-size:13px;letter-spacing:.2em;color:var(--ink2);display:block;margin-top:2px}
+  #paper .papername small{font-size:13px;letter-spacing:.2em;color:var(--ink2);display:block;margin-top:2px;white-space:nowrap}
   #paper .infoline{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;font-size:13px;border-bottom:1px solid var(--rule);padding:5px 2px;color:var(--ink2)}
   /* 日付の西暦は「字幕」：元号が主表記で、西暦は現代読者向けの補助として小さく従属的に添える */
   #paper .dateSub{font-size:.8em;color:var(--ink2);letter-spacing:0}
@@ -114,8 +115,11 @@
   .hidden{display:none}
   @media(max-width:720px){
     #paper{padding:18px 16px}
-    #paper .papername{font-size:30px}
-    #paper .mastSide{min-width:62px;font-size:10px}
+    /* 題字「戦時日報」と英字を一行に収める：字間を詰めて小さくし、両脇（小表記・日付）は最小幅を下げて折り返し可にする */
+    #paper .papername{font-size:27px;letter-spacing:.18em}
+    #paper .papername small{font-size:10px;letter-spacing:.1em}
+    #paper .mastSide{min-width:38px;font-size:9.5px;line-height:1.6}
+    #paper .mastLeft{min-width:52px}
     #vHead{font-size:21px;max-height:300px}
     #bodyV{height:68vh}
     /* 狭い幅（スマホ縦向き）では縦積みにせず、写真を小さくして見出しの左に並べ、
