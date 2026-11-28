@@ -7,11 +7,11 @@
 <title>戦争史｜歴史系ツール集</title>
 <link rel="icon" type="image/svg+xml" href="favicon-war.svg">
 <link rel="apple-touch-icon" href="favicon.png">
-<meta name="description" content="戦争と国を選ぶと、その国の目線で戦争を新聞として追えるコーナーです。戦況だけでなく経済・食料・技術の変化も、その国の公式資料をもとに報じます。第二次世界大戦の7か国編と第一次世界大戦の9か国編、日露戦争・日清戦争・南北戦争・普仏戦争・普墺戦争の各2か国編と、クリミア戦争の4か国編を公開中です。">
+<meta name="description" content="戦争と国を選ぶと、その国の目線で戦争を新聞として追えるコーナーです。戦況だけでなく経済・食料・技術の変化も、その国の公式資料をもとに報じます。第二次世界大戦の7か国編と第一次世界大戦の9か国編、日露戦争・日清戦争・南北戦争・普仏戦争・普墺戦争・米西戦争の各2か国編と、クリミア戦争の4か国編を公開中です。">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="歴史系ツール集">
 <meta property="og:title" content="戦争史">
-<meta property="og:description" content="戦争と国を選ぶと、その国の目線で戦争を新聞として追えるコーナーです。戦況だけでなく経済・食料・技術の変化も、その国の公式資料をもとに報じます。第二次世界大戦の7か国編と第一次世界大戦の9か国編、日露戦争・日清戦争・南北戦争・普仏戦争・普墺戦争の各2か国編と、クリミア戦争の4か国編を公開中です。">
+<meta property="og:description" content="戦争と国を選ぶと、その国の目線で戦争を新聞として追えるコーナーです。戦況だけでなく経済・食料・技術の変化も、その国の公式資料をもとに報じます。第二次世界大戦の7か国編と第一次世界大戦の9か国編、日露戦争・日清戦争・南北戦争・普仏戦争・普墺戦争・米西戦争の各2か国編と、クリミア戦争の4か国編を公開中です。">
 <meta property="og:url" content="https://wankodo.github.io/history/war.html">
 <meta property="og:image" content="https://wankodo.github.io/history/ogp-top.png">
 <meta property="og:image:width" content="1200">
@@ -213,7 +213,7 @@ footer .credit{margin:8px 0 0;font-size:13px;color:#fff}
 <div class="sitebar"><div class="sb-in"><a class="sb-name" href="index.html">歴史系ツール集</a><span style="display:flex;align-items:center;gap:12px;"><a href="https://wankodo.github.io/">よろず道具箱</a></span></div></div>
 <header class="site">
   <h1>戦争史</h1>
-  <span class="sub">戦争と国を選ぶと、その国の目線で戦争を追える新聞です ― 第二次世界大戦・第一次世界大戦・日露戦争・日清戦争・南北戦争・普仏戦争・普墺戦争・クリミア戦争を公開中</span>
+  <span class="sub">戦争と国を選ぶと、その国の目線で戦争を追える新聞です ― 第二次世界大戦・第一次世界大戦・日露戦争・日清戦争・南北戦争・普仏戦争・普墺戦争・クリミア戦争・米西戦争を公開中</span>
 </header>
 <main>
   <!-- 状態1：戦争の選択 -->
@@ -314,6 +314,7 @@ const WARS = [
   { code:"fp", name:"普仏戦争", years:"1870–1871年", desc:"フランスとプロイセン／ドイツ、両国の目線で追う。月刊と号外の新聞。", cnt:"2か国編を公開中", gran:"month" },
   { code:"ap", name:"普墺戦争", years:"1866年", desc:"プロイセンとオーストリア、ドイツの主導権を争った七週間の戦争を両国の目線で追う。", cnt:"2か国編を公開中", gran:"month" },
   { code:"cr", name:"クリミア戦争", years:"1853–1856年", desc:"イギリス・フランス・ロシア・オスマン、4か国の目線で追う。月刊と号外の新聞。", cnt:"4か国編を公開中", gran:"month" },
+  { code:"saw", name:"米西戦争", years:"1898年", desc:"アメリカとスペイン、両国の目線で追う。月刊と号外の新聞。", cnt:"2か国編を公開中", gran:"month" },
   { code:"ww1", name:"第一次世界大戦", years:"1914–1918年", desc:"9か国の新聞で読み比べる。", cnt:"9か国編を公開中（完結）", gran:"week" },
   { code:"ww2", name:"第二次世界大戦", years:"1939–1945年（日本・中国は1937年開始）", desc:"7か国の目線で追う。", cnt:"7か国編を公開中（完結）", gran:"week" }
 ];
@@ -339,6 +340,10 @@ COUNTRIES_BY_WAR.cr = [
   { code:"fr", name:"フランス", ready:true, period:"1853年10月〜1856年3月", catch:"マラコフの占領で主導権を握り、パリ会議を主催する内側", cnt:"公開中：プロローグ2号＋本編15号＋エピローグ2号" },
   { code:"ru", name:"ロシア", ready:true, period:"1853年10月〜1856年3月", catch:"セヴァストポリの防衛戦と、敗北から改革へ向かう内側", cnt:"公開中：プロローグ2号＋本編13号＋エピローグ2号" },
   { code:"ot", name:"オスマン帝国", ready:true, period:"1853年10月〜1856年3月", catch:"同盟国に支えられながら帝国の保全を図る内側", cnt:"公開中：プロローグ2号＋本編11号＋エピローグ2号" }
+];
+COUNTRIES_BY_WAR.saw = [
+  { code:"us", name:"アメリカ", ready:true, period:"1898年2月〜1898年10月", catch:"メイン号事件からマニラとサンティアゴへ、新興帝国の内側", cnt:"公開中：プロローグ2号＋本編13号＋エピローグ2号" },
+  { code:"es", name:"スペイン", ready:true, period:"1898年2月〜1898年10月", catch:"最後の植民地を失い、帝国が終わる内側", cnt:"公開中：プロローグ2号＋本編10号＋エピローグ2号" }
 ];
 COUNTRIES_BY_WAR.rj = [
   { code:"jp", name:"日本", ready:true, period:"1904年2月〜1905年9月", catch:"列強ロシアに挑み、国民総動員で戦った戦争の内側", cnt:"公開中：プロローグ2号＋本編28号＋エピローグ2号" },
