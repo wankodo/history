@@ -7,11 +7,11 @@
 <title>戦争史｜歴史系ツール集</title>
 <link rel="icon" type="image/svg+xml" href="favicon-war.svg">
 <link rel="apple-touch-icon" href="favicon.png">
-<meta name="description" content="戦争と国を選ぶと、その国の目線で戦争を新聞として追えるコーナーです。戦況だけでなく経済・食料・技術の変化も、その国の公式資料をもとに報じます。第二次世界大戦の7か国編と第一次世界大戦の9か国編、日露戦争・日清戦争・南北戦争・普仏戦争・普墺戦争・米西戦争の各2か国編と、クリミア戦争の4か国編、ナポレオン戦争の5か国編、七年戦争・スペイン継承戦争の各3か国編、大阪の陣の日本編、元寇の2か国編を公開中です。">
+<meta name="description" content="戦争と国を選ぶと、その国の目線で戦争を新聞として追えるコーナーです。戦況だけでなく経済・食料・技術の変化も、その国の公式資料をもとに報じます。第二次世界大戦の7か国編と第一次世界大戦の9か国編、日露戦争・日清戦争・南北戦争・普仏戦争・普墺戦争・米西戦争の各2か国編と、クリミア戦争の4か国編、ナポレオン戦争の5か国編、七年戦争・スペイン継承戦争の各3か国編、大阪の陣の日本編、元寇・百年戦争の各2か国編を公開中です。">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="歴史系ツール集">
 <meta property="og:title" content="戦争史">
-<meta property="og:description" content="戦争と国を選ぶと、その国の目線で戦争を新聞として追えるコーナーです。戦況だけでなく経済・食料・技術の変化も、その国の公式資料をもとに報じます。第二次世界大戦の7か国編と第一次世界大戦の9か国編、日露戦争・日清戦争・南北戦争・普仏戦争・普墺戦争・米西戦争の各2か国編と、クリミア戦争の4か国編、ナポレオン戦争の5か国編、七年戦争・スペイン継承戦争の各3か国編、大阪の陣の日本編、元寇の2か国編を公開中です。">
+<meta property="og:description" content="戦争と国を選ぶと、その国の目線で戦争を新聞として追えるコーナーです。戦況だけでなく経済・食料・技術の変化も、その国の公式資料をもとに報じます。第二次世界大戦の7か国編と第一次世界大戦の9か国編、日露戦争・日清戦争・南北戦争・普仏戦争・普墺戦争・米西戦争の各2か国編と、クリミア戦争の4か国編、ナポレオン戦争の5か国編、七年戦争・スペイン継承戦争の各3か国編、大阪の陣の日本編、元寇・百年戦争の各2か国編を公開中です。">
 <meta property="og:url" content="https://wankodo.github.io/history/war.html">
 <meta property="og:image" content="https://wankodo.github.io/history/ogp-top.png">
 <meta property="og:image:width" content="1200">
@@ -213,7 +213,7 @@ footer .credit{margin:8px 0 0;font-size:13px;color:#fff}
 <div class="sitebar"><div class="sb-in"><a class="sb-name" href="index.html">歴史系ツール集</a><span style="display:flex;align-items:center;gap:12px;"><a href="https://wankodo.github.io/">よろず道具箱</a></span></div></div>
 <header class="site">
   <h1>戦争史</h1>
-  <span class="sub">戦争と国を選ぶと、その国の目線で戦争を追える新聞です ― 第二次世界大戦・第一次世界大戦・日露戦争・日清戦争・南北戦争・普仏戦争・普墺戦争・クリミア戦争・米西戦争・ナポレオン戦争・七年戦争・スペイン継承戦争・大阪の陣・元寇を公開中</span>
+  <span class="sub">戦争と国を選ぶと、その国の目線で戦争を追える新聞です ― 第二次世界大戦・第一次世界大戦・日露戦争・日清戦争・南北戦争・普仏戦争・普墺戦争・クリミア戦争・米西戦争・ナポレオン戦争・七年戦争・スペイン継承戦争・大阪の陣・元寇・百年戦争を公開中</span>
 </header>
 <main>
   <!-- 状態1：戦争の選択 -->
@@ -320,6 +320,7 @@ const WARS = [
   { code:"ssw", name:"スペイン継承戦争", years:"1701–1714年", desc:"イギリス・フランス・スペイン、3か国の目線で追う、ガゼット風の新聞。出来事のある月だけ発行。", cnt:"3か国編を公開中", gran:"month" },
   { code:"osk", name:"大阪の陣", years:"1614–1615年", desc:"徳川幕府側の公式記録に基づく、瓦版風の読み物。", cnt:"日本編を公開中", gran:"month" },
   { code:"gk", name:"元寇", years:"1274–1281年", desc:"日本とモンゴル帝国、両国の公式記録で読む年代記。号ではなく「記」で数える。", cnt:"2か国編を公開中", gran:"year" },
+  { code:"hyw", name:"百年戦争", years:"1337–1453年", desc:"イングランドとフランス、両国の公式記録で読む年代記。号ではなく「記」で数える。", cnt:"2か国編を公開中", gran:"year" },
   { code:"ww1", name:"第一次世界大戦", years:"1914–1918年", desc:"9か国の新聞で読み比べる。", cnt:"9か国編を公開中（完結）", gran:"week" },
   { code:"ww2", name:"第二次世界大戦", years:"1939–1945年（日本・中国は1937年開始）", desc:"7か国の目線で追う。", cnt:"7か国編を公開中（完結）", gran:"week" }
 ];
@@ -373,6 +374,10 @@ COUNTRIES_BY_WAR.ssw = [
 COUNTRIES_BY_WAR.gk = [
   { code:"jp", name:"日本", ready:true, period:"1274年〜1281年", catch:"幕府の公式記録と社寺の祈祷で読む、二度の海を越えた戦い", cnt:"公開中：前史2記＋本編6記＋後日2記" },
   { code:"mg", name:"モンゴル帝国（元）", ready:true, period:"1274年〜1281年", catch:"『元史』の公式記録で読む、東征の顛末", cnt:"公開中：前史1記＋本編5記＋後日2記" }
+];
+COUNTRIES_BY_WAR.hyw = [
+  { code:"gb", name:"イングランド", ready:true, period:"1337年〜1453年", catch:"クレシー、アジャンクールの栄光から大陸領の喪失までを読む年代記", cnt:"公開中：前史2記＋本編24記＋後日2記" },
+  { code:"fr", name:"フランス", ready:true, period:"1337年〜1453年", catch:"度重なる敗北と内乱から、ジャンヌと王権の回復を読む年代記", cnt:"公開中：前史2記＋本編24記＋後日2記" }
 ];
 COUNTRIES_BY_WAR.rj = [
   { code:"jp", name:"日本", ready:true, period:"1904年2月〜1905年9月", catch:"列強ロシアに挑み、国民総動員で戦った戦争の内側", cnt:"公開中：プロローグ2号＋本編28号＋エピローグ2号" },
