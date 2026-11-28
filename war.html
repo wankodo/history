@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<script>try{var _t=localStorage.getItem("ido_theme_v1");if(_t==="andy"||_t==="kuma")document.documentElement.dataset.theme=_t;}catch(e){}</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>戦争史｜歴史系ツール集</title>
+<link rel="icon" type="image/svg+xml" href="favicon-war.svg">
+<link rel="apple-touch-icon" href="favicon.png">
+<meta name="description" content="戦争と国を選ぶと、その国の目線で戦争を週刊の新聞として追えるコーナーです。戦況だけでなく経済・食料・技術の変化も、その国の公式資料をもとに報じます。現在は第二次世界大戦・日本編を公開中です。">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="歴史系ツール集">
+<meta property="og:title" content="戦争史">
+<meta property="og:description" content="戦争と国を選ぶと、その国の目線で戦争を週刊の新聞として追えるコーナーです。戦況だけでなく経済・食料・技術の変化も、その国の公式資料をもとに報じます。現在は第二次世界大戦・日本編を公開中です。">
+<meta property="og:url" content="https://wankodo.github.io/history/war.html">
+<meta property="og:image" content="https://wankodo.github.io/history/ogp-top.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://wankodo.github.io/history/ogp-top.png">
+<style>
+  :root{
+    --paper:#f7f1de; --paper2:#efe6cd; --ink:#2b2419; --ink2:#5c5342;
+    --rule:#8a7a5c; --accent:#8f1f1f; --ui:#f4f4f2; --uib:#d8d8d2;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif JP",serif;background:#e9e4d4;color:var(--ink)}
+  header.site{padding:10px 16px;background:#33302a;color:#f0ead6;display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+  header.site h1{font-size:18px;margin:0;letter-spacing:.2em}
+  header.site .trial{font-size:12px;background:var(--accent);color:#fff;padding:2px 8px;border-radius:3px;letter-spacing:.1em}
+  header.site .sub{font-size:12px;color:#cbbf9f}
+  main{max-width:1060px;margin:0 auto;padding:14px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+  .card{background:var(--paper);border:1px solid var(--rule);padding:14px;cursor:pointer}
+  .card:hover{outline:2px solid var(--rule)}
+  .card.disabled{opacity:.45;cursor:not-allowed}
+  .card h3{margin:0 0 6px;font-size:19px}
+  .card p{margin:4px 0;font-size:13px;color:var(--ink2);line-height:1.6}
+  .card .cnt{font-size:12px;color:var(--accent)}
+  h2.step{font-size:16px;letter-spacing:.15em;border-bottom:3px double var(--rule);padding-bottom:4px}
+  button{font-family:inherit;cursor:pointer}
+  .btn{background:#33302a;color:#f0ead6;border:0;padding:7px 14px;font-size:14px;border-radius:3px}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--rule)}
+  /* 年表レイヤー（読み比べ三層構造の土台） */
+  #timelineWrap{background:var(--ui);border:1px solid var(--uib);padding:10px 12px;margin-bottom:12px}
+  #timelineWrap .tl-title{font-size:12px;color:#666;letter-spacing:.1em;margin-bottom:6px}
+  #tlBand{position:relative;height:34px;background:linear-gradient(#fff,#f0eee6);border:1px solid var(--uib);cursor:pointer}
+  #tlBand .zone{position:absolute;top:0;bottom:0;background:#e4dcc2;border-right:1px dashed var(--rule);font-size:10px;color:var(--ink2);writing-mode:vertical-rl;padding:2px 0}
+  #tlBand .mark{position:absolute;top:6px;width:3px;height:22px;background:#8a7a5c}
+  #tlBand .mark.extra{background:var(--accent);width:4px}
+  #tlBand .cursor{position:absolute;top:0;bottom:0;width:2px;background:var(--accent)}
+  #tlRead{font-size:12px;color:#555;margin-top:5px}
+  /* 操作系 */
+  .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:var(--ui);border:1px solid var(--uib);padding:10px 12px;margin-bottom:12px}
+  .controls select{font-family:inherit;padding:6px}
+  #slider{flex:1;min-width:160px}
+  .issuelabel{font-size:14px;font-weight:bold}
+  /* 紙面 */
+  #paper{background:var(--paper);border:1px solid var(--rule);box-shadow:0 2px 10px rgba(0,0,0,.18);padding:26px 30px;position:relative}
+  #paper .masthead{display:flex;align-items:flex-end;justify-content:space-between;border-bottom:4px double var(--ink);padding-bottom:8px;margin-bottom:6px}
+  #paper .papername{font-size:40px;letter-spacing:.35em;font-weight:700;text-align:center;flex:1}
+  #paper .mastSide{font-size:11px;color:var(--ink2);line-height:1.7;min-width:92px}
+  #paper .mastLeft{text-align:left}
+  #paper .mastRight{text-align:right}
+  #paper .papername small{font-size:13px;letter-spacing:.2em;color:var(--ink2);display:block;margin-top:2px}
+  #paper .infoline{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;font-size:13px;border-bottom:1px solid var(--rule);padding:5px 2px;color:var(--ink2)}
+  /* 日付の西暦は「字幕」：元号が主表記で、西暦は現代読者向けの補助として小さく従属的に添える */
+  #paper .dateSub{font-size:.8em;color:var(--ink2);letter-spacing:0}
+  #extraBand{display:none;background:var(--accent);color:#fff;text-align:center;font-size:22px;letter-spacing:1.2em;padding:4px 0;margin:10px 0 2px;font-weight:700}
+  #paper.extra #extraBand{display:block}
+  /* 表紙：見出しは縦書き（右端）、写真はその左。日本の新聞の組版に寄せる */
+  .coverRow{display:flex;flex-direction:row-reverse;gap:18px;margin-top:10px;align-items:flex-start}
+  #vHead{writing-mode:vertical-rl;font-size:29px;line-height:1.55;margin:0;font-weight:700;letter-spacing:.06em;max-height:440px}
+  figure.coverPhoto{margin:0;flex:1;min-width:0;border:1px solid var(--rule);background:#fffdf4;padding:8px}
+  figure.coverPhoto img{width:100%;height:auto;display:block;filter:sepia(.28) contrast(1.02)}
+  figure.coverPhoto figcaption{font-size:12.5px;line-height:1.6;margin-top:6px}
+  figure.coverPhoto .credit{font-size:11px;color:var(--ink2)}
+  #headlineSub{font-size:13px;color:var(--ink2);font-style:italic;margin:8px 0 0}
+  /* 本文：縦書き主体（右から左）。段は横へ流れ、はみ出しは横スクロール */
+  #bodyV{writing-mode:vertical-rl;height:560px;max-width:100%;overflow-x:auto;overflow-y:hidden;margin-top:12px;padding:10px 4px;border-top:3px double var(--rule)}
+  #bodyV .vSec{margin-left:26px}
+  #bodyV .vSec:last-child{margin-left:0}
+  #bodyV p{margin:0 0 0 14px;line-height:1.9;font-size:15px}
+  .secHeadV{font-size:16px;font-weight:700;letter-spacing:.35em;border-right:2px solid var(--ink);padding-right:6px;margin-left:12px}
+  #noteBox{display:none;margin-top:16px;border:1px solid var(--rule);background:var(--paper2);padding:10px 12px;font-size:13px;line-height:1.7}
+  #noteBox .nt{font-weight:700;letter-spacing:.2em}
+  #refsBox{margin-top:12px;font-size:13px}
+  #refsBox button{margin:2px 4px 2px 0}
+  #srcLine{margin-top:14px;border-top:1px solid var(--rule);padding-top:6px;font-size:12px;color:var(--ink2);line-height:1.6}
+  /* パネル（週ハブ／同期再生／バックナンバー） */
+  .panel{background:var(--ui);border:1px solid var(--uib);padding:12px;margin-top:14px}
+  .panel h3{margin:0 0 8px;font-size:15px;letter-spacing:.1em}
+  .hubGrid,.syncGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+  .hubItem,.syncItem{background:#fff;border:1px solid var(--uib);padding:8px 10px;font-size:13px;line-height:1.55}
+  .hubItem .cn,.syncItem .cn{font-weight:700;font-size:12px;color:#666;letter-spacing:.1em}
+  .hubItem.live{cursor:pointer;border-color:var(--rule);background:var(--paper)}
+  .hubItem .none,.syncItem .none{color:#999}
+  #backNumbers{display:flex;flex-wrap:wrap;gap:6px}
+  #backNumbers button{background:#fff;border:1px solid var(--uib);padding:5px 9px;font-size:12px;text-align:left}
+  #backNumbers button.cur{border-color:var(--accent);color:var(--accent);font-weight:700}
+  .hidden{display:none}
+  @media(max-width:720px){
+    #paper{padding:18px 16px}
+    #paper .papername{font-size:30px}
+    #paper .mastSide{min-width:62px;font-size:10px}
+    #vHead{font-size:23px;max-height:320px}
+    #bodyV{height:68vh}
+    .coverRow{flex-direction:column}
+    #vHead{align-self:flex-end}
+    figure.coverPhoto{width:100%}
+  }
+</style>
+<style id="hud-theme-style">
+/* ===== DEF/HUD テーマ切替（共通） ===== */
+.ido-theme-switch{position:relative;z-index:1;display:flex;gap:4px;padding:4px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.07);flex:none}
+.ido-theme-switch button{border:0;border-radius:999px;padding:6px 13px;background:transparent;box-shadow:none;color:#cfe2f3;font:inherit;font-size:12.5px;font-weight:800;line-height:1.25;cursor:pointer}
+.ido-theme-switch button[aria-pressed="true"]{background:linear-gradient(180deg,#ffc44d,var(--amber));color:#14273c}
+html[data-theme="andy"] .ido-theme-switch button[aria-pressed="true"]{background:linear-gradient(180deg,#8ff2ff,#46d9ec);color:#03222e;box-shadow:0 0 16px rgba(70,217,236,.55)}
+:root[data-theme="andy"]{color-scheme:dark;--navy:#1d4568;--navy2:#02070d;--amber:#46d9ec;--amber-d:#8ff2ff;--bg:#04090f;--card:#081623;--ink:#d8f1f6;--mut:#a9c9d9;--line:rgba(110,205,230,.32);--red:#ff6b61;--green:#3ddc97;--soft:rgba(70,217,236,.10);--good:#3ddc97;--bad:#ff6b61;--sat:#7cc7ff;--sun:#ff6b61}
+html[data-theme="andy"]{background:#04090f}
+html[data-theme="andy"] body{background:radial-gradient(900px 480px at 85% -120px,rgba(70,217,236,.13),rgba(70,217,236,0) 60%),repeating-linear-gradient(0deg,rgba(140,230,255,.022) 0 1px,transparent 1px 4px),linear-gradient(rgba(110,205,230,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(110,205,230,.045) 1px,transparent 1px),linear-gradient(180deg,#030a12,#04090f);background-size:auto,auto,52px 52px,52px 52px,auto}
+html[data-theme="andy"] a{color:#ffcf4d}
+html[data-theme="andy"] .sitebar a{color:#fff}
+/* 濃色文字（--navy）を担う見出し・数値類は明色に固定 */
+html[data-theme="andy"] :is(.card h2,.card h3,.tool-card h2,.today .word,.today.word,.result .word,.sumcard .val,.sumcard.white.val,.count,.date-line,.plan .pname,.plan.pname,.pname .pn,.prod .pname,.prod h4,.vs h3,.total3 h3,.bar-row .b-lab,.bar-row .bar-head .cat,.penline .amt,.bd-fixed,.stone .sname,.plabel,details summary,.adv-row .a-lab,.cal-title,.compat .ctext,.detail-rk,.detail-word,.dir-cell .d-dir,.dir-cell .d-star,.dnav .dlabel,.fortune-name,.grade,.kv dt,.lp-line .lp b,.person h3,.pos-name,.rank .bt,.read-head .pname,.result-word,.rname,.star-row .s-lab,.star-row .s-name,.sumline b){color:#d8f1f6}
+/* 白・淡色の面は背景と文字色をセットでダークパネル化 */
+html[data-theme="andy"] :is(.suggest,.chip,.plan,.rank li,.dir-cell,.hexbox.sub,.result .action,.checks label,.badges span,.rank-num,.prod .cond,.prod .nodatabox,.chips button,.tabs button,.cal-nav button,.btn-ghost,.btn.ghost,.presets button,.lp-line .lp,button.dbtn,.plan.dim){background:#0a1e30;color:#d8f1f6;border-color:rgba(110,205,230,.32)}
+html[data-theme="andy"] .btn-del{background:#0a1e30;border-color:rgba(110,205,230,.32)}
+html[data-theme="andy"] .sumcard.white{background:#0a1e30;color:#d8f1f6}
+html[data-theme="andy"] .seg button{background:#0a1e30;color:#d8f1f6;border-color:rgba(110,205,230,.32)}
+html[data-theme="andy"] .seg button.active{background:#1d4568;color:#fff}
+html[data-theme="andy"] :is(th,table.anchors th){background:#0d2a42;color:#d8f1f6}
+html[data-theme="andy"] table.cal td{background:#0a1e30;color:#d8f1f6}
+html[data-theme="andy"] table.cal td.empty{background:#060f18;color:#a9c9d9}
+html[data-theme="andy"] tr.total td{background:rgba(70,217,236,.12)}
+html[data-theme="andy"] :is(.bar-track,.bar-row .b-track){background:rgba(110,205,230,.15)}
+html[data-theme="andy"] :is(.warn,.sumcard.alert,.chip.unknown){background:rgba(255,82,82,.13)}
+html[data-theme="andy"] :is(.total3 .plan.win,.vs .side.win){background:rgba(61,220,151,.12)}
+html[data-theme="andy"] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),html[data-theme="andy"] select,html[data-theme="andy"] textarea{background-color:#0a1a29;color:#d8f1f6;border-color:rgba(110,205,230,.42)}
+/* アンバー地に白文字だったバッジ類は濃色文字に */
+html[data-theme="andy"] :is(.badge,.best-b,.birthday-banner,.rank-num.top,.chip.active,button.draw,.mini.kyo,.mini.kichi){color:#03222e}
+html[data-theme="andy"] .rank-num.top{background:var(--amber)}
+/* サイコロの目は白いままにする */
+html[data-theme="andy"] .die{background:#eef3f8;color:#1d2733}
+/* 色付きバッジ変種は白文字に戻す／淡色バッジ変種はダーク化する */
+html[data-theme="andy"] :is(.badge.badge-ins,.badge.badge-uranai,.badge.badge-mob,.badge.badge-hist,.badge.na,.badge.agency){color:#fff}
+html[data-theme="andy"] .badge.mid{background:#6b6557;color:#fff}
+html[data-theme="andy"] .badge.t1{background:rgba(255,82,82,.16);color:#ff9d94;border-color:rgba(255,82,82,.4)}
+html[data-theme="andy"] .badge.t2{background:#0d2a42;color:#d8f1f6;border-color:rgba(110,205,230,.32)}
+html[data-theme="andy"] .badge.t3{background:rgba(61,220,151,.14);color:#3ddc97;border-color:rgba(61,220,151,.4)}
+html[data-theme="andy"] .badges span.best-b{background:var(--amber);color:#03222e}
+</style>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QQ4435VBMK"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-QQ4435VBMK');
+</script>
+<style>
+/* プライバシーポリシー（共通・移動サイトと同一文面/同一流儀） */
+.pp-footer{text-align:center;margin:1rem 0 0;}
+.pp-link{background:none;border:0;padding:10px 14px;min-height:44px;color:inherit;opacity:.75;font-size:13px;text-decoration:underline;cursor:pointer;}
+.pp-overlay{position:fixed;inset:0;z-index:10001;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(8,18,30,.55);}
+.pp-overlay.open{display:flex;}
+.pp-dialog{width:100%;max-width:640px;max-height:min(86dvh,760px);display:flex;flex-direction:column;overflow:hidden;background:#fff;border:1px solid #d7dee6;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.25);color:#1c2b3a;text-align:left;}
+.pp-scroll{overflow-y:auto;padding:22px 22px 8px;-webkit-overflow-scrolling:touch;}
+.pp-actions{border-top:1px solid #d7dee6;padding:12px 22px 14px;}
+.pp-btn-row{display:flex;gap:10px;}
+.pp-close-btn{flex:1;min-height:48px;border:0;border-radius:9px;cursor:pointer;background:#16324f;color:#fff;font-size:15px;font-weight:700;}
+.privacy-policy h2{font-size:16px;margin:0 0 6px;}
+.privacy-policy p{font-size:13px;color:#42566b;line-height:1.8;}
+</style>
+<style>
+/* サイト共通クローム（サイトバー／フッター） */
+.sitebar{background:#0b1a2c;border-bottom:2px solid #f2a007;font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP",sans-serif}
+.sitebar .sb-in{max-width:980px;margin:0 auto;padding:7px 12px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.sitebar a{color:#fff;text-decoration:none;font-size:13px}
+.sitebar a:hover{color:#f2a007}
+.sitebar .sb-name{font-weight:700;letter-spacing:.03em;color:#fff;font-size:13px}
+footer{margin:26px 0 0;background:#0b1a2c;color:#cfd9e4;font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP",sans-serif}
+footer .wrap{max-width:980px;margin:0 auto;padding:18px 12px}
+footer .note{font-size:12.5px;color:#9fb0c1;line-height:1.6;margin:0}
+footer .credit{margin:8px 0 0;font-size:13px;color:#fff}
+.guideline{max-width:1060px;margin:0 auto;padding:0 14px;font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP",sans-serif;font-size:13.5px}
+</style>
+</head>
+<body>
+<div class="sitebar"><div class="sb-in"><a class="sb-name" href="index.html">歴史系ツール集</a><span style="display:flex;align-items:center;gap:12px;"><a href="https://wankodo.github.io/">よろず道具箱</a><div class="ido-theme-switch" role="group" aria-label="表示モード切替"><button type="button" data-ido-theme="kuma" aria-pressed="true">DEF</button><button type="button" data-ido-theme="andy" aria-pressed="false">HUD</button></div></span></div></div>
+<header class="site">
+  <h1>戦争史</h1>
+  <span class="sub">戦争と国を選ぶと、その国の目線で戦争を追える新聞です ― 現在は第二次世界大戦・日本編を公開中</span>
+</header>
+<main>
+  <!-- 状態1：戦争の選択 -->
+  <section id="stateWar">
+    <h2 class="step">一、戦争を選ぶ</h2>
+    <div class="cards">
+      <div class="card disabled"><h3>第一次世界大戦</h3><p>1914–1918年。9か国の新聞で読み比べる。</p><p class="cnt">準備中</p></div>
+      <div class="card" id="pickWw2"><h3>第二次世界大戦</h3><p>1939–1945年（日本編は1937年開始）。7か国の目線で追う。</p><p class="cnt">日本編：公開中（プロローグ7号＋本編25号）</p></div>
+    </div>
+  </section>
+
+  <!-- 状態2：国の選択 -->
+  <section id="stateCountry" class="hidden">
+    <h2 class="step">二、国を選ぶ ― 第二次世界大戦</h2>
+    <div class="cards" id="countryCards"></div>
+    <p><button class="btn ghost" id="backToWar">← 戦争の選択へ戻る</button></p>
+  </section>
+
+  <!-- 状態3：新聞ビューア -->
+  <section id="stateViewer" class="hidden">
+    <div id="timelineWrap">
+      <div class="tl-title">全体年表レイヤー（土台）― 帯をクリックすると最寄りの発行号へ。発行週に目盛り、赤は号外</div>
+      <div id="tlBand"></div>
+      <div id="tlRead"></div>
+    </div>
+
+    <div class="controls">
+      <button class="btn" id="prevBtn">← 前号</button>
+      <button class="btn" id="playBtn">▶ 再生</button>
+      <button class="btn" id="nextBtn">次号 →</button>
+      <select id="speedSel" title="再生速度">
+        <option value="5000">ゆっくり（5秒）</option>
+        <option value="3000" selected>標準（3秒）</option>
+        <option value="1500">速い（1.5秒）</option>
+      </select>
+      <input type="range" id="slider" min="0" value="0">
+      <span class="issuelabel" id="issueLabel"></span>
+      <button class="btn ghost" id="backToCountry">国の選択へ</button>
+    </div>
+
+    <article id="paper">
+      <div class="masthead">
+        <div class="mastSide mastLeft">第二次大戦<br>日本版</div>
+        <div class="papername">戦時日報<small>THE WAR DAILY</small></div>
+        <div class="mastSide mastRight" id="mastDate"></div>
+      </div>
+      <div class="infoline"><span id="infoLeft"></span><span id="infoRight"></span></div>
+      <div id="extraBand">号 外</div>
+      <div class="coverRow">
+        <h2 id="vHead"></h2>
+        <figure class="coverPhoto hidden" id="coverPhoto">
+          <img id="photoImg" alt="">
+          <figcaption><span id="photoCap"></span><br><span class="credit" id="photoCredit"></span></figcaption>
+        </figure>
+      </div>
+      <p id="headlineSub"></p>
+      <div id="bodyV"></div>
+      <div id="noteBox"><span class="nt">注記</span>　<span id="noteText"></span></div>
+      <div id="refsBox"></div>
+      <div id="srcLine"></div>
+    </article>
+
+    <div class="panel">
+      <h3>週ハブ ― この週の他国の新聞</h3>
+      <div class="hubGrid" id="hubGrid"></div>
+    </div>
+
+    <div class="panel">
+      <h3>同期再生 ― 全紙が同じ週でめくれる <button class="btn" id="syncBtn" style="float:right">同期再生 ▶</button></h3>
+      <div class="syncGrid" id="syncGrid"></div>
+    </div>
+
+    <div class="panel">
+      <h3>バックナンバー</h3>
+      <div id="backNumbers"></div>
+    </div>
+  </section>
+</main>
+
+<script src="war-weeks.js"></script>
+<script src="war-data-ww2-jp.js"></script>
+<script>
+"use strict";
+// ===== ビューア：WW2日本編のみ実データ。他編は構造だけ用意し「未製作」表示 =====
+const COUNTRIES_WW2 = [
+  { code:"jp", name:"日本", ready:true,  period:"1937年7月〜1945年9月", catch:"大陸での戦争から本土空襲まで、最も長く戦争を生きた国の内側" },
+  { code:"de", name:"ドイツ", ready:false, period:"1939年9月〜1945年5月", catch:"電撃戦の栄光から本土の焦土まで" },
+  { code:"gb", name:"イギリス", ready:false, period:"1939年9月〜1945年9月", catch:"孤独な抗戦と大陸反攻" },
+  { code:"us", name:"アメリカ", ready:false, period:"1941年12月〜1945年9月", catch:"真珠湾の衝撃から世界の工場へ" },
+  { code:"su", name:"ソ連", ready:false, period:"1939年9月〜1945年9月", catch:"独ソ戦の死闘と東欧への進出" },
+  { code:"it", name:"イタリア", ready:false, period:"1940年6月〜1945年", catch:"参戦、敗北、そして内戦" },
+  { code:"cn", name:"中国", ready:false, period:"1937年7月〜1945年9月", catch:"8年に及ぶ抗戦の内側" }
+];
+const WEEKS = WAR_WEEKS.ww2;
+let cur = 0;           // ISSUES の配列添字
+let timer = null, syncTimer = null;
+
+// 号の表示名（プロローグ第○号／第○号／エピローグ第○号）
+function issueName(idx){
+  const it = ISSUES[idx], kind = it.kind || "normal";
+  let n = 0;
+  for (let i=0;i<=idx;i++) if ((ISSUES[i].kind||"normal")===kind) n++;
+  if (kind==="prologue") return "プロローグ第"+n+"号";
+  if (kind==="epilogue") return "エピローグ第"+n+"号";
+  return "第"+n+"号";
+}
+function fmtDate(iso){
+  const d = new Date(iso+"T00:00:00");
+  return d.getFullYear()+"年"+(d.getMonth()+1)+"月"+d.getDate()+"日";
+}
+// 紙面の日付は元号が主表記。西暦は「字幕」として括弧付き・小さめで添える（2026-11-28、andy 決定）。
+// 根拠：当時の日本の新聞は1946年12月31日まで元号のみ表記で、西暦の併記は1947年1月1日から。
+// 西暦は当時の体裁の再現ではなく、言語仕様の字幕と同じ考え方で、現代の読者向けの補助として従属的に表示する。
+function warekiFull(iso){
+  const d = new Date(iso+"T00:00:00");
+  return "昭和"+(d.getFullYear()-1925)+"年"+(d.getMonth()+1)+"月"+d.getDate()+"日";
+}
+function adYearSub(y1, y2){ // 西暦の字幕（括弧付き）。年が同じなら1つだけ
+  return `<span class="dateSub">（${y1===y2 ? y1 : y1+"〜"+y2}）</span>`;
+}
+function warekiFullSub(iso){ // 題字脇の日付：昭和12年7月5日（1937）
+  const y = new Date(iso+"T00:00:00").getFullYear();
+  return warekiFull(iso) + adYearSub(y, y);
+}
+function weekRangeEra(week){
+  const a = WEEKS[week];
+  const d = new Date(a+"T00:00:00"); d.setDate(d.getDate()+6);
+  return warekiFull(a)+"〜"+(d.getMonth()+1)+"月"+d.getDate()+"日の週";
+}
+function weekRangeEraSub(week){ // 週範囲＋西暦字幕（年をまたぐ週は両年）
+  const a = WEEKS[week];
+  const d1 = new Date(a+"T00:00:00");
+  const d2 = new Date(a+"T00:00:00"); d2.setDate(d2.getDate()+6);
+  return weekRangeEra(week) + adYearSub(d1.getFullYear(), d2.getFullYear());
+}
+function periodLabelEra(p){
+  const conv = s => { const [y,m] = s.split("-").map(Number); return "昭和"+(y-1925)+"年"+m+"月"; };
+  return conv(p.from)+"〜"+conv(p.to);
+}
+function periodLabelEraSub(p){ // ダイジェスト対象期間＋西暦字幕
+  return periodLabelEra(p) + adYearSub(+p.from.split("-")[0], +p.to.split("-")[0]);
+}
+function weekRange(week){
+  const a = WEEKS[week];
+  const d = new Date(a+"T00:00:00"); d.setDate(d.getDate()+6);
+  const b = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  return fmtDate(a)+"〜"+fmtDate(b)+"の週";
+}
+
+// ===== 状態遷移 =====
+const $ = id => document.getElementById(id);
+function show(state){
+  ["stateWar","stateCountry","stateViewer"].forEach(s=>$(s).classList.toggle("hidden", s!==state));
+}
+$("pickWw2").addEventListener("click", ()=>{ buildCountries(); show("stateCountry"); });
+$("backToWar").addEventListener("click", ()=>show("stateWar"));
+$("backToCountry").addEventListener("click", ()=>{ stopPlay(); stopSync(); show("stateCountry"); });
+
+function buildCountries(){
+  $("countryCards").innerHTML = COUNTRIES_WW2.map(c=>`
+    <div class="card ${c.ready?"":"disabled"}" data-code="${c.code}">
+      <h3>${c.name}</h3><p>${c.period}</p><p>${c.catch}</p>
+      <p class="cnt">${c.ready ? "公開中：プロローグ7号＋本編25号" : "準備中"}</p>
+    </div>`).join("");
+  document.querySelectorAll("#countryCards .card").forEach(el=>{
+    el.addEventListener("click", ()=>{
+      if (el.dataset.code!=="jp") return;
+      openViewer(0); show("stateViewer");
+    });
+  });
+}
+
+// ===== ビューア =====
+function openViewer(idx){ cur = idx; buildTimeline(); buildBackNumbers(); render(); syncUrl(); }
+
+function render(){
+  const it = ISSUES[cur], kind = it.kind || "normal";
+  $("issueLabel").textContent = issueName(cur);
+  $("slider").max = ISSUES.length-1; $("slider").value = cur;
+  $("prevBtn").disabled = cur===0; $("nextBtn").disabled = cur===ISSUES.length-1;
+  // 紙面
+  $("paper").classList.toggle("extra", !!it.extra);
+  $("vHead").textContent = it.cover.headline;
+  $("headlineSub").textContent = it.cover.headlineSub || "";
+  // 表紙写真（§3「写真の使用仕様」：表紙・号外中心、出典を紙面に明示）
+  if (it.photo){
+    $("coverPhoto").classList.remove("hidden");
+    $("photoImg").src = it.photo.src;
+    $("photoImg").alt = it.photo.caption || "";
+    $("photoCap").textContent = it.photo.caption || "";
+    $("photoCredit").textContent = "出典：" + (it.photo.credit || "");
+  } else {
+    $("coverPhoto").classList.add("hidden");
+    $("photoImg").removeAttribute("src");
+  }
+  if (kind==="normal"){
+    $("infoLeft").innerHTML = issueName(cur)+"　"+weekRangeEraSub(it.week);
+    $("infoRight").textContent = "戦争"+(it.week+1)+"週目";
+    // 日付は題字脇に置く（元号が主表記、西暦は括弧の字幕）
+    $("mastDate").innerHTML = warekiFullSub(WEEKS[it.week]);
+  } else {
+    $("infoLeft").innerHTML = issueName(cur)+"　対象期間："+periodLabelEraSub(it.period);
+    $("infoRight").textContent = "ダイジェスト号（本編開始前）";
+    $("mastDate").innerHTML = periodLabelEraSub(it.period)+"<br>ダイジェスト";
+  }
+  const L = EDITION.sectionLabels;
+  let html = "";
+  const secs = [["war",L.war],["economy",L.economy],["food",L.food],["tech",L.tech]];
+  for (const [key,label] of secs){
+    const paras = it.body[key];
+    if (!paras || !paras.length) continue;
+    html += `<div class="vSec"><div class="secHeadV">${label}</div>` + paras.map(p=>`<p>${p}</p>`).join("") + `</div>`;
+  }
+  $("bodyV").innerHTML = html;
+  $("bodyV").scrollLeft = 0; // 縦書きは右端が読み始め
+  // 注記（紙面末尾注記）
+  if (it.note){ $("noteBox").style.display="block"; $("noteText").textContent = it.note; }
+  else $("noteBox").style.display="none";
+  // 発端リンク
+  const refs = it.refs||[];
+  $("refsBox").innerHTML = refs.length
+    ? "発端をたどる：" + refs.map((r,i)=>`<button class="btn ghost" data-ref="${i}"></button>`).join("")
+    : "";
+  refs.forEach((r,i)=>{
+    const btn = $("refsBox").querySelector(`[data-ref="${i}"]`);
+    const target = resolveRef(r);
+    if (target===null){ btn.textContent = "（参照先は未製作）"; btn.disabled = true; }
+    else {
+      btn.textContent = "この発端は "+issueName(target)+" →";
+      btn.addEventListener("click", ()=>{ cur = target; render(); syncUrl(); });
+    }
+  });
+  $("srcLine").textContent = "出典：" + (it.sources||[]).join("／");
+  buildHub(); buildSyncGrid(); updateTimelineCursor();
+  document.querySelectorAll("#backNumbers button").forEach((b,i)=>b.classList.toggle("cur", i===cur));
+}
+function resolveRef(r){
+  if (r.edition !== EDITION.war+"-"+EDITION.country) return null;
+  if (r.kind){
+    let n=0;
+    for (let i=0;i<ISSUES.length;i++){
+      if ((ISSUES[i].kind||"normal")===r.kind){ n++; if (n===r.n) return i; }
+    }
+    return null;
+  }
+  const i = ISSUES.findIndex(x=>(x.kind||"normal")==="normal" && x.week===r.week);
+  return i<0 ? null : i;
+}
+function syncUrl(){
+  const u = new URL(location.href);
+  u.searchParams.set("war","ww2"); u.searchParams.set("country","jp"); u.searchParams.set("issue", cur);
+  history.replaceState(null,"",u);
+}
+
+// 年表レイヤー：全期間の帯＋発行マーカー＋現在位置カーソル
+function buildTimeline(){
+  const band = $("tlBand"); band.innerHTML = "";
+  const total = WEEKS.length;
+  const mk = (cls, leftPct, title)=>{
+    const d = document.createElement("div"); d.className = cls;
+    d.style.left = leftPct+"%"; if (title) d.title = title; band.appendChild(d); return d;
+  };
+  const z = mk("zone", 0, ""); z.textContent = "プロローグ"; z.style.width = "3%";
+  ISSUES.forEach((it,i)=>{
+    if ((it.kind||"normal")!=="normal") return;
+    mk("mark"+(it.extra?" extra":""), (it.week/total)*100, issueName(i)+" "+weekRange(it.week));
+  });
+  const c = mk("cursor", 0, ""); c.id = "tlCursor";
+  band.onclick = (e)=>{
+    const r = band.getBoundingClientRect();
+    const week = Math.round(((e.clientX-r.left)/r.width)*total);
+    let best=0, bd=1e9;
+    ISSUES.forEach((it,i)=>{ if((it.kind||"normal")==="normal"){ const d=Math.abs(it.week-week); if(d<bd){bd=d;best=i;} }});
+    cur = best; render(); syncUrl();
+  };
+}
+function updateTimelineCursor(){
+  const it = ISSUES[cur], total = WEEKS.length;
+  const pos = (it.kind||"normal")==="normal" ? (it.week/total)*100 : (cur===0?0.5:1.5);
+  const c = $("tlCursor"); if (c) c.style.left = pos+"%";
+  $("tlRead").textContent = (it.kind||"normal")==="normal"
+    ? "現在位置："+weekRange(it.week)+"（全"+total+"週中の第"+(it.week+1)+"週）"
+    : "現在位置：ダイジェスト区間（本編の週軸の外側）";
+}
+
+// 週ハブ：同じ週の他国紙（現時点では日本編のみ実データ）
+function buildHub(){
+  const it = ISSUES[cur], kind = it.kind||"normal";
+  $("hubGrid").innerHTML = COUNTRIES_WW2.map(c=>{
+    if (c.code==="jp"){
+      return `<div class="hubItem live" id="hubJp"><div class="cn">日本 ― ${issueName(cur)}</div>${it.cover.headline}</div>`;
+    }
+    return `<div class="hubItem"><div class="cn">${c.name}</div><span class="none">${kind==="normal" ? "未製作（この週の号はまだ無い）" : "未製作"}</span></div>`;
+  }).join("");
+  const j = $("hubJp"); if (j) j.addEventListener("click", ()=>window.scrollTo({top:0,behavior:"smooth"}));
+}
+
+// 同期再生：全紙グリッド（現時点では日本編のみ連動）
+function buildSyncGrid(){
+  const it = ISSUES[cur];
+  $("syncGrid").innerHTML = COUNTRIES_WW2.map(c=>{
+    if (c.code==="jp") return `<div class="syncItem"><div class="cn">日本 ― ${issueName(cur)}</div>${it.cover.headline}</div>`;
+    return `<div class="syncItem"><div class="cn">${c.name}</div><span class="none">準備中</span></div>`;
+  }).join("");
+}
+
+// バックナンバー
+function buildBackNumbers(){
+  $("backNumbers").innerHTML = ISSUES.map((it,i)=>
+    `<button data-i="${i}">${issueName(i)}：${it.cover.headline}</button>`).join("");
+  document.querySelectorAll("#backNumbers button").forEach(b=>{
+    b.addEventListener("click", ()=>{ cur = +b.dataset.i; render(); syncUrl(); });
+  });
+}
+
+// 再生系
+function stopPlay(){ if (timer){ clearInterval(timer); timer=null; $("playBtn").textContent="▶ 再生"; } }
+function stopSync(){ if (syncTimer){ clearInterval(syncTimer); syncTimer=null; $("syncBtn").textContent="同期再生 ▶"; } }
+function step(d){
+  const n = cur + d;
+  if (n<0 || n>=ISSUES.length){ stopPlay(); stopSync(); return; }
+  cur = n; render(); syncUrl();
+}
+$("prevBtn").addEventListener("click", ()=>step(-1));
+$("nextBtn").addEventListener("click", ()=>step(1));
+$("slider").addEventListener("input", e=>{ cur = +e.target.value; render(); syncUrl(); });
+$("playBtn").addEventListener("click", ()=>{
+  if (timer){ stopPlay(); return; }
+  $("playBtn").textContent = "⏸ 停止";
+  timer = setInterval(()=>step(1), +$("speedSel").value);
+});
+$("speedSel").addEventListener("change", ()=>{
+  if (timer){ stopPlay(); $("playBtn").click(); }
+});
+$("syncBtn").addEventListener("click", ()=>{
+  if (syncTimer){ stopSync(); return; }
+  $("syncBtn").textContent = "同期再生 ⏸";
+  syncTimer = setInterval(()=>step(1), +$("speedSel").value);
+});
+document.addEventListener("keydown", e=>{
+  if ($("stateViewer").classList.contains("hidden")) return;
+  if (e.key==="ArrowRight") step(1);
+  else if (e.key==="ArrowLeft") step(-1);
+  else if (e.key===" "){ e.preventDefault(); $("playBtn").click(); }
+});
+
+// URLパラメータからの復元
+(function init(){
+  const q = new URLSearchParams(location.search);
+  if (q.get("war")==="ww2" && q.get("country")==="jp"){
+    const i = Math.min(Math.max(+q.get("issue")||0, 0), ISSUES.length-1);
+    openViewer(i); show("stateViewer");
+  }
+})();
+</script>
+
+<p class="guideline">この新聞の楽しみ方と、史実の扱いについては「<a href="guide-war.html">戦争史の楽しみ方</a>」をご覧ください。</p>
+<footer>
+  <div class="wrap">
+    <p class="note">本サイトは非公式の個人ツールです。記事は各国の公式資料をはじめとする公開資料に基づく再構成で、当時の報道そのものではありません。年代や数値には諸説があり、学術的な正確さを保証するものではありません。</p>
+    <p class="credit">著作権は andy に帰属します。無断転載を禁止します（リンクは自由です）。埋め込みリンクは動作を保証できないため禁止です。プログラムの複製・転用も禁止します。｜© 2026 andy（わんこ堂）</p>
+    <p class="credit">制作：andy（わんこ堂）× 熊八 🐾（Muse Spark）</p>
+  </div>
+  <p class="pp-footer"><button type="button" class="pp-link" data-pp-open>プライバシーポリシー</button><a class="pp-link" href="https://forms.gle/qwDBSCjG1rgiiRdT6" target="_blank" rel="noopener">お問い合わせ・ご意見</a></p>
+</footer>
+<script>
+(function(){
+  var btns=document.querySelectorAll("[data-ido-theme]");
+  function sync(){var cur=document.documentElement.dataset.theme||"kuma";btns.forEach(function(b){b.setAttribute("aria-pressed",String(b.dataset.idoTheme===cur));});}
+  btns.forEach(function(b){b.addEventListener("click",function(){document.documentElement.dataset.theme=b.dataset.idoTheme;try{localStorage.setItem("ido_theme_v1",b.dataset.idoTheme);}catch(e){}sync();});});
+  sync();
+})();
+</script>
+<div class="pp-overlay" data-pp-overlay>
+  <div class="pp-dialog privacy-policy" role="dialog" aria-modal="true" aria-labelledby="ppTitle">
+    <div class="pp-scroll">
+      <h2 id="ppTitle">プライバシーポリシー</h2>
+      <p>当サイト「歴史系ツール集」は、個人を特定する情報を収集しません。</p>
+      <p><strong>入力データについて：</strong>ツールに入力した内容は、お使いの端末のブラウザの中だけで処理され、サーバーへ送信されることはありません。ツールによっては、入力内容や設定を、お使いのブラウザの localStorage にのみ保存する場合があります。</p>
+      <p><strong>広告について：</strong>当サイトは、第三者配信の広告サービス（Google AdSense）を利用する場合があります。広告配信事業者は、ユーザーの興味に応じた広告を表示するため Cookie を使用することがあります。パーソナライズ広告は、Google の「広告設定」から無効にできます。</p>
+      <p><strong>アクセス解析について：</strong>当サイトは、アクセス解析ツール「Google アナリティクス」を使用しています。Google アナリティクスは Cookie を使用してサイトの利用状況を収集しますが、個人を特定する情報は含まれません。</p>
+      <p><strong>免責事項：</strong>計算結果や占い結果は目安・娯楽であり、実際の料金や判断は各事業者・専門家の公式情報をご確認ください。当サイトの利用によって生じた損害について、運営者は責任を負いません。</p>
+      <p><strong>お問い合わせ：</strong>当サイトは個人運営のツールサイトです。</p>
+      <p>制定日：2026年11月15日</p>
+    </div>
+    <div class="pp-actions">
+      <div class="pp-btn-row">
+        <button type="button" class="pp-close-btn" data-pp-close>閉じる</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="policy-snippet.js"></script>
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<script>try{var _t=localStorage.getItem("ido_theme_v1");if(_t==="andy"||_t==="kuma")document.documentElement.dataset.theme=_t;}catch(e){}</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>戦争史の楽しみ方｜歴史系ツール集</title>
+<link rel="icon" type="image/svg+xml" href="favicon-war.svg">
+<link rel="apple-touch-icon" href="favicon.png">
+<meta name="description" content="戦争と国を選んで、その国の目線で戦争を週刊の新聞として追う「戦争史」の楽しみ方。再生でめくれる紙面、読み比べの三層構造、発端リンクの使い方と、各国の公式資料を最優先する史実の扱いを案内する解説記事です。">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="歴史系ツール集">
+<meta property="og:title" content="戦争史の楽しみ方">
+<meta property="og:description" content="戦争と国を選んで、その国の目線で戦争を週刊の新聞として追う「戦争史」の楽しみ方。再生でめくれる紙面、読み比べの三層構造、発端リンクの使い方と、各国の公式資料を最優先する史実の扱いを案内する解説記事です。">
+<meta property="og:url" content="https://wankodo.github.io/history/guide-war.html">
+<meta property="og:image" content="https://wankodo.github.io/history/ogp-top.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://wankodo.github.io/history/ogp-top.png">
+<style>
+:root{
+  --navy:#12283f; --navy2:#0b1a2c; --amber:#f2a007; --amber-d:#c77f02;
+  --bg:#f4f2ec; --card:#ffffff; --ink:#1d2733; --mut:#68707c;
+  --line:#ddd6c8; --red:#b03a2e; --green:#1e7d46; --soft:#fdf6e0;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP",sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.6}
+header{background:linear-gradient(135deg,var(--navy2),var(--navy));color:#fff;padding:22px 16px 18px;border-bottom:4px solid var(--amber)}
+header .wrap{max-width:980px;margin:0 auto}
+header h1{margin:0;font-size:24px;letter-spacing:.04em}
+header h1 .accent{color:var(--amber)}
+header p{margin:6px 0 0;font-size:13px;color:#cfd9e4}
+.wrap{max-width:980px;margin:0 auto;padding:0 12px}
+.note{font-size:12.5px;color:var(--mut)}
+.sitebar{background:var(--navy2);border-bottom:2px solid var(--amber)}
+.sitebar .sb-in{max-width:980px;margin:0 auto;padding:7px 12px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.sitebar a{color:#fff;text-decoration:none;font-size:13px}
+.sitebar a:hover{color:var(--amber)}
+.sitebar .sb-name{font-weight:700;letter-spacing:.03em;color:#fff;font-size:13px}
+.searchbox{margin:18px 0 6px}
+.searchbox input{
+  width:100%;padding:16px 18px;font-size:18px;border:2px solid var(--navy);border-radius:12px;background:#fff;color:var(--ink);
+  box-shadow:0 2px 8px rgba(18,40,63,.10);
+}
+.searchbox input:focus{outline:3px solid var(--amber);outline-offset:0;border-color:var(--amber-d)}
+.search-field{position:relative}
+.suggest{
+  position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:30;
+  background:#fff;border:2px solid var(--navy);border-radius:12px;
+  box-shadow:0 8px 24px rgba(18,40,63,.18);
+  max-height:320px;overflow-y:auto;padding:4px;
+}
+.suggest[hidden]{display:none}
+.sug-item{
+  display:flex;align-items:center;gap:8px;min-height:44px;
+  padding:11px 10px;border-radius:8px;text-decoration:none;color:var(--ink);font-size:15px;
+}
+.sug-item:hover,.sug-item:active{background:var(--soft)}
+.sug-item .sug-name{flex:1;line-height:1.4}
+.sug-none{padding:14px 10px;color:var(--mut);font-size:14px;text-align:center}
+.searchinfo{font-size:13px;color:var(--mut);margin:8px 2px 0;min-height:1.4em}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 20px}
+@media(max-width:640px){.cards{grid-template-columns:1fr}}
+.tool-card{
+  display:block;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;
+  box-shadow:0 1px 3px rgba(18,40,63,.06);text-decoration:none;color:var(--ink);
+}
+.tool-card:hover{border-color:var(--amber);box-shadow:0 2px 10px rgba(18,40,63,.13)}
+.tool-card .tc-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tool-card h2{margin:0;font-size:17px;color:var(--navy)}
+.tool-card .tc-cat{font-size:12px;color:var(--mut);margin-top:2px}
+.tool-card p{margin:8px 0 0;font-size:13.5px}
+.badge{display:inline-block;font-size:11.5px;font-weight:700;border-radius:999px;padding:1px 9px;line-height:1.7}
+.badge-money{background:var(--amber);color:#231a00}
+.badge-mob{background:var(--navy);color:#fff}
+.badge-uranai{background:#6d28d9;color:#fff}
+.badge-ins{background:#0f766e;color:#fff}
+.badge-hist{background:#92400e;color:#fff}
+.noresult{
+  display:none;background:var(--card);border:1px solid var(--line);border-radius:10px;
+  padding:22px 16px;margin:14px 0 20px;text-align:center;color:var(--mut);font-size:14.5px;
+}
+footer{margin:26px 0 0;background:var(--navy2);color:#cfd9e4}
+footer .wrap{max-width:980px;margin:0 auto;padding:18px 12px}
+footer .note{color:#9fb0c1}
+footer .credit{margin:8px 0 0;font-size:13px;color:#fff}
+</style>
+<style id="hud-theme-style">
+/* ===== DEF/HUD テーマ切替（共通） ===== */
+.ido-theme-switch{position:relative;z-index:1;display:flex;gap:4px;padding:4px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.07);flex:none}
+.ido-theme-switch button{border:0;border-radius:999px;padding:6px 13px;background:transparent;box-shadow:none;color:#cfe2f3;font:inherit;font-size:12.5px;font-weight:800;line-height:1.25;cursor:pointer}
+.ido-theme-switch button[aria-pressed="true"]{background:linear-gradient(180deg,#ffc44d,var(--amber));color:#14273c}
+html[data-theme="andy"] .ido-theme-switch button[aria-pressed="true"]{background:linear-gradient(180deg,#8ff2ff,#46d9ec);color:#03222e;box-shadow:0 0 16px rgba(70,217,236,.55)}
+:root[data-theme="andy"]{color-scheme:dark;--navy:#1d4568;--navy2:#02070d;--amber:#46d9ec;--amber-d:#8ff2ff;--bg:#04090f;--card:#081623;--ink:#d8f1f6;--mut:#a9c9d9;--line:rgba(110,205,230,.32);--red:#ff6b61;--green:#3ddc97;--soft:rgba(70,217,236,.10);--good:#3ddc97;--bad:#ff6b61;--sat:#7cc7ff;--sun:#ff6b61}
+html[data-theme="andy"]{background:#04090f}
+html[data-theme="andy"] body{background:radial-gradient(900px 480px at 85% -120px,rgba(70,217,236,.13),rgba(70,217,236,0) 60%),repeating-linear-gradient(0deg,rgba(140,230,255,.022) 0 1px,transparent 1px 4px),linear-gradient(rgba(110,205,230,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(110,205,230,.045) 1px,transparent 1px),linear-gradient(180deg,#030a12,#04090f);background-size:auto,auto,52px 52px,52px 52px,auto}
+html[data-theme="andy"] a{color:#ffcf4d}
+html[data-theme="andy"] .sitebar a{color:#fff}
+/* 濃色文字（--navy）を担う見出し・数値類は明色に固定 */
+html[data-theme="andy"] :is(.card h2,.card h3,.tool-card h2,.today .word,.today.word,.result .word,.sumcard .val,.sumcard.white.val,.count,.date-line,.plan .pname,.plan.pname,.pname .pn,.prod .pname,.prod h4,.vs h3,.total3 h3,.bar-row .b-lab,.bar-row .bar-head .cat,.penline .amt,.bd-fixed,.stone .sname,.plabel,details summary,.adv-row .a-lab,.cal-title,.compat .ctext,.detail-rk,.detail-word,.dir-cell .d-dir,.dir-cell .d-star,.dnav .dlabel,.fortune-name,.grade,.kv dt,.lp-line .lp b,.person h3,.pos-name,.rank .bt,.read-head .pname,.result-word,.rname,.star-row .s-lab,.star-row .s-name,.sumline b){color:#d8f1f6}
+/* 白・淡色の面は背景と文字色をセットでダークパネル化 */
+html[data-theme="andy"] :is(.suggest,.chip,.plan,.rank li,.dir-cell,.hexbox.sub,.result .action,.checks label,.badges span,.rank-num,.prod .cond,.prod .nodatabox,.chips button,.tabs button,.cal-nav button,.btn-ghost,.btn.ghost,.presets button,.lp-line .lp,button.dbtn,.plan.dim){background:#0a1e30;color:#d8f1f6;border-color:rgba(110,205,230,.32)}
+html[data-theme="andy"] .btn-del{background:#0a1e30;border-color:rgba(110,205,230,.32)}
+html[data-theme="andy"] .sumcard.white{background:#0a1e30;color:#d8f1f6}
+html[data-theme="andy"] .seg button{background:#0a1e30;color:#d8f1f6;border-color:rgba(110,205,230,.32)}
+html[data-theme="andy"] .seg button.active{background:#1d4568;color:#fff}
+html[data-theme="andy"] :is(th,table.anchors th){background:#0d2a42;color:#d8f1f6}
+html[data-theme="andy"] table.cal td{background:#0a1e30;color:#d8f1f6}
+html[data-theme="andy"] table.cal td.empty{background:#060f18;color:#a9c9d9}
+html[data-theme="andy"] tr.total td{background:rgba(70,217,236,.12)}
+html[data-theme="andy"] :is(.bar-track,.bar-row .b-track){background:rgba(110,205,230,.15)}
+html[data-theme="andy"] :is(.warn,.sumcard.alert,.chip.unknown){background:rgba(255,82,82,.13)}
+html[data-theme="andy"] :is(.total3 .plan.win,.vs .side.win){background:rgba(61,220,151,.12)}
+html[data-theme="andy"] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),html[data-theme="andy"] select,html[data-theme="andy"] textarea{background-color:#0a1a29;color:#d8f1f6;border-color:rgba(110,205,230,.42)}
+/* アンバー地に白文字だったバッジ類は濃色文字に */
+html[data-theme="andy"] :is(.badge,.best-b,.birthday-banner,.rank-num.top,.chip.active,button.draw,.mini.kyo,.mini.kichi){color:#03222e}
+html[data-theme="andy"] .rank-num.top{background:var(--amber)}
+/* サイコロの目は白いままにする */
+html[data-theme="andy"] .die{background:#eef3f8;color:#1d2733}
+/* 色付きバッジ変種は白文字に戻す／淡色バッジ変種はダーク化する */
+html[data-theme="andy"] :is(.badge.badge-ins,.badge.badge-uranai,.badge.badge-mob,.badge.badge-hist,.badge.na,.badge.agency){color:#fff}
+html[data-theme="andy"] .badge.mid{background:#6b6557;color:#fff}
+html[data-theme="andy"] .badge.t1{background:rgba(255,82,82,.16);color:#ff9d94;border-color:rgba(255,82,82,.4)}
+html[data-theme="andy"] .badge.t2{background:#0d2a42;color:#d8f1f6;border-color:rgba(110,205,230,.32)}
+html[data-theme="andy"] .badge.t3{background:rgba(61,220,151,.14);color:#3ddc97;border-color:rgba(61,220,151,.4)}
+html[data-theme="andy"] .badges span.best-b{background:var(--amber);color:#03222e}
+</style>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QQ4435VBMK"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-QQ4435VBMK');
+</script>
+<style>
+/* プライバシーポリシー（共通・移動サイトと同一文面/同一流儀） */
+.pp-footer{text-align:center;margin:1rem 0 0;}
+.pp-link{background:none;border:0;padding:10px 14px;min-height:44px;color:inherit;opacity:.75;font-size:13px;text-decoration:underline;cursor:pointer;}
+.pp-overlay{position:fixed;inset:0;z-index:10001;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(8,18,30,.55);}
+.pp-overlay.open{display:flex;}
+.pp-dialog{width:100%;max-width:640px;max-height:min(86dvh,760px);display:flex;flex-direction:column;overflow:hidden;background:#fff;border:1px solid #d7dee6;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.25);color:#1c2b3a;text-align:left;}
+.pp-scroll{overflow-y:auto;padding:22px 22px 8px;-webkit-overflow-scrolling:touch;}
+.pp-actions{border-top:1px solid #d7dee6;padding:12px 22px 14px;}
+.pp-btn-row{display:flex;gap:10px;}
+.pp-close-btn{flex:1;min-height:48px;border:0;border-radius:9px;cursor:pointer;background:#16324f;color:#fff;font-size:15px;font-weight:700;}
+.privacy-policy h2{font-size:16px;margin:0 0 6px;}
+.privacy-policy p{font-size:13px;color:#42566b;line-height:1.8;}
+</style>
+<style>
+.article{max-width:760px;margin:0 auto;padding:26px 16px 6px}
+.article h2{font-size:19px;color:var(--navy);border-bottom:2px solid var(--amber);padding-bottom:6px;margin:34px 0 12px;line-height:1.5}
+.article h2:first-child{margin-top:6px}
+.article p{margin:0 0 14px;font-size:15.5px;line-height:1.95}
+.article-nav{max-width:760px;margin:0 auto;padding:18px 16px 0}
+.article-nav a{display:block;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;text-decoration:none;color:var(--ink);box-shadow:0 1px 3px rgba(18,40,63,.06)}
+.article-nav a:hover{border-color:var(--amber)}
+.article-nav .an-t{font-weight:700;color:var(--navy);font-size:16px}
+.article-nav .an-d{font-size:13px;color:var(--mut);margin-top:2px}
+.backline{max-width:760px;margin:0 auto;padding:14px 16px 0;font-size:13.5px}
+</style>
+</head>
+<body>
+<div class="sitebar"><div class="sb-in"><a class="sb-name" href="index.html">歴史系ツール集</a><span style="display:flex;align-items:center;gap:12px;"><a href="https://wankodo.github.io/">よろず道具箱</a><div class="ido-theme-switch" role="group" aria-label="表示モード切替"><button type="button" data-ido-theme="kuma" aria-pressed="true">DEF</button><button type="button" data-ido-theme="andy" aria-pressed="false">HUD</button></div></span></div></div>
+<header>
+  <div class="wrap">
+    <h1>戦争史の楽しみ方</h1>
+    <p>歴史系ツール集の解説記事です。対応するコーナーは「<a href="war.html" style="color:var(--amber)">戦争史</a>」です。</p>
+  </div>
+</header>
+<main class="article">
+<h2>戦争を、その国の新聞で読む</h2>
+<p>戦争の歴史は、ふつう年表や地図で語られます。でも、その戦争のただ中にいた人たちにとって、戦争は「来週の配給」と「遠くの前線の報せ」の積み重ねでした。この「戦争史」は、戦争と国を選ぶと、その国の目線で戦争を週刊の新聞として追えるコーナーです。</p>
+<p>紙面には戦況だけでなく、その週に変化があった面だけ、経済・食料・技術のコラムが差し込まれます。出来事のない週は発行されません。号をめくるうちに、戦火が少しずつ広がり、暮らしが少しずつ締め付けられていく過程を、当時の人々と同じ時間の流れで辿ることができます。</p>
+<h2>歩き方：戦争を選ぶ、国を選ぶ、新聞を読む</h2>
+<p>最初に戦争を選び、次に国を選びます。同じ戦争でも、国によって始まりと終わりが違います。カードに書かれた期間は、その国にとっての戦争の期間です。国を選ぶと、その国の新聞が創刊号から開きます。</p>
+<p>紙面は前号・次号ボタンで1号ずつめくれます。再生ボタンを押せば、一定の間隔で自動で号が進みます。速度は3段階に切り替えられます。キーボードの左右キーでも前後に動けます。上部の年表の帯（全体年表レイヤー）は戦争の全期間を示していて、発行された週に目盛りが打たれています。帯をクリックすると最寄りの号へ跳べるので、気になる時期から読み始めることもできます。バックナンバー一覧から、任意の号へ直接跳ぶこともできます。</p>
+<h2>プロローグとエピローグ ― 本編の前と後</h2>
+<p>各国の編は、本編の前後に「ダイジェスト号」を置いています。本編の前がプロローグで、その国が戦争へ入っていく理由や、よその国で戦火が広がっていく様子を、転機ごとに圧縮して伝えます。本編の後にはエピローグが続き、戦争が終わった後のその国を辿ります。戦争は、始まる前から始まっていて、終わった後もしばらく終わらない。その感覚を掴むための仕掛けです。</p>
+<h2>読み比べの三層構造</h2>
+<p>一つの戦争を複数の国の内側から読み比べるために、三つの導線を用意しています。土台は、上部に常時表示される全体年表レイヤーです。拾い読みには「週ハブ」があり、見ている号と同じ週の他国の新聞の一面見出しを並べて、気になる国へ跳べます。そして目玉が「同期再生」で、全紙が同じ週で足並みを揃えてめくれていきます。同じ週に、各国がそれぞれ何を見ていたか。そのずれと重なりが、このコーナーの一番の読みどころです（他国の編は順次公開していきます）。</p>
+<h2>発端リンクで、因果をさかのぼる</h2>
+<p>記事の中には「発端リンク」があります。ある出来事について、その発端となった過去の号へ跳べる仕掛けです。因果は前から後ろへしか流れませんが、理解は後ろから前へさかのぼると深まります。「なぜこうなったのか」を、号を遡って確かめてみてください。</p>
+<h2>史実の扱いについて</h2>
+<p>各編の記事は、その国の政府の公式資料（公式の戦史・記録・見解）を一次資料として最優先し、その国の目線で書いています。日本編なら日本の公式資料、という具合に、「その国の目線＝その国の公式資料」で統一しています。裏取りできない数値は推測で埋めず、書かないか、出どころを明示して書きます。</p>
+<p>当時の認識と、後世に判明した事実が食い違う場合があります。戦果の発表が実績と異なっていた、といったケースです。そのような箇所には紙面に注記を付け、当時の読者が見ていた世界と、実際の出来事の両方が分かるようにしています。プロパガンダ的な当時の表現を再現する場合も、それが当時のその国の認識であることが伝わる体裁にしています。</p>
+<p>紙面の写真は、表紙と号外を中心に、当時の実写真を使っています。使っているのはパブリックドメインの写真や公的機関の記録写真のみで、出典を紙面に明示しています。新聞社・通信社のアーカイブ写真は使いません。</p>
+<h2>現在の公開状況</h2>
+<p>現在公開しているのは、第二次世界大戦・日本編（プロローグ7号＋本編25号、1937年7月から12月まで）です。他の国の編と第一次世界大戦は準備中で、出来たページから順次公開していきます。日本編の続きも、号を書き足していく予定です。</p>
+<h2>データについて</h2>
+<p>このコーナーは、当時の新聞そのものではありません。公開資料に基づいて再構成した、読み物としての新聞です。紙名も架空のものです。週の区切りは月曜始まりで、出来事のあった週だけ号を発行しています。分からないことは分からないままにし、推測で埋めない方針で作っています。</p>
+</main>
+<div class="article-nav"><a href="war.html"><div class="an-t">戦争史を開く</div><div class="an-d">この記事で紹介したコーナーへ移動します。</div></a></div>
+<p class="backline"><a href="index.html">歴史系ツール集トップへ戻る</a></p>
+<section class="ai-summary" style="max-width:760px;margin:22px auto;padding:0 16px;font-size:13px;line-height:1.8;opacity:.78"><h2 style="font-size:14px;margin:0 0 6px">この記事について</h2><p style="margin:0">戦争と国を選んで、その国の目線で戦争を週刊の新聞として追う「戦争史」の楽しみ方。再生でめくれる紙面、読み比べの三層構造、発端リンクの使い方と、各国の公式資料を最優先する史実の扱いを案内する解説記事です。 処理はブラウザ内で完結し、入力データを外部送信しません。</p></section>
+<footer>
+  <div class="wrap">
+    <p class="note">本サイトは非公式の個人ツールです。在位期間・国境などの歴史情報は、Wikipediaなどの公開資料に基づく概略です。年代や境界には諸説があり、学術的な正確さを保証するものではありません。</p>
+    <p class="credit">著作権は andy に帰属します。無断転載を禁止します（リンクは自由です）。埋め込みリンクは動作を保証できないため禁止です。プログラムの複製・転用も禁止します。｜© 2026 andy（わんこ堂）</p>
+    <p class="credit">制作：andy（わんこ堂）× 熊八 🐾（Muse Spark）</p>
+  </div>
+  <p class="pp-footer"><button type="button" class="pp-link" data-pp-open>プライバシーポリシー</button></p>
+</footer>
+<script>
+(function(){
+  var btns=document.querySelectorAll("[data-ido-theme]");
+  function sync(){var cur=document.documentElement.dataset.theme||"kuma";btns.forEach(function(b){b.setAttribute("aria-pressed",String(b.dataset.idoTheme===cur));});}
+  btns.forEach(function(b){b.addEventListener("click",function(){document.documentElement.dataset.theme=b.dataset.idoTheme;try{localStorage.setItem("ido_theme_v1",b.dataset.idoTheme);}catch(e){}sync();});});
+  sync();
+})();
+</script>
+<div class="pp-overlay" data-pp-overlay>
+  <div class="pp-dialog privacy-policy" role="dialog" aria-modal="true" aria-labelledby="ppTitle">
+    <div class="pp-scroll">
+      <h2 id="ppTitle">プライバシーポリシー</h2>
+      <p>当サイト「歴史系ツール集」は、個人を特定する情報を収集しません。</p>
+      <p><strong>入力データについて：</strong>ツールに入力した内容は、お使いの端末のブラウザの中だけで処理され、サーバーへ送信されることはありません。ツールによっては、入力内容や設定を、お使いのブラウザの localStorage にのみ保存する場合があります。</p>
+      <p><strong>広告について：</strong>当サイトは、第三者配信の広告サービス（Google AdSense）を利用する場合があります。広告配信事業者は、ユーザーの興味に応じた広告を表示するため Cookie を使用することがあります。パーソナライズ広告は、Google の「広告設定」から無効にできます。</p>
+      <p><strong>アクセス解析について：</strong>当サイトは、アクセス解析ツール「Google アナリティクス」を使用しています。Google アナリティクスは Cookie を使用してサイトの利用状況を収集しますが、個人を特定する情報は含まれません。</p>
+      <p><strong>免責事項：</strong>計算結果や占い結果は目安・娯楽であり、実際の料金や判断は各事業者・専門家の公式情報をご確認ください。当サイトの利用によって生じた損害について、運営者は責任を負いません。</p>
+      <p><strong>お問い合わせ：</strong>当サイトは個人運営のツールサイトです。</p>
+      <p>制定日：2026年11月15日</p>
+    </div>
+    <div class="pp-actions">
+      <div class="pp-btn-row">
+        <button type="button" class="pp-close-btn" data-pp-close>閉じる</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="policy-snippet.js"></script>
+</body>
+</html>
