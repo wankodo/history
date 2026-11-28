@@ -6,11 +6,11 @@
 <title>戦争史｜歴史系ツール集</title>
 <link rel="icon" type="image/svg+xml" href="favicon-war.svg">
 <link rel="apple-touch-icon" href="favicon.png">
-<meta name="description" content="戦争と国を選ぶと、その国の目線で戦争を週刊の新聞として追えるコーナーです。戦況だけでなく経済・食料・技術の変化も、その国の公式資料をもとに報じます。現在は第二次世界大戦・日本編を公開中です。">
+<meta name="description" content="戦争と国を選ぶと、その国の目線で戦争を週刊の新聞として追えるコーナーです。戦況だけでなく経済・食料・技術の変化も、その国の公式資料をもとに報じます。現在は第二次世界大戦の7か国編（1939年分まで）を公開中です。">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="歴史系ツール集">
 <meta property="og:title" content="戦争史">
-<meta property="og:description" content="戦争と国を選ぶと、その国の目線で戦争を週刊の新聞として追えるコーナーです。戦況だけでなく経済・食料・技術の変化も、その国の公式資料をもとに報じます。現在は第二次世界大戦・日本編を公開中です。">
+<meta property="og:description" content="戦争と国を選ぶと、その国の目線で戦争を週刊の新聞として追えるコーナーです。戦況だけでなく経済・食料・技術の変化も、その国の公式資料をもとに報じます。現在は第二次世界大戦の7か国編（1939年分まで）を公開中です。">
 <meta property="og:url" content="https://wankodo.github.io/history/war.html">
 <meta property="og:image" content="https://wankodo.github.io/history/ogp-top.png">
 <meta property="og:image:width" content="1200">
@@ -64,6 +64,12 @@
   #paper .mastLeft{text-align:left}
   #paper .mastRight{text-align:right}
   #paper .papername small{font-size:13px;letter-spacing:.2em;color:var(--ink2);display:block;margin-top:2px;white-space:nowrap}
+  /* 他国編の題字：国ごとのデザイン言語（§3 国別デザイン仕様）。実在紙の題字ロゴは使わない */
+  #paper.hz .papername{font-size:33px;letter-spacing:.06em}
+  #paper.pf-de .papername{font-family:Georgia,"Times New Roman",serif;font-weight:900;letter-spacing:.03em}
+  #paper.pf-gb .papername,#paper.pf-us .papername{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:900;letter-spacing:.02em}
+  #paper.pf-su .papername{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:900;letter-spacing:.04em}
+  #paper.pf-it .papername{font-family:Georgia,"Times New Roman",serif;font-weight:700;letter-spacing:.14em}
   /* 発行情報行（二重線と一本線の間）：2行が間延びしないよう行間をしっかり詰める（2026-11-28、andy 指示） */
   #paper .infoline{display:flex;justify-content:space-between;flex-wrap:wrap;gap:1px 6px;font-size:13px;line-height:1.3;border-bottom:1px solid var(--rule);padding:3px 2px 4px;color:var(--ink2)}
   /* 日付の西暦は「字幕」：元号が主表記で、西暦は現代読者向けの補助として小さく従属的に添える */
@@ -74,6 +80,7 @@
   .upr{text-orientation:upright}
   #extraBand{display:none;background:var(--accent);color:#fff;text-align:center;font-size:22px;letter-spacing:1.2em;padding:4px 0;margin:10px 0 2px;font-weight:700}
   #paper.extra #extraBand{display:block}
+  #paper.hz #extraBand{letter-spacing:.35em;font-size:19px}
   /* 表紙：見出しは縦書き（右端）、写真はその左。日本の新聞の組版に寄せる */
   .coverRow{display:flex;flex-direction:row-reverse;gap:18px;margin-top:10px;align-items:flex-start}
   #vHead{writing-mode:vertical-rl;font-size:29px;line-height:1.55;margin:0;font-weight:700;letter-spacing:.06em;max-height:440px}
@@ -96,6 +103,19 @@
   #bodyV .vSec:last-child{margin-left:0}
   #bodyV p{margin:0 0 0 14px;line-height:1.9;font-size:15px}
   .secHeadV{font-size:16px;font-weight:700;letter-spacing:.35em;border-right:2px solid var(--ink);padding-right:6px;margin-left:12px}
+  /* 横書き紙面（他国編）：大きな見出し＋段組み。本文は全編とも日本語 */
+  #hHead{font-size:30px;line-height:1.35;margin:12px 0 2px;font-weight:900;letter-spacing:.01em}
+  #paper.pf-de #hHead{font-family:Georgia,"Times New Roman",serif}
+  #paper.pf-gb #hHead,#paper.pf-us #hHead,#paper.pf-su #hHead{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif}
+  #paper.pf-it #hHead{font-family:Georgia,"Times New Roman",serif;font-weight:700}
+  #headlineSubH{font-size:13.5px;color:var(--ink2);margin:4px 0 0}
+  figure.coverPhotoH{margin:14px 0 4px;border:1px solid var(--rule);background:#fffdf4;padding:8px}
+  figure.coverPhotoH img{width:100%;height:auto;display:block;filter:sepia(.28) contrast(1.02)}
+  figure.coverPhotoH figcaption{font-size:12.5px;line-height:1.6;margin-top:6px}
+  figure.coverPhotoH .credit{font-size:11px;color:var(--ink2)}
+  #bodyH{margin-top:12px;border-top:3px double var(--rule);padding-top:6px}
+  #bodyH p{line-height:1.9;font-size:15px;margin:0 0 10px}
+  .secHeadH{font-size:15px;font-weight:700;letter-spacing:.18em;border-bottom:2px solid var(--ink);padding-bottom:3px;margin:16px 0 8px}
   #noteBox{display:none;margin-top:16px;border:1px solid var(--rule);background:var(--paper2);padding:10px 12px;font-size:13px;line-height:1.7}
   #noteBox .nt{font-weight:700;letter-spacing:.2em}
   #refsBox{margin-top:12px;font-size:13px}
@@ -107,7 +127,7 @@
   .hubGrid,.syncGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
   .hubItem,.syncItem{background:#fff;border:1px solid var(--uib);padding:8px 10px;font-size:13px;line-height:1.55}
   .hubItem .cn,.syncItem .cn{font-weight:700;font-size:12px;color:#666;letter-spacing:.1em}
-  .hubItem.live{cursor:pointer;border-color:var(--rule);background:var(--paper)}
+  .hubItem.live,.syncItem.live{cursor:pointer;border-color:var(--rule);background:var(--paper)}
   .hubItem .none,.syncItem .none{color:#999}
   #backNumbers{display:flex;flex-wrap:wrap;gap:6px}
   #backNumbers button{background:#fff;border:1px solid var(--uib);padding:5px 9px;font-size:12px;text-align:left}
@@ -118,9 +138,11 @@
     /* 題字「戦時日報」と英字を一行に収める：字間を詰めて小さくし、両脇（左＝小表記、右＝余白）は最小幅を下げて題字の幅を確保する */
     #paper .papername{font-size:27px;letter-spacing:.18em}
     #paper .papername small{font-size:10px;letter-spacing:.1em}
+    #paper.hz .papername{font-size:21px;letter-spacing:.03em}
     #paper .mastSide{min-width:38px;font-size:9.5px;line-height:1.6}
     #paper .mastLeft{min-width:52px}
     #vHead{font-size:21px;max-height:300px}
+    #hHead{font-size:23px}
     #bodyV{height:68vh}
     /* 狭い幅（スマホ縦向き）では縦積みにせず、写真を小さくして見出しの左に並べ、
        見出し脇の空白を埋める（2026-11-28、andy 指示。横幅が十分な表示は通常レイアウトのまま） */
@@ -174,7 +196,7 @@ footer .credit{margin:8px 0 0;font-size:13px;color:#fff}
 <div class="sitebar"><div class="sb-in"><a class="sb-name" href="index.html">歴史系ツール集</a><span style="display:flex;align-items:center;gap:12px;"><a href="https://wankodo.github.io/">よろず道具箱</a></span></div></div>
 <header class="site">
   <h1>戦争史</h1>
-  <span class="sub">戦争と国を選ぶと、その国の目線で戦争を追える新聞です ― 現在は第二次世界大戦・日本編を公開中</span>
+  <span class="sub">戦争と国を選ぶと、その国の目線で戦争を追える新聞です ― 現在は第二次世界大戦・7か国編を公開中（1939年分まで）</span>
 </header>
 <main>
   <!-- 状態1：戦争の選択 -->
@@ -182,7 +204,7 @@ footer .credit{margin:8px 0 0;font-size:13px;color:#fff}
     <h2 class="step">一、戦争を選ぶ</h2>
     <div class="cards">
       <div class="card disabled"><h3>第一次世界大戦</h3><p>1914–1918年。9か国の新聞で読み比べる。</p><p class="cnt">準備中</p></div>
-      <div class="card" id="pickWw2"><h3>第二次世界大戦</h3><p>1939–1945年（日本編は1937年開始）。7か国の目線で追う。</p><p class="cnt">日本編：公開中（プロローグ7号＋本編73号）</p></div>
+      <div class="card" id="pickWw2"><h3>第二次世界大戦</h3><p>1939–1945年（日本・中国は1937年開始）。7か国の目線で追う。</p><p class="cnt">7か国編を公開中（1939年分まで）</p></div>
     </div>
   </section>
 
@@ -217,13 +239,14 @@ footer .credit{margin:8px 0 0;font-size:13px;color:#fff}
 
     <article id="paper">
       <div class="masthead">
-        <div class="mastSide mastLeft">第二次大戦<br>日本版</div>
-        <div class="papername">戦時日報<small>THE WAR DAILY</small></div>
+        <div class="mastSide mastLeft" id="mastLeft"></div>
+        <div class="papername"><span id="paperName"></span><small id="paperNameSub"></small></div>
         <div class="mastSide mastRight"></div>
       </div>
       <div class="infoline"><span id="infoLeft"></span><span id="infoRight"></span></div>
       <div id="extraBand">号 外</div>
-      <div class="coverRow">
+      <!-- 縦書き紙面（日本編・中国編） -->
+      <div class="coverRow" id="coverRowV">
         <h2 id="vHead"></h2>
         <figure class="coverPhoto hidden" id="coverPhoto">
           <img id="photoImg" alt="">
@@ -233,6 +256,14 @@ footer .credit{margin:8px 0 0;font-size:13px;color:#fff}
       </div>
       <p id="headlineSub"></p>
       <div id="bodyV"></div>
+      <!-- 横書き紙面（ドイツ・イギリス・アメリカ・ソ連・イタリア編） -->
+      <h2 id="hHead" class="hidden"></h2>
+      <p id="headlineSubH" class="hidden"></p>
+      <figure class="coverPhotoH hidden" id="coverPhotoH">
+        <img id="photoImgH" alt="">
+        <figcaption><span id="photoCapH"></span><br><span class="credit" id="photoCreditH"></span></figcaption>
+      </figure>
+      <div id="bodyH" class="hidden"></div>
       <div id="noteBox"><span class="nt">注記</span>　<span id="noteText"></span></div>
       <div id="refsBox"></div>
       <div id="srcLine"></div>
@@ -256,32 +287,61 @@ footer .credit{margin:8px 0 0;font-size:13px;color:#fff}
 </main>
 
 <script src="war-weeks.js"></script>
-<script src="war-data-ww2-jp.js"></script>
 <script>
 "use strict";
-// ===== ビューア：WW2日本編のみ実データ。他編は構造だけ用意し「未製作」表示 =====
+// ===== ビューア：WW2 は7か国編が実データ。他編はデータを遅延読み込みする =====
 const COUNTRIES_WW2 = [
-  { code:"jp", name:"日本", ready:true,  period:"1937年7月〜1945年9月", catch:"大陸での戦争から本土空襲まで、最も長く戦争を生きた国の内側" },
-  { code:"de", name:"ドイツ", ready:false, period:"1939年9月〜1945年5月", catch:"電撃戦の栄光から本土の焦土まで" },
-  { code:"gb", name:"イギリス", ready:false, period:"1939年9月〜1945年9月", catch:"孤独な抗戦と大陸反攻" },
-  { code:"us", name:"アメリカ", ready:false, period:"1941年12月〜1945年9月", catch:"真珠湾の衝撃から世界の工場へ" },
-  { code:"su", name:"ソ連", ready:false, period:"1939年9月〜1945年9月", catch:"独ソ戦の死闘と東欧への進出" },
-  { code:"it", name:"イタリア", ready:false, period:"1940年6月〜1945年", catch:"参戦、敗北、そして内戦" },
-  { code:"cn", name:"中国", ready:false, period:"1937年7月〜1945年9月", catch:"8年に及ぶ抗戦の内側" }
+  { code:"jp", name:"日本", ready:true, period:"1937年7月〜1945年9月", catch:"大陸での戦争から本土空襲まで、最も長く戦争を生きた国の内側", cnt:"公開中：プロローグ7号＋本編73号（1937年7月〜1939年12月）" },
+  { code:"cn", name:"中国", ready:true, period:"1937年7月〜1945年9月", catch:"8年に及ぶ抗戦の内側", cnt:"公開中：プロローグ2号＋本編23号（1937年7月〜1939年12月）" },
+  { code:"de", name:"ドイツ", ready:true, period:"1939年9月〜1945年5月", catch:"電撃戦の栄光から本土の焦土まで", cnt:"公開中：プロローグ4号＋本編10号（1939年12月まで）" },
+  { code:"gb", name:"イギリス", ready:true, period:"1939年9月〜1945年9月", catch:"孤独な抗戦と大陸反攻", cnt:"公開中：プロローグ3号＋本編8号（1939年12月まで）" },
+  { code:"su", name:"ソ連", ready:true, period:"1939年9月〜1945年9月", catch:"独ソ戦の死闘と東欧への進出", cnt:"公開中：プロローグ3号＋本編8号（1939年12月まで）" },
+  { code:"it", name:"イタリア", ready:true, period:"1940年6月〜1945年", catch:"参戦、敗北、そして内戦", cnt:"公開中：プロローグ3号＋本編5号（1939年12月まで）" },
+  { code:"us", name:"アメリカ", ready:true, period:"1941年12月〜1945年9月", catch:"真珠湾の衝撃から世界の工場へ", cnt:"公開中：プロローグ3号＋本編6号（1939年12月まで）" }
 ];
 const WEEKS = WAR_WEEKS.ww2;
-let cur = 0;           // ISSUES の配列添字
+const EDITIONS = {};   // "ww2-jp" -> { EDITION, ISSUES }
+const LOADING = {};    // code -> Promise
+let ED = null, ISS = null, curCode = "jp";
+let cur = 0;           // ISS の配列添字
 let timer = null, syncTimer = null;
 
+// 編データの遅延読み込み。日本編ファイルは const EDITION/ISSUES 形式、他編は WAR_EDITIONS 登録形式
+function loadEdition(code){
+  if (EDITIONS["ww2-"+code]) return Promise.resolve(EDITIONS["ww2-"+code]);
+  if (LOADING[code]) return LOADING[code];
+  LOADING[code] = new Promise((resolve, reject)=>{
+    const s = document.createElement("script");
+    s.src = "war-data-ww2-" + code + ".js";
+    s.onload = ()=>{
+      let data = null;
+      if (window.WAR_EDITIONS && window.WAR_EDITIONS["ww2-"+code]) data = window.WAR_EDITIONS["ww2-"+code];
+      else if (code==="jp" && typeof EDITION!=="undefined" && typeof ISSUES!=="undefined") data = { EDITION, ISSUES };
+      if (data){ EDITIONS["ww2-"+code] = data; resolve(data); }
+      else reject(new Error("edition data not found: "+code));
+    };
+    s.onerror = ()=>reject(new Error("failed to load edition: "+code));
+    document.head.appendChild(s);
+  });
+  return LOADING[code];
+}
+// 全編を裏で読み込み、週ハブ・同期再生に他編の見出しを出す（読み終わるたびに再描画）
+function preloadOthers(){
+  COUNTRIES_WW2.filter(c=>c.ready).forEach(c=>{
+    loadEdition(c.code).then(()=>{ if (ED) { buildHub(); buildSyncGrid(); } }).catch(()=>{});
+  });
+}
+
 // 号の表示名（プロローグ第○号／第○号／エピローグ第○号）
-function issueName(idx){
-  const it = ISSUES[idx], kind = it.kind || "normal";
+function issueNameIn(issues, idx){
+  const it = issues[idx], kind = it.kind || "normal";
   let n = 0;
-  for (let i=0;i<=idx;i++) if ((ISSUES[i].kind||"normal")===kind) n++;
+  for (let i=0;i<=idx;i++) if ((issues[i].kind||"normal")===kind) n++;
   if (kind==="prologue") return "プロローグ第"+n+"号";
   if (kind==="epilogue") return "エピローグ第"+n+"号";
   return "第"+n+"号";
 }
+function issueName(idx){ return issueNameIn(ISS, idx); }
 function fmtDate(iso){
   const d = new Date(iso+"T00:00:00");
   return d.getFullYear()+"年"+(d.getMonth()+1)+"月"+d.getDate()+"日";
@@ -320,6 +380,42 @@ function weekRange(week){
   const b = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
   return fmtDate(a)+"〜"+fmtDate(b)+"の週";
 }
+// 他国編の日付：表紙は現地語形式で表示し、日本語を字幕として添える（§3「日付表記」）
+const MONTHS_LOCAL = {
+  de: ["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"],
+  en: ["January","February","March","April","May","June","July","August","September","October","November","December"],
+  ru: ["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"],
+  it: ["gennaio","febbraio","marzo","aprile","maggio","giugno","luglio","agosto","settembre","ottobre","novembre","dicembre"],
+  zh: []
+};
+function fmtLocal(iso, lang){
+  const d = new Date(iso+"T00:00:00");
+  const y = d.getFullYear(), m = d.getMonth(), day = d.getDate();
+  if (lang==="de") return day+". "+MONTHS_LOCAL.de[m]+" "+y;
+  if (lang==="en") return MONTHS_LOCAL.en[m]+" "+day+", "+y;
+  if (lang==="ru") return day+" "+MONTHS_LOCAL.ru[m]+" "+y+" г.";
+  if (lang==="it") return day+" "+MONTHS_LOCAL.it[m]+" "+y;
+  return y+"年"+(m+1)+"月"+day+"日"; // zh は漢字数字表記（日本語と同じ形）
+}
+function weekRangeLocal(week, lang){
+  const a = WEEKS[week];
+  const d = new Date(a+"T00:00:00"); d.setDate(d.getDate()+6);
+  const b = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  return fmtLocal(a, lang)+" – "+fmtLocal(b, lang);
+}
+function periodLabelLocal(p, lang){
+  const conv = s => { const [y,m] = s.split("-").map(Number);
+    if (lang==="zh") return y+"年"+m+"月";
+    if (lang==="en") return MONTHS_LOCAL.en[m-1]+" "+y;
+    if (lang==="ru") return MONTHS_LOCAL.ru[m-1].replace(/я$/,"ь")+" "+y; // 主格の月名へ（январь等）
+    return MONTHS_LOCAL[lang][m-1]+" "+y; };
+  return conv(p.from)+" – "+conv(p.to);
+}
+function periodLabelJa(p){
+  const conv = s => { const [y,m] = s.split("-").map(Number); return y+"年"+m+"月"; };
+  return conv(p.from)+"〜"+conv(p.to);
+}
+function isVertical(){ return (ED.layout || (ED.country==="jp"||ED.country==="cn" ? "vertical" : "horizontal")) === "vertical"; }
 
 // ===== 状態遷移 =====
 const $ = id => document.getElementById(id);
@@ -334,14 +430,25 @@ function buildCountries(){
   $("countryCards").innerHTML = COUNTRIES_WW2.map(c=>`
     <div class="card ${c.ready?"":"disabled"}" data-code="${c.code}">
       <h3>${c.name}</h3><p>${c.period}</p><p>${c.catch}</p>
-      <p class="cnt">${c.ready ? "公開中：プロローグ7号＋本編73号" : "準備中"}</p>
+      <p class="cnt">${c.ready ? c.cnt : "準備中"}</p>
     </div>`).join("");
   document.querySelectorAll("#countryCards .card").forEach(el=>{
     el.addEventListener("click", ()=>{
-      if (el.dataset.code!=="jp") return;
-      openViewer(0); show("stateViewer");
+      const code = el.dataset.code;
+      const c = COUNTRIES_WW2.find(x=>x.code===code);
+      if (!c || !c.ready) return;
+      loadEdition(code).then(()=>{ switchEdition(code, 0); show("stateViewer"); }).catch(()=>{});
     });
   });
+}
+function switchEdition(code, idx){
+  stopPlay(); stopSync();
+  curCode = code;
+  const data = EDITIONS["ww2-"+code];
+  ED = data.EDITION; ISS = data.ISSUES;
+  cur = Math.min(Math.max(idx||0, 0), ISS.length-1);
+  buildTimeline(); buildBackNumbers(); render(); syncUrl();
+  preloadOthers();
 }
 
 // 縦書き用テキスト処理（2026-11-28、andy 指摘）：縦書きの中で数字・英字が横向きになり読みにくい問題への対処。
@@ -360,98 +467,158 @@ function vText(s){
     return run.length<=4 ? `<span class="upr">${run}</span>` : run;   // 英字・英数字の連なり
   });
 }
+function esc(s){
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
 
 // ===== ビューア =====
 function openViewer(idx){ cur = idx; buildTimeline(); buildBackNumbers(); render(); syncUrl(); }
 
-
-
 function render(){
-  const it = ISSUES[cur], kind = it.kind || "normal";
-  $("issueLabel").textContent = issueName(cur);
-  $("slider").max = ISSUES.length-1; $("slider").value = cur;
-  $("prevBtn").disabled = cur===0; $("nextBtn").disabled = cur===ISSUES.length-1;
-  // 紙面
+  const it = ISS[cur], kind = it.kind || "normal";
+  $("issueLabel").textContent = ED.countryName + "編 " + issueName(cur);
+  $("slider").max = ISS.length-1; $("slider").value = cur;
+  $("prevBtn").disabled = cur===0; $("nextBtn").disabled = cur===ISS.length-1;
+  // 題字（マストヘッド）：紙名・小表記・脇の小表記は版共通定義から出す
+  $("paperName").textContent = ED.paperName;
+  $("paperNameSub").textContent = ED.paperNameSub || (ED.country==="jp" ? "THE WAR DAILY" : "");
+  $("mastLeft").innerHTML = (ED.mastSide || (ED.country==="jp" ? ["第二次大戦","日本版"] : ["第二次世界大戦", ED.countryName+"版"])).map(esc).join("<br>");
+  $("paper").className = "";
+  $("paper").id = "paper";
+  if (!isVertical()) $("paper").classList.add("hz");
+  $("paper").classList.add("pf-" + ED.country);
   $("paper").classList.toggle("extra", !!it.extra);
-  $("vHead").innerHTML = vText(it.cover.headline);
-  $("headlineSub").textContent = it.cover.headlineSub || "";
-  // 表紙写真（§3「写真の使用仕様」：表紙・号外中心、出典を紙面に明示）
-  $("paper").classList.toggle("nophoto", !it.photo);
-  if (it.photo){
-    $("coverPhoto").classList.remove("hidden");
-    $("photoImg").src = it.photo.src;
-    $("photoImg").alt = it.photo.caption || "";
-    $("photoCap").textContent = it.photo.caption || "";
-    $("photoCredit").textContent = "出典：" + (it.photo.credit || "");
-  } else {
-    $("coverPhoto").classList.add("hidden");
-    $("photoImg").removeAttribute("src");
-  }
+  $("extraBand").textContent = ED.extraLabel || "号外";
+  // 発行情報行：日付は題字脇には置かず、二重線の下のこの行に一本化する（2026-11-28、andy 指示）
   if (kind==="normal"){
-    $("infoLeft").innerHTML = issueName(cur)+"　"+weekRangeEraSub(it.week);
+    if (ED.country==="jp"){
+      $("infoLeft").innerHTML = issueName(cur)+"　"+weekRangeEraSub(it.week);
+    } else {
+      $("infoLeft").innerHTML = issueName(cur)+"　"+esc(weekRangeLocal(it.week, ED.lang)) +
+        ` <span class="dateSub">（${weekRange(it.week)}）</span>`;
+    }
     $("infoRight").textContent = "戦争"+(it.week+1)+"週目";
-    // 日付は題字脇には置かず、二重線の下の発行情報行に一本化する（2026-11-28、andy 指示）
   } else {
-    $("infoLeft").innerHTML = issueName(cur)+"　対象期間："+periodLabelEraSub(it.period);
-    $("infoRight").textContent = "ダイジェスト号（本編開始前）";
+    if (ED.country==="jp"){
+      $("infoLeft").innerHTML = issueName(cur)+"　対象期間："+periodLabelEraSub(it.period);
+    } else {
+      $("infoLeft").innerHTML = issueName(cur)+"　対象期間："+esc(periodLabelLocal(it.period, ED.lang)) +
+        ` <span class="dateSub">（${periodLabelJa(it.period)}）</span>`;
+    }
+    $("infoRight").textContent = kind==="prologue" ? "ダイジェスト号（本編開始前）" : "ダイジェスト号（終戦後）";
   }
-  const L = EDITION.sectionLabels;
-  let html = "";
+  const L = ED.sectionLabels;
   const secs = [["war",L.war],["economy",L.economy],["food",L.food],["tech",L.tech]];
-  for (const [key,label] of secs){
-    const paras = it.body[key];
-    if (!paras || !paras.length) continue;
-    html += `<div class="vSec"><div class="secHeadV">${label}</div>` + paras.map(p=>`<p>${vText(p)}</p>`).join("") + `</div>`;
-  }
-  // 本文の置き場所：写真のある号は見出しの下の本文欄へ。写真のない号は見出しのすぐ左から
-  // 本文が始まる組版にするため、表紙の行の中へ入れる（2026-11-28、andy 決定）
-  if (it.photo){
-    $("coverBody").classList.remove("on"); $("coverBody").innerHTML = "";
-    $("bodyV").style.display = "";
-    $("bodyV").innerHTML = html;
-    $("bodyV").scrollLeft = 0; // 縦書きは右端が読み始め
+  if (isVertical()){
+    $("coverRowV").classList.remove("hidden");
+    $("headlineSub").classList.remove("hidden");
+    $("bodyV").classList.remove("hidden");
+    $("hHead").classList.add("hidden");
+    $("headlineSubH").classList.add("hidden");
+    $("coverPhotoH").classList.add("hidden");
+    $("bodyH").classList.add("hidden");
+    $("vHead").innerHTML = vText(it.cover.headline);
+    $("headlineSub").textContent = it.cover.headlineSub || "";
+    $("paper").classList.toggle("nophoto", !it.photo);
+    if (it.photo){
+      $("coverPhoto").classList.remove("hidden");
+      $("photoImg").src = it.photo.src;
+      $("photoImg").alt = it.photo.caption || "";
+      $("photoCap").textContent = it.photo.caption || "";
+      $("photoCredit").textContent = "出典：" + (it.photo.credit || "");
+    } else {
+      $("coverPhoto").classList.add("hidden");
+      $("photoImg").removeAttribute("src");
+    }
+    let html = "";
+    for (const [key,label] of secs){
+      const paras = it.body[key];
+      if (!paras || !paras.length) continue;
+      html += `<div class="vSec"><div class="secHeadV">${esc(label)}</div>` + paras.map(p=>`<p>${vText(p)}</p>`).join("") + `</div>`;
+    }
+    // 本文の置き場所：写真のある号は見出しの下の本文欄へ。写真のない号は見出しのすぐ左から
+    // 本文が始まる組版にするため、表紙の行の中へ入れる（2026-11-28、andy 決定）
+    if (it.photo){
+      $("coverBody").classList.remove("on"); $("coverBody").innerHTML = "";
+      $("bodyV").style.display = "";
+      $("bodyV").innerHTML = html;
+      $("bodyV").scrollLeft = 0; // 縦書きは右端が読み始め
+    } else {
+      $("bodyV").style.display = "none"; $("bodyV").innerHTML = "";
+      $("coverBody").innerHTML = html;
+      $("coverBody").classList.add("on");
+      $("coverBody").scrollLeft = 0; // 見出しの左隣が読み始め
+    }
   } else {
-    $("bodyV").style.display = "none"; $("bodyV").innerHTML = "";
-    $("coverBody").innerHTML = html;
-    $("coverBody").classList.add("on");
-    $("coverBody").scrollLeft = 0; // 見出しの左隣が読み始め
+    $("coverRowV").classList.add("hidden");
+    $("headlineSub").classList.add("hidden");
+    $("bodyV").classList.add("hidden");
+    $("hHead").classList.remove("hidden");
+    $("headlineSubH").classList.remove("hidden");
+    $("bodyH").classList.remove("hidden");
+    $("paper").classList.remove("nophoto");
+    $("hHead").textContent = it.cover.headline;
+    $("headlineSubH").textContent = it.cover.headlineSub || "";
+    if (it.photo){
+      $("coverPhotoH").classList.remove("hidden");
+      $("photoImgH").src = it.photo.src;
+      $("photoImgH").alt = it.photo.caption || "";
+      $("photoCapH").textContent = it.photo.caption || "";
+      $("photoCreditH").textContent = "出典：" + (it.photo.credit || "");
+    } else {
+      $("coverPhotoH").classList.add("hidden");
+      $("photoImgH").removeAttribute("src");
+    }
+    let html = "";
+    for (const [key,label] of secs){
+      const paras = it.body[key];
+      if (!paras || !paras.length) continue;
+      html += `<div class="secHeadH">${esc(label)}</div>` + paras.map(p=>`<p>${esc(p)}</p>`).join("");
+    }
+    $("bodyH").innerHTML = html;
   }
   // 注記（紙面末尾注記。§9-9 の方針：各国版は単一視点で、他国の見解は併記しない）
   if (it.note){ $("noteBox").style.display="block"; $("noteText").textContent = it.note; }
   else $("noteBox").style.display="none";
-  // 発端リンク
+  // 発端リンク（自編・他編の両方を解決する。他編は必要なら読み込んでから跳ぶ）
   const refs = it.refs||[];
   $("refsBox").innerHTML = refs.length
     ? "発端をたどる：" + refs.map((r,i)=>`<button class="btn ghost" data-ref="${i}"></button>`).join("")
     : "";
   refs.forEach((r,i)=>{
     const btn = $("refsBox").querySelector(`[data-ref="${i}"]`);
-    const target = resolveRef(r);
-    if (target===null){ btn.textContent = "（参照先は未製作）"; btn.disabled = true; }
-    else {
-      btn.textContent = "この発端は "+issueName(target)+" →";
-      btn.addEventListener("click", ()=>{ cur = target; render(); syncUrl(); });
-    }
+    const tCode = (r.edition||"").split("-")[1];
+    const jump = (data)=>{
+      const target = resolveRefIn(data.ISSUES, r);
+      if (target===null){ btn.textContent = "（参照先は未製作）"; btn.disabled = true; return; }
+      btn.textContent = "この発端は " + (tCode===curCode ? "" : (data.EDITION.countryName+"編 ")) + issueNameIn(data.ISSUES, target) + " →";
+      btn.addEventListener("click", ()=>{
+        if (tCode===curCode){ cur = target; render(); syncUrl(); }
+        else switchEdition(tCode, target);
+      });
+    };
+    if (EDITIONS[r.edition]) jump(EDITIONS[r.edition]);
+    else if (tCode) loadEdition(tCode).then(jump).catch(()=>{ btn.textContent = "（参照先は未製作）"; btn.disabled = true; });
+    else { btn.textContent = "（参照先は未製作）"; btn.disabled = true; }
   });
   $("srcLine").textContent = "出典：" + (it.sources||[]).join("／");
   buildHub(); buildSyncGrid(); updateTimelineCursor();
   document.querySelectorAll("#backNumbers button").forEach((b,i)=>b.classList.toggle("cur", i===cur));
 }
-function resolveRef(r){
-  if (r.edition !== EDITION.war+"-"+EDITION.country) return null;
+function resolveRefIn(issues, r){
   if (r.kind){
     let n=0;
-    for (let i=0;i<ISSUES.length;i++){
-      if ((ISSUES[i].kind||"normal")===r.kind){ n++; if (n===r.n) return i; }
+    for (let i=0;i<issues.length;i++){
+      if ((issues[i].kind||"normal")===r.kind){ n++; if (n===r.n) return i; }
     }
     return null;
   }
-  const i = ISSUES.findIndex(x=>(x.kind||"normal")==="normal" && x.week===r.week);
+  const i = issues.findIndex(x=>(x.kind||"normal")==="normal" && x.week===r.week);
   return i<0 ? null : i;
 }
 function syncUrl(){
   const u = new URL(location.href);
-  u.searchParams.set("war","ww2"); u.searchParams.set("country","jp"); u.searchParams.set("issue", cur);
+  u.searchParams.set("war","ww2"); u.searchParams.set("country", curCode); u.searchParams.set("issue", cur);
   history.replaceState(null,"",u);
 }
 
@@ -464,7 +631,7 @@ function buildTimeline(){
     d.style.left = leftPct+"%"; if (title) d.title = title; band.appendChild(d); return d;
   };
   const z = mk("zone", 0, ""); z.textContent = "プロローグ"; z.style.width = "3%";
-  ISSUES.forEach((it,i)=>{
+  ISS.forEach((it,i)=>{
     if ((it.kind||"normal")!=="normal") return;
     mk("mark"+(it.extra?" extra":""), (it.week/total)*100, issueName(i)+" "+weekRange(it.week));
   });
@@ -473,12 +640,12 @@ function buildTimeline(){
     const r = band.getBoundingClientRect();
     const week = Math.round(((e.clientX-r.left)/r.width)*total);
     let best=0, bd=1e9;
-    ISSUES.forEach((it,i)=>{ if((it.kind||"normal")==="normal"){ const d=Math.abs(it.week-week); if(d<bd){bd=d;best=i;} }});
+    ISS.forEach((it,i)=>{ if((it.kind||"normal")==="normal"){ const d=Math.abs(it.week-week); if(d<bd){bd=d;best=i;} }});
     cur = best; render(); syncUrl();
   };
 }
 function updateTimelineCursor(){
-  const it = ISSUES[cur], total = WEEKS.length;
+  const it = ISS[cur], total = WEEKS.length;
   const pos = (it.kind||"normal")==="normal" ? (it.week/total)*100 : (cur===0?0.5:1.5);
   const c = $("tlCursor"); if (c) c.style.left = pos+"%";
   $("tlRead").textContent = (it.kind||"normal")==="normal"
@@ -486,31 +653,58 @@ function updateTimelineCursor(){
     : "現在位置：ダイジェスト区間（本編の週軸の外側）";
 }
 
-// 週ハブ：同じ週の他国紙（現時点では日本編のみ実データ）
+// その週にその編で発行された号の添字（なければ -1）
+function issueAtWeek(data, week){
+  return data.ISSUES.findIndex(x=>(x.kind||"normal")==="normal" && x.week===week);
+}
+// 週ハブ：同じ週の他国紙の一面見出しを並べ、選ぶとその国の号へ跳ぶ（読み比べ三層構造の第2層）
 function buildHub(){
-  const it = ISSUES[cur], kind = it.kind||"normal";
+  const it = ISS[cur], kind = it.kind||"normal";
   $("hubGrid").innerHTML = COUNTRIES_WW2.map(c=>{
-    if (c.code==="jp"){
-      return `<div class="hubItem live" id="hubJp"><div class="cn">日本 ― ${issueName(cur)}</div>${it.cover.headline}</div>`;
-    }
-    return `<div class="hubItem"><div class="cn">${c.name}</div><span class="none">${kind==="normal" ? "未製作（この週の号はまだ無い）" : "未製作"}</span></div>`;
+    if (kind!=="normal")
+      return `<div class="hubItem"><div class="cn">${c.name}</div><span class="none">ダイジェスト期間（週軸の外側）</span></div>`;
+    const data = EDITIONS["ww2-"+c.code];
+    if (!data) return `<div class="hubItem"><div class="cn">${c.name}</div><span class="none">読み込み中…</span></div>`;
+    const idx = issueAtWeek(data, it.week);
+    if (idx<0) return `<div class="hubItem"><div class="cn">${c.name}</div><span class="none">この週は発行なし</span></div>`;
+    const t = data.ISSUES[idx];
+    return `<div class="hubItem live" data-code="${c.code}" data-idx="${idx}"><div class="cn">${c.name} ― ${issueNameIn(data.ISSUES, idx)}</div>${esc(t.cover.headline)}<br><span class="none">${esc(t.cover.headlineSub||"")}</span></div>`;
   }).join("");
-  const j = $("hubJp"); if (j) j.addEventListener("click", ()=>window.scrollTo({top:0,behavior:"smooth"}));
+  document.querySelectorAll("#hubGrid .hubItem.live").forEach(el=>{
+    el.addEventListener("click", ()=>{
+      const code = el.dataset.code, idx = +el.dataset.idx;
+      if (code===curCode){ cur = idx; render(); syncUrl(); window.scrollTo({top:0,behavior:"smooth"}); }
+      else switchEdition(code, idx);
+    });
+  });
 }
 
-// 同期再生：全紙グリッド（現時点では日本編のみ連動）
+// 同期再生：全紙グリッド。各マスは現在の週における各編の号（発行がなければ空欄表示）
 function buildSyncGrid(){
-  const it = ISSUES[cur];
+  const it = ISS[cur], kind = it.kind||"normal";
   $("syncGrid").innerHTML = COUNTRIES_WW2.map(c=>{
-    if (c.code==="jp") return `<div class="syncItem"><div class="cn">日本 ― ${issueName(cur)}</div>${it.cover.headline}</div>`;
-    return `<div class="syncItem"><div class="cn">${c.name}</div><span class="none">準備中</span></div>`;
+    if (kind!=="normal")
+      return `<div class="syncItem"><div class="cn">${c.name}</div><span class="none">ダイジェスト期間</span></div>`;
+    const data = EDITIONS["ww2-"+c.code];
+    if (!data) return `<div class="syncItem"><div class="cn">${c.name}</div><span class="none">読み込み中…</span></div>`;
+    const idx = issueAtWeek(data, it.week);
+    if (idx<0) return `<div class="syncItem"><div class="cn">${c.name}</div><span class="none">この週は発行なし</span></div>`;
+    const t = data.ISSUES[idx];
+    return `<div class="syncItem live" data-code="${c.code}" data-idx="${idx}"><div class="cn">${c.name} ― ${issueNameIn(data.ISSUES, idx)}</div>${esc(t.cover.headline)}</div>`;
   }).join("");
+  document.querySelectorAll("#syncGrid .syncItem.live").forEach(el=>{
+    el.addEventListener("click", ()=>{
+      const code = el.dataset.code, idx = +el.dataset.idx;
+      if (code===curCode){ cur = idx; render(); syncUrl(); }
+      else switchEdition(code, idx);
+    });
+  });
 }
 
 // バックナンバー
 function buildBackNumbers(){
-  $("backNumbers").innerHTML = ISSUES.map((it,i)=>
-    `<button data-i="${i}">${issueName(i)}：${it.cover.headline}</button>`).join("");
+  $("backNumbers").innerHTML = ISS.map((it,i)=>
+    `<button data-i="${i}">${issueName(i)}：${esc(it.cover.headline)}</button>`).join("");
   document.querySelectorAll("#backNumbers button").forEach(b=>{
     b.addEventListener("click", ()=>{ cur = +b.dataset.i; render(); syncUrl(); });
   });
@@ -521,7 +715,7 @@ function stopPlay(){ if (timer){ clearInterval(timer); timer=null; $("playBtn").
 function stopSync(){ if (syncTimer){ clearInterval(syncTimer); syncTimer=null; $("syncBtn").textContent="同期再生 ▶"; } }
 function step(d){
   const n = cur + d;
-  if (n<0 || n>=ISSUES.length){ stopPlay(); stopSync(); return; }
+  if (n<0 || n>=ISS.length){ stopPlay(); stopSync(); return; }
   cur = n; render(); syncUrl();
 }
 $("prevBtn").addEventListener("click", ()=>step(-1));
@@ -550,9 +744,15 @@ document.addEventListener("keydown", e=>{
 // URLパラメータからの復元
 (function init(){
   const q = new URLSearchParams(location.search);
-  if (q.get("war")==="ww2" && q.get("country")==="jp"){
-    const i = Math.min(Math.max(+q.get("issue")||0, 0), ISSUES.length-1);
-    openViewer(i); show("stateViewer");
+  if (q.get("war")==="ww2"){
+    const code = q.get("country") || "jp";
+    const c = COUNTRIES_WW2.find(x=>x.code===code);
+    if (c && c.ready){
+      loadEdition(code).then(data=>{
+        const i = Math.min(Math.max(+q.get("issue")||0, 0), data.ISSUES.length-1);
+        switchEdition(code, i); show("stateViewer");
+      }).catch(()=>{});
+    }
   }
 })();
 </script>
