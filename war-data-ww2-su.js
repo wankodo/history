@@ -13,8 +13,8 @@ WAR_EDITIONS["ww2-su"] = {
   EDITION: {
     war: "ww2", country: "su", countryName: "ソ連", lang: "ru", subLang: "ja",
     paperName: "Советский вестник",
-    paperNameSub: "МОСКВА（モスクワ）",
-    mastSide: ["Вторая мировая война（第二次世界大戦）", "Советское издание（ソ連版）"],
+    paperNameSub: "МОСКВА",
+    mastSide: ["Вторая мировая война", "Советское издание"],
     sectionLabels: { war: "戦況", economy: "経済", food: "食料・生活", tech: "技術" },
     extraLabel: "ЭКСТРЕННЫЙ ВЫПУСК（号外）",
     layout: "horizontal",

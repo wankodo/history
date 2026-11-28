@@ -290,7 +290,7 @@ footer .credit{margin:8px 0 0;font-size:13px;color:#fff}
   </section>
 </main>
 
-<script src="war-weeks.js"></script>
+<script src="war-weeks.js?v=20261128c"></script>
 <script>
 "use strict";
 // ===== ビューア：WW2 は7か国編が実データ。他編はデータを遅延読み込みする =====
@@ -311,12 +311,16 @@ let cur = 0;           // ISS の配列添字
 let timer = null, syncTimer = null;
 
 // 編データの遅延読み込み。日本編ファイルは const EDITION/ISSUES 形式、他編は WAR_EDITIONS 登録形式
+// 号データの読み込みには版数クエリを付ける：データファイルを差し替えてもブラウザの
+// キャッシュに残った旧版が表示される事故（欄名の旧表記が実機で出た等）を防ぐため。
+// データ側を変更したら、この版数を上げること（2026-11-28）。
+const DATA_VER = "20261128c";
 function loadEdition(code){
   if (EDITIONS["ww2-"+code]) return Promise.resolve(EDITIONS["ww2-"+code]);
   if (LOADING[code]) return LOADING[code];
   LOADING[code] = new Promise((resolve, reject)=>{
     const s = document.createElement("script");
-    s.src = "war-data-ww2-" + code + ".js";
+    s.src = "war-data-ww2-" + code + ".js?v=" + DATA_VER;
     s.onload = ()=>{
       let data = null;
       if (window.WAR_EDITIONS && window.WAR_EDITIONS["ww2-"+code]) data = window.WAR_EDITIONS["ww2-"+code];
@@ -384,7 +388,8 @@ function weekRange(week){
   const b = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
   return fmtDate(a)+"〜"+fmtDate(b)+"の週";
 }
-// 他国編の日付：表紙は現地語形式で表示し、日本語を字幕として添える（§3「日付表記」）
+// 独・英・ソ・米編の日付：独自の紀年法がないため、西暦の現地語形式がそのまま正式表記（§3「日付表記」）。
+// 中国編・イタリア編は下の民國紀元／ファシスト紀元の関数を使う。
 const MONTHS_LOCAL = {
   de: ["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"],
   en: ["January","February","March","April","May","June","July","August","September","October","November","December"],
@@ -414,6 +419,65 @@ function periodLabelLocal(p, lang){
     if (lang==="ru") return MONTHS_LOCAL.ru[m-1].replace(/я$/,"ь")+" "+y; // 主格の月名へ（январь等）
     return MONTHS_LOCAL[lang][m-1]+" "+y; };
   return conv(p.from)+" – "+conv(p.to);
+}
+// 全編の日付は、その国の当時の正式な年号・紀年法を主表記とし、西暦は字幕として
+// 括弧付きで小さく添える（2026-11-28、andy 指示「全編現地の年号で表記してカッコ付きで西暦表記」）。
+// これは同日の「他国編の日付に日本語字幕を付けない」訂正とは別：外すのは日本語の訳文字幕で、
+// 年号と西暦の対応を示す括弧は全編で付けるのが今回の決定。
+// 中国編：民國紀元（1912年＝民國元年）。当時の中国の公文書・新聞の正式表記に合わせる。
+function minguoFull(iso){
+  const d = new Date(iso+"T00:00:00");
+  return "民國"+(d.getFullYear()-1911)+"年"+(d.getMonth()+1)+"月"+d.getDate()+"日";
+}
+function weekRangeMinguo(week){
+  const a = WEEKS[week];
+  const d = new Date(a+"T00:00:00"); d.setDate(d.getDate()+6);
+  return minguoFull(a)+"〜"+(d.getMonth()+1)+"月"+d.getDate()+"日の週";
+}
+function weekRangeMinguoSub(week){ // 週範囲＋西暦字幕（年をまたぐ週は両年）
+  const a = WEEKS[week];
+  const d1 = new Date(a+"T00:00:00");
+  const d2 = new Date(a+"T00:00:00"); d2.setDate(d2.getDate()+6);
+  return weekRangeMinguo(week) + adYearSub(d1.getFullYear(), d2.getFullYear());
+}
+function periodLabelMinguoSub(p){ // ダイジェスト対象期間＋西暦字幕
+  const conv = s => { const [y,m] = s.split("-").map(Number); return "民國"+(y-1911)+"年"+m+"月"; };
+  return conv(p.from)+"〜"+conv(p.to) + adYearSub(+p.from.split("-")[0], +p.to.split("-")[0]);
+}
+// イタリア編：ファシスト紀元（Era Fascista）。1922年10月29日（ローマ進軍の翌日）を
+// 元年元日とし、毎年10月29日に年が改まる。当時の公文書の慣行どおりローマ数字で記す。
+function efYear(iso){
+  const d = new Date(iso+"T00:00:00");
+  const y = d.getFullYear(), m = d.getMonth()+1;
+  return (m > 10 || (m === 10 && d.getDate() >= 29)) ? y-1921 : y-1922;
+}
+function toRoman(n){
+  const T = [[10,"X"],[9,"IX"],[5,"V"],[4,"IV"],[1,"I"]];
+  let s = "";
+  for (const [v,r] of T){ while (n>=v){ s+=r; n-=v; } }
+  return s;
+}
+function fmtEF(iso){ // 例：28 agosto XVII E.F.
+  const d = new Date(iso+"T00:00:00");
+  return d.getDate()+" "+MONTHS_LOCAL.it[d.getMonth()]+" "+toRoman(efYear(iso))+" E.F.";
+}
+function weekRangeEFSub(week){ // 週範囲＋西暦字幕（年をまたぐ週は両年）
+  const a = WEEKS[week];
+  const d = new Date(a+"T00:00:00"); d.setDate(d.getDate()+6);
+  const b = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  let main;
+  if (efYear(a)===efYear(b)){ // 同じ紀元年の週は、紀元年を末尾に1つだけ置く
+    main = fmtEF(a).replace(/ [IVX]+ E\.F\.$/,"")+" – "+d.getDate()+" "+MONTHS_LOCAL.it[d.getMonth()]+" "+toRoman(efYear(a))+" E.F.";
+  } else {
+    main = fmtEF(a)+" – "+fmtEF(b);
+  }
+  return main + adYearSub(new Date(a+"T00:00:00").getFullYear(), d.getFullYear());
+}
+function periodLabelEFSub(p){ // ダイジェスト対象期間＋西暦字幕
+  // 月の途中で紀元年が改まる10月は、月初（1日）時点の紀元年で代表させる
+  const conv = s => { const [y,m] = s.split("-").map(Number);
+    return MONTHS_LOCAL.it[m-1]+" "+toRoman(efYear(s+"-01"))+" E.F."; };
+  return conv(p.from)+" – "+conv(p.to) + adYearSub(+p.from.split("-")[0], +p.to.split("-")[0]);
 }
 function periodLabelJa(p){
   const conv = s => { const [y,m] = s.split("-").map(Number); return y+"年"+m+"月"; };
@@ -505,14 +569,24 @@ function render(){
   if (kind==="normal"){
     if (ED.country==="jp"){
       $("infoLeft").innerHTML = issueName(cur)+"　"+weekRangeEraSub(it.week);
+    } else if (ED.country==="cn"){
+      // 中国編の日付は民國紀元が主表記、西暦は字幕（2026-11-28、andy 指示）
+      $("infoLeft").innerHTML = issueName(cur)+"　"+weekRangeMinguoSub(it.week);
+    } else if (ED.country==="it"){
+      // イタリア編の日付はファシスト紀元が主表記、西暦は字幕（同日、andy 指示）
+      $("infoLeft").innerHTML = issueName(cur)+"　"+weekRangeEFSub(it.week);
     } else {
-      // 他国編の日付は現地語のみ（日本語字幕は付けない。2026-11-28、andy 訂正「日付も」）
+      // 独・英・ソ・米編は独自の紀年法がなく、西暦がそのまま現地の正式表記
       $("infoLeft").innerHTML = issueName(cur)+"　"+esc(weekRangeLocal(it.week, ED.lang));
     }
     $("infoRight").textContent = "戦争"+(it.week+1)+"週目";
   } else {
     if (ED.country==="jp"){
       $("infoLeft").innerHTML = issueName(cur)+"　対象期間："+periodLabelEraSub(it.period);
+    } else if (ED.country==="cn"){
+      $("infoLeft").innerHTML = issueName(cur)+"　対象期間："+periodLabelMinguoSub(it.period);
+    } else if (ED.country==="it"){
+      $("infoLeft").innerHTML = issueName(cur)+"　対象期間："+periodLabelEFSub(it.period);
     } else {
       $("infoLeft").innerHTML = issueName(cur)+"　対象期間："+esc(periodLabelLocal(it.period, ED.lang));
     }

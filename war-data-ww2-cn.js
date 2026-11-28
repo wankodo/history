@@ -11,8 +11,8 @@ WAR_EDITIONS["ww2-cn"] = {
   EDITION: {
     war: "ww2", country: "cn", countryName: "中国", lang: "zh", subLang: "ja",
     paperName: "抗戰日報",
-    paperNameSub: "KANGZHAN RIBAO（カンジャン・リーバオ）",
-    mastSide: ["第二次世界大戰（第二次世界大戦）", "中國版（中国版）"],
+    paperNameSub: "KANGZHAN RIBAO",
+    mastSide: ["第二次世界大戰", "中國版"],
     sectionLabels: { war: "戦況", economy: "経済", food: "食料・生活", tech: "技術" },
     extraLabel: "號外（号外）",
     layout: "vertical",

@@ -11,8 +11,8 @@ WAR_EDITIONS["ww2-us"] = {
   EDITION: {
     war: "ww2", country: "us", countryName: "アメリカ", lang: "en", subLang: "ja",
     paperName: "The National Herald",
-    paperNameSub: "WASHINGTON（ワシントン）",
-    mastSide: ["Second World War（第二次世界大戦）", "American Edition（アメリカ版）"],
+    paperNameSub: "WASHINGTON",
+    mastSide: ["Second World War", "American Edition"],
     sectionLabels: { war: "戦況", economy: "経済", food: "食料・生活", tech: "技術" },
     extraLabel: "EXTRA（号外）",
     layout: "horizontal",

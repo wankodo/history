@@ -11,8 +11,8 @@ WAR_EDITIONS["ww2-gb"] = {
   EDITION: {
     war: "ww2", country: "gb", countryName: "イギリス", lang: "en", subLang: "ja",
     paperName: "The War Chronicle",
-    paperNameSub: "LONDON（ロンドン）",
-    mastSide: ["Second World War（第二次世界大戦）", "British Edition（イギリス版）"],
+    paperNameSub: "LONDON",
+    mastSide: ["Second World War", "British Edition"],
     sectionLabels: { war: "戦況", economy: "経済", food: "食料・生活", tech: "技術" },
     extraLabel: "EXTRA（号外）",
     layout: "horizontal",

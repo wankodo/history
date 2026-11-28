@@ -11,8 +11,8 @@ WAR_EDITIONS["ww2-de"] = {
   EDITION: {
     war: "ww2", country: "de", countryName: "ドイツ", lang: "de", subLang: "ja",
     paperName: "Die Kriegschronik",
-    paperNameSub: "BERLIN（ベルリン）",
-    mastSide: ["Zweiter Weltkrieg（第二次世界大戦）", "Deutsche Ausgabe（ドイツ版）"],
+    paperNameSub: "BERLIN",
+    mastSide: ["Zweiter Weltkrieg", "Deutsche Ausgabe"],
     sectionLabels: { war: "戦況", economy: "経済", food: "食料・生活", tech: "技術" },
     extraLabel: "Extrablatt（号外）",
     layout: "horizontal",
