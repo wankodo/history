@@ -67,6 +67,10 @@
   #paper .infoline{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;font-size:13px;border-bottom:1px solid var(--rule);padding:5px 2px;color:var(--ink2)}
   /* 日付の西暦は「字幕」：元号が主表記で、西暦は現代読者向けの補助として小さく従属的に添える */
   #paper .dateSub{font-size:.8em;color:var(--ink2);letter-spacing:0}
+  /* 縦書き内の数字・英字（2026-11-28、andy 指摘で追加）：横向きで読みにくい問題への対処。
+     数字2桁までは縦中横（横組み1文字分）、3桁以上と英字は1字ずつ正立させる */
+  .tcy{text-combine-upright:all}
+  .upr{text-orientation:upright}
   #extraBand{display:none;background:var(--accent);color:#fff;text-align:center;font-size:22px;letter-spacing:1.2em;padding:4px 0;margin:10px 0 2px;font-weight:700}
   #paper.extra #extraBand{display:block}
   /* 表紙：見出しは縦書き（右端）、写真はその左。日本の新聞の組版に寄せる */
@@ -364,6 +368,23 @@ function buildCountries(){
   });
 }
 
+// 縦書き用テキスト処理（2026-11-28、andy 指摘）：縦書きの中で数字・英字が横向きになり読みにくい問題への対処。
+// 号データは書き換えず、描画時に数字・英字の連なりを自動で span に包む（HTMLエスケープも同じ一巡で処理）。
+// - 数字2桁まで：縦中横（.tcy＝text-combine-upright:all、横組みで1文字分に収める）
+// - 数字3桁以上・小数や桁区切りを含む数字：.upr（text-orientation:upright）で1字ずつ正立させる
+// - 英字（英数字の混在も一連として扱う）：短い連なり（4文字まで）は .upr で正立。
+//   長い英単語は無理に立てず、ブラウザ既定の横倒し（縦書き中の横組み回転）のままにする方が読みやすいので span を付けない
+function vText(s){
+  return String(s).replace(/&|<|>|[0-9A-Za-z]+(?:[.,][0-9]+)*/g, run=>{
+    if (run==="&") return "&amp;";
+    if (run==="<") return "&lt;";
+    if (run===">") return "&gt;";
+    if (/^[0-9]+$/.test(run)) return run.length<=2 ? `<span class="tcy">${run}</span>` : `<span class="upr">${run}</span>`;
+    if (/^[0-9]/.test(run)) return `<span class="upr">${run}</span>`; // 小数・桁区切りを含む数字
+    return run.length<=4 ? `<span class="upr">${run}</span>` : run;   // 英字・英数字の連なり
+  });
+}
+
 // ===== ビューア =====
 function openViewer(idx){ cur = idx; buildTimeline(); buildBackNumbers(); render(); syncUrl(); }
 
@@ -374,7 +395,7 @@ function render(){
   $("prevBtn").disabled = cur===0; $("nextBtn").disabled = cur===ISSUES.length-1;
   // 紙面
   $("paper").classList.toggle("extra", !!it.extra);
-  $("vHead").textContent = it.cover.headline;
+  $("vHead").innerHTML = vText(it.cover.headline);
   $("headlineSub").textContent = it.cover.headlineSub || "";
   // 表紙写真（§3「写真の使用仕様」：表紙・号外中心、出典を紙面に明示）
   if (it.photo){
@@ -403,7 +424,7 @@ function render(){
   for (const [key,label] of secs){
     const paras = it.body[key];
     if (!paras || !paras.length) continue;
-    html += `<div class="vSec"><div class="secHeadV">${label}</div>` + paras.map(p=>`<p>${p}</p>`).join("") + `</div>`;
+    html += `<div class="vSec"><div class="secHeadV">${label}</div>` + paras.map(p=>`<p>${vText(p)}</p>`).join("") + `</div>`;
   }
   $("bodyV").innerHTML = html;
   $("bodyV").scrollLeft = 0; // 縦書きは右端が読み始め
