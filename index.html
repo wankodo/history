@@ -138,8 +138,10 @@ html[data-theme="andy"] .badges span.best-b{background:var(--amber);color:#03222
 </style>
 <style id="kind-color-hud">
 /* 種別色分けのHUD上書き：本体は明色紺＋シアンの帯で立たせ、ガイドは淡い緑で落とす */
-html[data-theme="andy"] .badge-kind-tool{background:#1d4568;color:#fff}
-html[data-theme="andy"] .badge-kind-guide{background:rgba(61,220,151,.10);color:#3ddc97;border-color:rgba(61,220,151,.45)}
+/* 注意：セレクタは .badge.〜 の2クラス形にする。汎用ルール :is(.badge,…,.rank-num.top,…){color:#03222e} の
+   特異度 (0,3,1) に勝つためで、1クラス形 (0,2,1) だと濃色文字に潰れて読めなくなる（2026-11-28 修正） */
+html[data-theme="andy"] .badge.badge-kind-tool{background:#1d4568;color:#fff}
+html[data-theme="andy"] .badge.badge-kind-guide{background:rgba(61,220,151,.10);color:#3ddc97;border-color:rgba(61,220,151,.45)}
 html[data-theme="andy"] .tool-card.kind-tool{border-left-color:var(--amber)}
 html[data-theme="andy"] .tool-card.kind-guide{border-left-color:rgba(61,220,151,.38);background:#07170f}
 html[data-theme="andy"] .tool-card.kind-guide h2{color:#a9c9b4}
