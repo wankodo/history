@@ -65,7 +65,8 @@
   #paper .mastLeft{text-align:left}
   #paper .mastRight{text-align:right}
   #paper .papername small{font-size:13px;letter-spacing:.2em;color:var(--ink2);display:block;margin-top:2px;white-space:nowrap}
-  #paper .infoline{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;font-size:13px;border-bottom:1px solid var(--rule);padding:5px 2px;color:var(--ink2)}
+  /* 発行情報行（二重線と一本線の間）：2行が間延びしないよう行間をしっかり詰める（2026-11-28、andy 指示） */
+  #paper .infoline{display:flex;justify-content:space-between;flex-wrap:wrap;gap:1px 6px;font-size:13px;line-height:1.3;border-bottom:1px solid var(--rule);padding:3px 2px 4px;color:var(--ink2)}
   /* 日付の西暦は「字幕」：元号が主表記で、西暦は現代読者向けの補助として小さく従属的に添える */
   #paper .dateSub{font-size:.8em;color:var(--ink2);letter-spacing:0}
   /* 縦書き内の数字・英字（2026-11-28、andy 指摘で追加）：横向きで読みにくい問題への対処。
@@ -115,7 +116,7 @@
   .hidden{display:none}
   @media(max-width:720px){
     #paper{padding:18px 16px}
-    /* 題字「戦時日報」と英字を一行に収める：字間を詰めて小さくし、両脇（小表記・日付）は最小幅を下げて折り返し可にする */
+    /* 題字「戦時日報」と英字を一行に収める：字間を詰めて小さくし、両脇（左＝小表記、右＝余白）は最小幅を下げて題字の幅を確保する */
     #paper .papername{font-size:27px;letter-spacing:.18em}
     #paper .papername small{font-size:10px;letter-spacing:.1em}
     #paper .mastSide{min-width:38px;font-size:9.5px;line-height:1.6}
@@ -259,7 +260,7 @@ footer .credit{margin:8px 0 0;font-size:13px;color:#fff}
       <div class="masthead">
         <div class="mastSide mastLeft">第二次大戦<br>日本版</div>
         <div class="papername">戦時日報<small>THE WAR DAILY</small></div>
-        <div class="mastSide mastRight" id="mastDate"></div>
+        <div class="mastSide mastRight"></div>
       </div>
       <div class="infoline"><span id="infoLeft"></span><span id="infoRight"></span></div>
       <div id="extraBand">号 外</div>
@@ -335,10 +336,6 @@ function warekiFull(iso){
 }
 function adYearSub(y1, y2){ // 西暦の字幕（括弧付き）。年が同じなら1つだけ
   return `<span class="dateSub">（${y1===y2 ? y1 : y1+"〜"+y2}）</span>`;
-}
-function warekiFullSub(iso){ // 題字脇の日付：昭和12年7月5日（1937）
-  const y = new Date(iso+"T00:00:00").getFullYear();
-  return warekiFull(iso) + adYearSub(y, y);
 }
 function weekRangeEra(week){
   const a = WEEKS[week];
@@ -434,12 +431,10 @@ function render(){
   if (kind==="normal"){
     $("infoLeft").innerHTML = issueName(cur)+"　"+weekRangeEraSub(it.week);
     $("infoRight").textContent = "戦争"+(it.week+1)+"週目";
-    // 日付は題字脇に置く（元号が主表記、西暦は括弧の字幕）
-    $("mastDate").innerHTML = warekiFullSub(WEEKS[it.week]);
+    // 日付は題字脇には置かず、二重線の下の発行情報行に一本化する（2026-11-28、andy 指示）
   } else {
     $("infoLeft").innerHTML = issueName(cur)+"　対象期間："+periodLabelEraSub(it.period);
     $("infoRight").textContent = "ダイジェスト号（本編開始前）";
-    $("mastDate").innerHTML = periodLabelEraSub(it.period)+"<br>ダイジェスト";
   }
   const L = EDITION.sectionLabels;
   let html = "";
