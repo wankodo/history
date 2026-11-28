@@ -80,6 +80,14 @@
   figure.coverPhoto img{width:100%;height:auto;display:block;filter:sepia(.28) contrast(1.02)}
   figure.coverPhoto figcaption{font-size:12.5px;line-height:1.6;margin-top:6px}
   figure.coverPhoto .credit{font-size:11px;color:var(--ink2)}
+  /* 写真のない号：見出しのすぐ左から本文が始まる組版にする（2026-11-28、andy 決定）。
+     見出しと本文を横に並べ、本文の縦書きの段が見出しの左隣から流れ込むことで空白を作らない */
+  #coverBody{display:none;flex:1;min-width:0;writing-mode:vertical-rl;height:440px;overflow-x:auto;overflow-y:hidden;padding:6px 2px}
+  #coverBody.on{display:block}
+  #coverBody .vSec{margin-left:26px}
+  #coverBody .vSec:last-child{margin-left:0}
+  #coverBody p{margin:0 0 0 14px;line-height:1.9;font-size:15px}
+  #paper.nophoto #vHead{font-size:34px}
   #headlineSub{font-size:13px;color:var(--ink2);font-style:italic;margin:8px 0 0}
   /* 本文：縦書き主体（右から左）。段は横へ流れ、はみ出しは横スクロール */
   #bodyV{writing-mode:vertical-rl;height:560px;max-width:100%;overflow-x:auto;overflow-y:hidden;margin-top:12px;padding:10px 4px;border-top:3px double var(--rule)}
@@ -116,6 +124,10 @@
     figure.coverPhoto{flex:0 0 54%;max-width:54%;padding:6px}
     figure.coverPhoto figcaption{font-size:11px;line-height:1.55;margin-top:4px}
     figure.coverPhoto .credit{font-size:10px}
+    /* 写真のない号は狭い幅でも、見出しの左から本文が始まる組版のまま（高さは見出しに合わせる） */
+    #coverBody{height:300px;padding:4px 0}
+    #coverBody p{font-size:14px}
+    #paper.nophoto #vHead{font-size:24px}
   }
 </style>
 <style id="hud-theme-style">
@@ -253,6 +265,7 @@ footer .credit{margin:8px 0 0;font-size:13px;color:#fff}
           <img id="photoImg" alt="">
           <figcaption><span id="photoCap"></span><br><span class="credit" id="photoCredit"></span></figcaption>
         </figure>
+        <div id="coverBody"></div>
       </div>
       <p id="headlineSub"></p>
       <div id="bodyV"></div>
@@ -391,6 +404,8 @@ function vText(s){
 // ===== ビューア =====
 function openViewer(idx){ cur = idx; buildTimeline(); buildBackNumbers(); render(); syncUrl(); }
 
+
+
 function render(){
   const it = ISSUES[cur], kind = it.kind || "normal";
   $("issueLabel").textContent = issueName(cur);
@@ -401,6 +416,7 @@ function render(){
   $("vHead").innerHTML = vText(it.cover.headline);
   $("headlineSub").textContent = it.cover.headlineSub || "";
   // 表紙写真（§3「写真の使用仕様」：表紙・号外中心、出典を紙面に明示）
+  $("paper").classList.toggle("nophoto", !it.photo);
   if (it.photo){
     $("coverPhoto").classList.remove("hidden");
     $("photoImg").src = it.photo.src;
@@ -429,8 +445,19 @@ function render(){
     if (!paras || !paras.length) continue;
     html += `<div class="vSec"><div class="secHeadV">${label}</div>` + paras.map(p=>`<p>${vText(p)}</p>`).join("") + `</div>`;
   }
-  $("bodyV").innerHTML = html;
-  $("bodyV").scrollLeft = 0; // 縦書きは右端が読み始め
+  // 本文の置き場所：写真のある号は見出しの下の本文欄へ。写真のない号は見出しのすぐ左から
+  // 本文が始まる組版にするため、表紙の行の中へ入れる（2026-11-28、andy 決定）
+  if (it.photo){
+    $("coverBody").classList.remove("on"); $("coverBody").innerHTML = "";
+    $("bodyV").style.display = "";
+    $("bodyV").innerHTML = html;
+    $("bodyV").scrollLeft = 0; // 縦書きは右端が読み始め
+  } else {
+    $("bodyV").style.display = "none"; $("bodyV").innerHTML = "";
+    $("coverBody").innerHTML = html;
+    $("coverBody").classList.add("on");
+    $("coverBody").scrollLeft = 0; // 見出しの左隣が読み始め
+  }
   // 注記（紙面末尾注記）
   if (it.note){ $("noteBox").style.display="block"; $("noteText").textContent = it.note; }
   else $("noteBox").style.display="none";
