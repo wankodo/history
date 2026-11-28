@@ -457,7 +457,7 @@ function render(){
     $("coverBody").classList.add("on");
     $("coverBody").scrollLeft = 0; // 見出しの左隣が読み始め
   }
-  // 注記（紙面末尾注記）
+  // 注記（紙面末尾注記。§9-9 の方針：各国版は単一視点で、他国の見解は併記しない）
   if (it.note){ $("noteBox").style.display="block"; $("noteText").textContent = it.note; }
   else $("noteBox").style.display="none";
   // 発端リンク
