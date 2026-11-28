@@ -108,11 +108,14 @@
     #paper{padding:18px 16px}
     #paper .papername{font-size:30px}
     #paper .mastSide{min-width:62px;font-size:10px}
-    #vHead{font-size:23px;max-height:320px}
+    #vHead{font-size:21px;max-height:300px}
     #bodyV{height:68vh}
-    .coverRow{flex-direction:column}
-    #vHead{align-self:flex-end}
-    figure.coverPhoto{width:100%}
+    /* 狭い幅（スマホ縦向き）では縦積みにせず、写真を小さくして見出しの左に並べ、
+       見出し脇の空白を埋める（2026-11-28、andy 指示。横幅が十分な表示は通常レイアウトのまま） */
+    .coverRow{gap:12px}
+    figure.coverPhoto{flex:0 0 54%;max-width:54%;padding:6px}
+    figure.coverPhoto figcaption{font-size:11px;line-height:1.55;margin-top:4px}
+    figure.coverPhoto .credit{font-size:10px}
   }
 </style>
 <style id="hud-theme-style">
