@@ -223,7 +223,7 @@ footer .credit{margin:8px 0 0;font-size:13px;color:#fff}
     <h2 class="step">一、戦争を選ぶ</h2>
     <div class="cards">
       <div class="card disabled"><h3>第一次世界大戦</h3><p>1914–1918年。9か国の新聞で読み比べる。</p><p class="cnt">準備中</p></div>
-      <div class="card" id="pickWw2"><h3>第二次世界大戦</h3><p>1939–1945年（日本編は1937年開始）。7か国の目線で追う。</p><p class="cnt">日本編：公開中（プロローグ7号＋本編25号）</p></div>
+      <div class="card" id="pickWw2"><h3>第二次世界大戦</h3><p>1939–1945年（日本編は1937年開始）。7か国の目線で追う。</p><p class="cnt">日本編：公開中（プロローグ7号＋本編52号）</p></div>
     </div>
   </section>
 
@@ -375,7 +375,7 @@ function buildCountries(){
   $("countryCards").innerHTML = COUNTRIES_WW2.map(c=>`
     <div class="card ${c.ready?"":"disabled"}" data-code="${c.code}">
       <h3>${c.name}</h3><p>${c.period}</p><p>${c.catch}</p>
-      <p class="cnt">${c.ready ? "公開中：プロローグ7号＋本編25号" : "準備中"}</p>
+      <p class="cnt">${c.ready ? "公開中：プロローグ7号＋本編52号" : "準備中"}</p>
     </div>`).join("");
   document.querySelectorAll("#countryCards .card").forEach(el=>{
     el.addEventListener("click", ()=>{
