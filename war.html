@@ -7,11 +7,11 @@
 <title>戦争史｜歴史系ツール集</title>
 <link rel="icon" type="image/svg+xml" href="favicon-war.svg">
 <link rel="apple-touch-icon" href="favicon.png">
-<meta name="description" content="戦争と国を選ぶと、その国の目線で戦争を週刊の新聞として追えるコーナーです。戦況だけでなく経済・食料・技術の変化も、その国の公式資料をもとに報じます。第二次世界大戦の7か国編と第一次世界大戦の9か国編を公開中です（いずれも本編・エピローグとも完結）。">
+<meta name="description" content="戦争と国を選ぶと、その国の目線で戦争を新聞として追えるコーナーです。戦況だけでなく経済・食料・技術の変化も、その国の公式資料をもとに報じます。第二次世界大戦の7か国編と第一次世界大戦の9か国編、日露戦争の2か国編を公開中です。">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="歴史系ツール集">
 <meta property="og:title" content="戦争史">
-<meta property="og:description" content="戦争と国を選ぶと、その国の目線で戦争を週刊の新聞として追えるコーナーです。戦況だけでなく経済・食料・技術の変化も、その国の公式資料をもとに報じます。第二次世界大戦の7か国編と第一次世界大戦の9か国編を公開中です（いずれも本編・エピローグとも完結）。">
+<meta property="og:description" content="戦争と国を選ぶと、その国の目線で戦争を新聞として追えるコーナーです。戦況だけでなく経済・食料・技術の変化も、その国の公式資料をもとに報じます。第二次世界大戦の7か国編と第一次世界大戦の9か国編、日露戦争の2か国編を公開中です。">
 <meta property="og:url" content="https://wankodo.github.io/history/war.html">
 <meta property="og:image" content="https://wankodo.github.io/history/ogp-top.png">
 <meta property="og:image:width" content="1200">
@@ -213,16 +213,13 @@ footer .credit{margin:8px 0 0;font-size:13px;color:#fff}
 <div class="sitebar"><div class="sb-in"><a class="sb-name" href="index.html">歴史系ツール集</a><span style="display:flex;align-items:center;gap:12px;"><a href="https://wankodo.github.io/">よろず道具箱</a></span></div></div>
 <header class="site">
   <h1>戦争史</h1>
-  <span class="sub">戦争と国を選ぶと、その国の目線で戦争を追える新聞です ― 第二次世界大戦・7か国編と第一次世界大戦・9か国編を公開中（いずれも完結）</span>
+  <span class="sub">戦争と国を選ぶと、その国の目線で戦争を追える新聞です ― 第二次世界大戦・第一次世界大戦・日露戦争を公開中</span>
 </header>
 <main>
   <!-- 状態1：戦争の選択 -->
   <section id="stateWar">
     <h2 class="step">一、戦争を選ぶ</h2>
-    <div class="cards">
-      <div class="card" id="pickWw1"><h3>第一次世界大戦</h3><p>1914–1918年。9か国の新聞で読み比べる。</p><p class="cnt">9か国編を公開中</p></div>
-      <div class="card" id="pickWw2"><h3>第二次世界大戦</h3><p>1939–1945年（日本・中国は1937年開始）。7か国の目線で追う。</p><p class="cnt">7か国編を公開中（完結）</p></div>
-    </div>
+    <div class="cards" id="warCards"></div>
   </section>
 
   <!-- 状態2：国の選択 -->
@@ -235,7 +232,7 @@ footer .credit{margin:8px 0 0;font-size:13px;color:#fff}
   <!-- 状態3：新聞ビューア -->
   <section id="stateViewer" class="hidden">
     <div id="timelineWrap">
-      <div class="tl-title">全体年表レイヤー（土台）― 帯をクリックすると最寄りの発行号へ。発行週に目盛り、赤は号外</div>
+      <div class="tl-title" id="tlTitle">全体年表レイヤー（土台）― 帯をクリックすると最寄りの発行号へ。発行週に目盛り、赤は号外</div>
       <div id="tlBand"></div>
       <div id="tlRead"></div>
     </div>
@@ -287,12 +284,12 @@ footer .credit{margin:8px 0 0;font-size:13px;color:#fff}
     </article>
 
     <div class="panel">
-      <h3>週ハブ ― この週の他国の新聞</h3>
+      <h3 id="hubTitle">週ハブ ― この週の他国の新聞</h3>
       <div class="hubGrid" id="hubGrid"></div>
     </div>
 
     <div class="panel">
-      <h3>同期再生 ― 全紙が同じ週でめくれる <button class="btn" id="syncBtn" style="float:right">同期再生 ▶</button></h3>
+      <h3><span id="syncTitle">同期再生 ― 全紙が同じ週でめくれる</span> <button class="btn" id="syncBtn" style="float:right">同期再生 ▶</button></h3>
       <div class="syncGrid" id="syncGrid"></div>
     </div>
 
@@ -303,11 +300,24 @@ footer .credit{margin:8px 0 0;font-size:13px;color:#fff}
   </section>
 </main>
 
-<script src="war-weeks.js?v=20261128n"></script>
+<script src="war-weeks.js?v=20261128r"></script>
 <script>
 "use strict";
-// ===== ビューア：WW1 は9か国編、WW2 は7か国編が実データ。編データは遅延読み込みする =====
-const COUNTRIES_WW2 = [
+// ===== ビューア：戦争×国の編データは遅延読み込みする =====
+// 戦争一覧（選択画面のカードはこの設定から描く。gran は期間マスターの刻み：
+// "week"＝週単位（WWシリーズ）、"month"＝月単位＋出来事単位（19世紀・近世）、
+// "year"＝年単位＋出来事単位（中世）。設計書 §10 の読み替え）
+const WARS = [
+  { code:"rj", name:"日露戦争", years:"1904–1905年", desc:"日本とロシア、両国の目線で追う。月刊と号外の新聞。", cnt:"2か国編を公開中", gran:"month" },
+  { code:"ww1", name:"第一次世界大戦", years:"1914–1918年", desc:"9か国の新聞で読み比べる。", cnt:"9か国編を公開中（完結）", gran:"week" },
+  { code:"ww2", name:"第二次世界大戦", years:"1939–1945年（日本・中国は1937年開始）", desc:"7か国の目線で追う。", cnt:"7か国編を公開中（完結）", gran:"week" }
+];
+const COUNTRIES_BY_WAR = {};
+COUNTRIES_BY_WAR.rj = [
+  { code:"jp", name:"日本", ready:true, period:"1904年2月〜1905年9月", catch:"列強ロシアに挑み、国民総動員で戦った戦争の内側", cnt:"公開中：プロローグ2号＋本編28号＋エピローグ2号" },
+  { code:"ru", name:"ロシア", ready:true, period:"1904年2月〜1905年9月", catch:"遠い極東の戦争と、帝国の威信が揺らぐ内側", cnt:"公開中：プロローグ2号＋本編26号＋エピローグ2号" }
+];
+COUNTRIES_BY_WAR.ww2 = [
   { code:"jp", name:"日本", ready:true, period:"1937年7月〜1945年9月", catch:"大陸での戦争から本土空襲まで、最も長く戦争を生きた国の内側", cnt:"公開中：プロローグ7号＋本編175号＋エピローグ6号（完結）" },
   { code:"cn", name:"中国", ready:true, period:"1937年7月〜1945年9月", catch:"8年に及ぶ抗戦の内側", cnt:"公開中：プロローグ2号＋本編89号＋エピローグ5号（完結）" },
   { code:"de", name:"ドイツ", ready:true, period:"1939年9月〜1945年5月", catch:"電撃戦の栄光から本土の焦土まで", cnt:"公開中：プロローグ4号＋本編92号＋エピローグ5号（完結）" },
@@ -316,7 +326,7 @@ const COUNTRIES_WW2 = [
   { code:"it", name:"イタリア", ready:true, period:"1940年6月〜1945年", catch:"参戦、敗北、そして内戦", cnt:"公開中：プロローグ3号＋本編68号＋エピローグ4号（完結）" },
   { code:"us", name:"アメリカ", ready:true, period:"1941年12月〜1945年9月", catch:"真珠湾の衝撃から世界の工場へ", cnt:"公開中：プロローグ3号＋本編80号＋エピローグ5号（完結）" }
 ];
-const COUNTRIES_WW1 = [
+COUNTRIES_BY_WAR.ww1 = [
   { code:"de", name:"ドイツ", ready:true, period:"1914年8月〜1918年11月", catch:"二正面の戦争と、封鎖に締め上げられる内側", cnt:"全143号" },
   { code:"at", name:"オーストリア＝ハンガリー", ready:true, period:"1914年7月〜1918年11月", catch:"多民族帝国の戦争と、その崩壊まで", cnt:"全121号" },
   { code:"gb", name:"イギリス", ready:true, period:"1914年8月〜1918年11月", catch:"大陸への大軍派遣と、海の戦争", cnt:"全137号" },
@@ -329,8 +339,10 @@ const COUNTRIES_WW1 = [
 ];
 let curWar = "ww2";
 let WEEKS = WAR_WEEKS.ww2;
-function COUNTRIES(){ return curWar==="ww1" ? COUNTRIES_WW1 : COUNTRIES_WW2; }
-function WAR_NAME(){ return curWar==="ww1" ? "第一次世界大戦" : "第二次世界大戦"; }
+function COUNTRIES(){ return COUNTRIES_BY_WAR[curWar] || []; }
+function WAR_NAME(){ const w = WARS.find(x=>x.code===curWar); return w ? w.name : ""; }
+function gran(){ const w = WARS.find(x=>x.code===curWar); return (w && w.gran) || "week"; }
+function unitWord(){ const g = gran(); return g==="month" ? "月" : g==="year" ? "年" : "週"; }
 const EDITIONS = {};   // "ww2-jp" -> { EDITION, ISSUES }
 const LOADING = {};    // "ww2-jp" -> Promise
 let ED = null, ISS = null, curCode = "jp";
@@ -341,7 +353,7 @@ let timer = null, syncTimer = null;
 // 号データの読み込みには版数クエリを付ける：データファイルを差し替えてもブラウザの
 // キャッシュに残った旧版が表示される事故（欄名の旧表記が実機で出た等）を防ぐため。
 // データ側を変更したら、この版数を上げること（2026-11-28）。
-const DATA_VER = "20261128q";
+const DATA_VER = "20261128r";
 function loadEdition(war, code){
   const key = war + "-" + code;
   if (EDITIONS[key]) return Promise.resolve(EDITIONS[key]);
@@ -369,15 +381,21 @@ function preloadOthers(){
 }
 
 // 号の表示名（プロローグ第○号／第○号／エピローグ第○号）
-function issueNameIn(issues, idx){
+// 中世の年代記形式では EDITION.unit="記" とし、「号」ではなく「記」で数える（設計書 §10）
+function issueNameIn(issues, idx, unit){
   const it = issues[idx], kind = it.kind || "normal";
   let n = 0;
   for (let i=0;i<=idx;i++) if ((issues[i].kind||"normal")===kind) n++;
+  if (unit==="記"){
+    if (kind==="prologue") return "前史・第"+n+"記";
+    if (kind==="epilogue") return "後日・第"+n+"記";
+    return "第"+n+"記";
+  }
   if (kind==="prologue") return "プロローグ第"+n+"号";
   if (kind==="epilogue") return "エピローグ第"+n+"号";
   return "第"+n+"号";
 }
-function issueName(idx){ return issueNameIn(ISS, idx); }
+function issueName(idx){ return issueNameIn(ISS, idx, ED && ED.unit); }
 function fmtDate(iso){
   const d = new Date(iso+"T00:00:00");
   return d.getFullYear()+"年"+(d.getMonth()+1)+"月"+d.getDate()+"日";
@@ -426,6 +444,7 @@ const MONTHS_LOCAL = {
   ru: ["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"],
   fr: ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"],
   it: ["gennaio","febbraio","marzo","aprile","maggio","giugno","luglio","agosto","settembre","ottobre","novembre","dicembre"],
+  es: ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"],
   zh: []
 };
 const MONTHS_RU_NOM = ["январь","февраль","март","апрель","май","июнь","июль","август","сентябрь","октябрь","ноябрь","декабрь"];
@@ -437,6 +456,7 @@ function fmtLocal(iso, lang){
   if (lang==="ru") return day+" "+MONTHS_LOCAL.ru[m]+" "+y+" г.";
   if (lang==="fr") return day+" "+MONTHS_LOCAL.fr[m]+" "+y;
   if (lang==="it") return day+" "+MONTHS_LOCAL.it[m]+" "+y;
+  if (lang==="es") return day+" de "+MONTHS_LOCAL.es[m]+" de "+y;
   return y+"年"+(m+1)+"月"+day+"日"; // zh は漢字数字表記（日本語と同じ形）
 }
 function weekRangeLocal(week, lang){
@@ -450,6 +470,7 @@ function periodLabelLocal(p, lang){
     if (lang==="zh") return y+"年"+m+"月";
     if (lang==="en") return MONTHS_LOCAL.en[m-1]+" "+y;
     if (lang==="ru") return MONTHS_LOCAL.ru[m-1].replace(/я$/,"ь")+" "+y; // 主格の月名へ（январь等）
+    if (lang==="es") return MONTHS_LOCAL.es[m-1]+" de "+y;
     return MONTHS_LOCAL[lang][m-1]+" "+y; };
   return conv(p.from)+" – "+conv(p.to);
 }
@@ -566,6 +587,53 @@ function periodLabelRumiSub(p){
   const conv = s => { const pt = rumiParts(s+"-01"); return MONTHS_RUMI[pt.m-1]+" "+pt.ry; };
   return conv(p.from)+" – "+conv(p.to) + adYearSub(+p.from.split("-")[0], +p.to.split("-")[0]);
 }
+// ===== 低解像度版（19世紀以降の拡張、設計書 §10）の期間ラベル =====
+// 月単位・年単位の戦争では、通常号の発行情報行は「週範囲」ではなく期間（月／年）そのものを
+// その国の紀年法で表示する。紀年法のある編だけ西暦をカッコ字幕で添える原則は週単位と同じ。
+// 戻り値は発行情報行へそのまま入る HTML（現地語部分は必要に応じて esc 済み）。
+function warekiMonth(iso){
+  const d = new Date(iso+"T00:00:00");
+  const name = (ED && ED.eraName) || "昭和", base = (ED && ED.eraBase != null) ? ED.eraBase : 1925;
+  return name+(d.getFullYear()-base)+"年"+(d.getMonth()+1)+"月";
+}
+function localMonthLabel(iso, lang){
+  const d = new Date(iso+"T00:00:00");
+  const y = d.getFullYear(), m = d.getMonth();
+  if (lang==="de") return MONTHS_LOCAL.de[m]+" "+y;
+  if (lang==="en") return MONTHS_LOCAL.en[m]+" "+y;
+  if (lang==="fr") return MONTHS_LOCAL.fr[m]+" "+y;
+  if (lang==="it") return MONTHS_LOCAL.it[m]+" "+y;
+  if (lang==="es") return MONTHS_LOCAL.es[m]+" de "+y;
+  if (lang==="ru") return MONTHS_RU_NOM[m]+" "+y+" г.";
+  return y+"年"+(m+1)+"月"; // zh など
+}
+function periodStartLabel(week){
+  const iso = WEEKS[week], ds = dateStyle();
+  const d = new Date(iso+"T00:00:00"), y = d.getFullYear();
+  if (gran()==="month"){
+    if (ds==="era") return warekiMonth(iso) + adYearSub(y, y);
+    if (ds==="minguo") return "民國"+(y-1911)+"年"+(d.getMonth()+1)+"月" + adYearSub(y, y);
+    if (ds==="ef") return MONTHS_LOCAL.it[d.getMonth()]+" "+toRoman(efYear(iso))+" E.F." + adYearSub(y, y);
+    if (ds==="julian"){ const j = julianShifted(iso); return esc(MONTHS_RU_NOM[j.getMonth()]+" "+j.getFullYear()+" г."); }
+    if (ds==="rumi"){ const p = rumiParts(iso); return esc(MONTHS_RUMI[p.m-1]+" "+p.ry) + adYearSub(p.gy, p.gy); }
+    return esc(localMonthLabel(iso, ED.lang));
+  }
+  // 年単位（中世）：発行情報行は年だけを出す。年号の対応は本文中に記す（SPEC の読み替え）
+  if (ds==="era"){
+    if (ED.eraYears && ED.eraYears[y]) return esc(ED.eraYears[y]) + adYearSub(y, y);
+    const name = (ED && ED.eraName) || "昭和", base = (ED && ED.eraBase != null) ? ED.eraBase : 1925;
+    return name+(y-base)+"年" + adYearSub(y, y);
+  }
+  if (ds==="julian"){ const j = julianShifted(iso); return esc(j.getFullYear()+" г."); }
+  return esc(y+"年");
+}
+// 年表レイヤーの読み出し用（日本語UI側の期間表記）
+function fmtPeriodJa(week){
+  const iso = WEEKS[week];
+  if (gran()==="month"){ const [y,m] = iso.split("-").map(Number); return y+"年"+m+"月"; }
+  if (gran()==="year") return iso.split("-")[0]+"年";
+  return weekRange(week);
+}
 // 紙面の日付の紀年法は EDITION.dateStyle で切り替える（WW2の既存データは dateStyle を
 // 持たないため、国コードからの従来判定にフォールバックする）。
 function dateStyle(){
@@ -588,8 +656,12 @@ function pickWar(war){
   buildCountries();
   show("stateCountry");
 }
-$("pickWw1").addEventListener("click", ()=>pickWar("ww1"));
-$("pickWw2").addEventListener("click", ()=>pickWar("ww2"));
+// 戦争の選択カードは WARS 設定から描く
+$("warCards").innerHTML = WARS.map(w=>`
+  <div class="card" data-war="${w.code}"><h3>${w.name}</h3><p>${w.years}。${w.desc}</p><p class="cnt">${w.cnt}</p></div>`).join("");
+document.querySelectorAll("#warCards .card").forEach(el=>{
+  el.addEventListener("click", ()=>pickWar(el.dataset.war));
+});
 $("backToWar").addEventListener("click", ()=>show("stateWar"));
 $("backToCountry").addEventListener("click", ()=>{ stopPlay(); stopSync(); show("stateCountry"); });
 
@@ -674,15 +746,20 @@ function render(){
   // WW1露＝ユリウス暦／WW1オスマン＝ルミ暦）。紀年法のある編だけ西暦をカッコ字幕で添える。
   const ds = dateStyle();
   if (kind==="normal"){
-    let range;
-    if (ds==="era") range = weekRangeEraSub(it.week);
-    else if (ds==="minguo") range = weekRangeMinguoSub(it.week);
-    else if (ds==="ef") range = weekRangeEFSub(it.week);
-    else if (ds==="julian") range = esc(weekRangeJulian(it.week));
-    else if (ds==="rumi") range = weekRangeRumiSub(it.week);
-    else range = esc(weekRangeLocal(it.week, ED.lang)); // 独・英・仏・米・伊（WW1）は西暦がそのまま現地の正式表記
+    let range, right;
+    if (gran()!=="week"){
+      // 低解像度版：日付は期間（月／年）そのものを現地の紀年法で表示する
+      range = periodStartLabel(it.week);
+      right = "戦争"+(it.week+1)+(gran()==="month" ? "か月目" : "年目");
+    }
+    else if (ds==="era"){ range = weekRangeEraSub(it.week); right = "戦争"+(it.week+1)+"週目"; }
+    else if (ds==="minguo"){ range = weekRangeMinguoSub(it.week); right = "戦争"+(it.week+1)+"週目"; }
+    else if (ds==="ef"){ range = weekRangeEFSub(it.week); right = "戦争"+(it.week+1)+"週目"; }
+    else if (ds==="julian"){ range = esc(weekRangeJulian(it.week)); right = "戦争"+(it.week+1)+"週目"; }
+    else if (ds==="rumi"){ range = weekRangeRumiSub(it.week); right = "戦争"+(it.week+1)+"週目"; }
+    else { range = esc(weekRangeLocal(it.week, ED.lang)); right = "戦争"+(it.week+1)+"週目"; } // 独・英・仏・米・伊（WW1）は西暦がそのまま現地の正式表記
     $("infoLeft").innerHTML = issueName(cur)+"　"+range;
-    $("infoRight").textContent = "戦争"+(it.week+1)+"週目";
+    $("infoRight").textContent = right;
   } else {
     let pl;
     if (ds==="era") pl = periodLabelEraSub(it.period);
@@ -792,7 +869,7 @@ function render(){
     const jump = (data)=>{
       const target = resolveRefIn(data.ISSUES, r);
       if (target===null){ btn.textContent = "（参照先は未製作）"; btn.disabled = true; return; }
-      btn.textContent = "この発端は " + ((tWar===curWar && tCode===curCode) ? "" : (data.EDITION.countryName+"編 ")) + issueNameIn(data.ISSUES, target) + " →";
+      btn.textContent = "この発端は " + ((tWar===curWar && tCode===curCode) ? "" : (data.EDITION.countryName+"編 ")) + issueNameIn(data.ISSUES, target, data.EDITION.unit) + " →";
       btn.addEventListener("click", ()=>{
         if (tWar===curWar && tCode===curCode){ cur = target; render(); syncUrl(); }
         else { curWar = tWar; WEEKS = WAR_WEEKS[tWar]; switchEdition(tCode, target); show("stateViewer"); }
@@ -825,6 +902,7 @@ function syncUrl(){
 
 // 年表レイヤー：全期間の帯＋発行マーカー＋現在位置カーソル
 function buildTimeline(){
+  $("tlTitle").textContent = "全体年表レイヤー（土台）― 帯をクリックすると最寄りの発行号へ。発行"+unitWord()+"に目盛り、赤は号外";
   const band = $("tlBand"); band.innerHTML = "";
   const total = WEEKS.length;
   const mk = (cls, leftPct, title)=>{
@@ -834,7 +912,7 @@ function buildTimeline(){
   const z = mk("zone", 0, ""); z.textContent = "プロローグ"; z.style.width = "3%";
   ISS.forEach((it,i)=>{
     if ((it.kind||"normal")!=="normal") return;
-    mk("mark"+(it.extra?" extra":""), (it.week/total)*100, issueName(i)+" "+weekRange(it.week));
+    mk("mark"+(it.extra?" extra":""), (it.week/total)*100, issueName(i)+" "+fmtPeriodJa(it.week));
   });
   const c = mk("cursor", 0, ""); c.id = "tlCursor";
   band.onclick = (e)=>{
@@ -850,8 +928,8 @@ function updateTimelineCursor(){
   const pos = (it.kind||"normal")==="normal" ? (it.week/total)*100 : (cur===0?0.5:1.5);
   const c = $("tlCursor"); if (c) c.style.left = pos+"%";
   $("tlRead").textContent = (it.kind||"normal")==="normal"
-    ? "現在位置："+weekRange(it.week)+"（全"+total+"週中の第"+(it.week+1)+"週）"
-    : "現在位置：ダイジェスト区間（本編の週軸の外側）";
+    ? "現在位置："+fmtPeriodJa(it.week)+"（全"+total+unitWord()+"中の第"+(it.week+1)+unitWord()+"）"
+    : "現在位置：ダイジェスト区間（本編の"+unitWord()+"軸の外側）";
 }
 
 // その週にその編で発行された号の添字（なければ -1）
@@ -860,16 +938,17 @@ function issueAtWeek(data, week){
 }
 // 週ハブ：同じ週の他国紙の一面見出しを並べ、選ぶとその国の号へ跳ぶ（読み比べ三層構造の第2層）
 function buildHub(){
+  $("hubTitle").textContent = unitWord()+"ハブ ― この"+unitWord()+"の他国の新聞";
   const it = ISS[cur], kind = it.kind||"normal";
   $("hubGrid").innerHTML = COUNTRIES().map(c=>{
     if (kind!=="normal")
-      return `<div class="hubItem"><div class="cn">${c.name}</div><span class="none">ダイジェスト期間（週軸の外側）</span></div>`;
+      return `<div class="hubItem"><div class="cn">${c.name}</div><span class="none">ダイジェスト期間（${unitWord()}軸の外側）</span></div>`;
     const data = EDITIONS[curWar+"-"+c.code];
     if (!data) return `<div class="hubItem"><div class="cn">${c.name}</div><span class="none">読み込み中…</span></div>`;
     const idx = issueAtWeek(data, it.week);
-    if (idx<0) return `<div class="hubItem"><div class="cn">${c.name}</div><span class="none">この週は発行なし</span></div>`;
+    if (idx<0) return `<div class="hubItem"><div class="cn">${c.name}</div><span class="none">この${unitWord()}は発行なし</span></div>`;
     const t = data.ISSUES[idx];
-    return `<div class="hubItem live" data-code="${c.code}" data-idx="${idx}"><div class="cn">${c.name} ― ${issueNameIn(data.ISSUES, idx)}</div>${esc(t.cover.headline)}<br><span class="none">${esc(t.cover.headlineSub||"")}</span></div>`;
+    return `<div class="hubItem live" data-code="${c.code}" data-idx="${idx}"><div class="cn">${c.name} ― ${issueNameIn(data.ISSUES, idx, data.EDITION.unit)}</div>${esc(t.cover.headline)}<br><span class="none">${esc(t.cover.headlineSub||"")}</span></div>`;
   }).join("");
   document.querySelectorAll("#hubGrid .hubItem.live").forEach(el=>{
     el.addEventListener("click", ()=>{
@@ -882,6 +961,7 @@ function buildHub(){
 
 // 同期再生：全紙グリッド。各マスは現在の週における各編の号（発行がなければ空欄表示）
 function buildSyncGrid(){
+  $("syncTitle").textContent = "同期再生 ― 全紙が同じ"+unitWord()+"でめくれる";
   const it = ISS[cur], kind = it.kind||"normal";
   $("syncGrid").innerHTML = COUNTRIES().map(c=>{
     if (kind!=="normal")
@@ -889,9 +969,9 @@ function buildSyncGrid(){
     const data = EDITIONS[curWar+"-"+c.code];
     if (!data) return `<div class="syncItem"><div class="cn">${c.name}</div><span class="none">読み込み中…</span></div>`;
     const idx = issueAtWeek(data, it.week);
-    if (idx<0) return `<div class="syncItem"><div class="cn">${c.name}</div><span class="none">この週は発行なし</span></div>`;
+    if (idx<0) return `<div class="syncItem"><div class="cn">${c.name}</div><span class="none">この${unitWord()}は発行なし</span></div>`;
     const t = data.ISSUES[idx];
-    return `<div class="syncItem live" data-code="${c.code}" data-idx="${idx}"><div class="cn">${c.name} ― ${issueNameIn(data.ISSUES, idx)}</div>${esc(t.cover.headline)}</div>`;
+    return `<div class="syncItem live" data-code="${c.code}" data-idx="${idx}"><div class="cn">${c.name} ― ${issueNameIn(data.ISSUES, idx, data.EDITION.unit)}</div>${esc(t.cover.headline)}</div>`;
   }).join("");
   document.querySelectorAll("#syncGrid .syncItem.live").forEach(el=>{
     el.addEventListener("click", ()=>{
@@ -946,7 +1026,7 @@ document.addEventListener("keydown", e=>{
 (function init(){
   const q = new URLSearchParams(location.search);
   const war = q.get("war");
-  if (war==="ww1" || war==="ww2"){
+  if (war && WARS.some(w=>w.code===war)){
     curWar = war;
     WEEKS = WAR_WEEKS[war];
     const code = q.get("country") || "jp";
