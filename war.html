@@ -7,11 +7,11 @@
 <title>戦争史｜歴史系ツール集</title>
 <link rel="icon" type="image/svg+xml" href="favicon-war.svg">
 <link rel="apple-touch-icon" href="favicon.png">
-<meta name="description" content="戦争と国を選ぶと、その国の目線で戦争を週刊の新聞として追えるコーナーです。戦況だけでなく経済・食料・技術の変化も、その国の公式資料をもとに報じます。現在は第二次世界大戦の7か国編（1940年分まで）を公開中です。">
+<meta name="description" content="戦争と国を選ぶと、その国の目線で戦争を週刊の新聞として追えるコーナーです。戦況だけでなく経済・食料・技術の変化も、その国の公式資料をもとに報じます。現在は第二次世界大戦の7か国編（1941年分まで）を公開中です。">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="歴史系ツール集">
 <meta property="og:title" content="戦争史">
-<meta property="og:description" content="戦争と国を選ぶと、その国の目線で戦争を週刊の新聞として追えるコーナーです。戦況だけでなく経済・食料・技術の変化も、その国の公式資料をもとに報じます。現在は第二次世界大戦の7か国編（1940年分まで）を公開中です。">
+<meta property="og:description" content="戦争と国を選ぶと、その国の目線で戦争を週刊の新聞として追えるコーナーです。戦況だけでなく経済・食料・技術の変化も、その国の公式資料をもとに報じます。現在は第二次世界大戦の7か国編（1941年分まで）を公開中です。">
 <meta property="og:url" content="https://wankodo.github.io/history/war.html">
 <meta property="og:image" content="https://wankodo.github.io/history/ogp-top.png">
 <meta property="og:image:width" content="1200">
@@ -202,7 +202,7 @@ footer .credit{margin:8px 0 0;font-size:13px;color:#fff}
 <div class="sitebar"><div class="sb-in"><a class="sb-name" href="index.html">歴史系ツール集</a><span style="display:flex;align-items:center;gap:12px;"><a href="https://wankodo.github.io/">よろず道具箱</a></span></div></div>
 <header class="site">
   <h1>戦争史</h1>
-  <span class="sub">戦争と国を選ぶと、その国の目線で戦争を追える新聞です ― 現在は第二次世界大戦・7か国編を公開中（1940年分まで）</span>
+  <span class="sub">戦争と国を選ぶと、その国の目線で戦争を追える新聞です ― 現在は第二次世界大戦・7か国編を公開中（1941年分まで）</span>
 </header>
 <main>
   <!-- 状態1：戦争の選択 -->
@@ -292,7 +292,7 @@ footer .credit{margin:8px 0 0;font-size:13px;color:#fff}
   </section>
 </main>
 
-<script src="war-weeks.js?v=20261128f"></script>
+<script src="war-weeks.js?v=20261128g"></script>
 <script>
 "use strict";
 // ===== ビューア：WW2 は7か国編が実データ。他編はデータを遅延読み込みする =====
@@ -316,7 +316,7 @@ let timer = null, syncTimer = null;
 // 号データの読み込みには版数クエリを付ける：データファイルを差し替えてもブラウザの
 // キャッシュに残った旧版が表示される事故（欄名の旧表記が実機で出た等）を防ぐため。
 // データ側を変更したら、この版数を上げること（2026-11-28）。
-const DATA_VER = "20261128f";
+const DATA_VER = "20261128g";
 function loadEdition(code){
   if (EDITIONS["ww2-"+code]) return Promise.resolve(EDITIONS["ww2-"+code]);
   if (LOADING[code]) return LOADING[code];
