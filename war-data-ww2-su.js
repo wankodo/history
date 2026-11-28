@@ -12,11 +12,11 @@ globalThis.WAR_EDITIONS = globalThis.WAR_EDITIONS || {};
 WAR_EDITIONS["ww2-su"] = {
   EDITION: {
     war: "ww2", country: "su", countryName: "ソ連", lang: "ru", subLang: "ja",
-    paperName: "Советский вестник",
-    paperNameSub: "МОСКВА",
-    mastSide: ["Вторая мировая война", "Советское издание"],
-    sectionLabels: { war: "На фронтах", economy: "Народное хозяйство", food: "Снабжение", tech: "Военная техника" },
-    extraLabel: "ЭКСТРЕННЫЙ ВЫПУСК",
+    paperName: "Советский вестник（ソビエト通報）",
+    paperNameSub: "МОСКВА（モスクワ）",
+    mastSide: ["Вторая мировая война（第二次世界大戦）", "Советское издание（ソ連版）"],
+    sectionLabels: { war: "На фронтах（前線にて）", economy: "Народное хозяйство（国民経済）", food: "Снабжение（供給）", tech: "Военная техника（軍事技術）" },
+    extraLabel: "ЭКСТРЕННЫЙ ВЫПУСК（号外）",
     layout: "horizontal",
     warPeriod: "1939年9月〜1945年9月"
   },

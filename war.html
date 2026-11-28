@@ -74,6 +74,9 @@
   #paper .infoline{display:flex;justify-content:space-between;flex-wrap:wrap;gap:1px 6px;font-size:13px;line-height:1.3;border-bottom:1px solid var(--rule);padding:3px 2px 4px;color:var(--ink2)}
   /* 日付の西暦は「字幕」：元号が主表記で、西暦は現代読者向けの補助として小さく従属的に添える */
   #paper .dateSub{font-size:.8em;color:var(--ink2);letter-spacing:0}
+  /* 日本語字幕（カッコ表記）：他国編の外国語表記に添える日本語は、日付の西暦字幕（.dateSub）と
+     同じ扱いで小さく従属的に表示する（2026-11-28、andy 指示） */
+  #paper .jaSub{font-size:.8em;color:var(--ink2);letter-spacing:0;font-weight:400}
   /* 縦書き内の数字・英字（2026-11-28、andy 指摘で追加）：横向きで読みにくい問題への対処。
      数字2桁までは縦中横（横組み1文字分）、3桁以上と英字は1字ずつ正立させる */
   .tcy{text-combine-upright:all}
@@ -470,6 +473,14 @@ function vText(s){
 function esc(s){
   return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
+// 外国語表記の末尾にある（日本語）を、日本語字幕として字幕サイズ（.jaSub＝0.8em、
+// 日付の西暦字幕 .dateSub と同じ扱い）で包む。カッコ表記で統一する（2026-11-28、andy 指示）
+function parenSub(s){
+  const t = String(s == null ? "" : s);
+  const m = t.match(/^(.*?)(（[^（）]*）)$/);
+  if (!m) return esc(t);
+  return esc(m[1]) + `<span class="jaSub">${esc(m[2])}</span>`;
+}
 
 // ===== ビューア =====
 function openViewer(idx){ cur = idx; buildTimeline(); buildBackNumbers(); render(); syncUrl(); }
@@ -480,15 +491,15 @@ function render(){
   $("slider").max = ISS.length-1; $("slider").value = cur;
   $("prevBtn").disabled = cur===0; $("nextBtn").disabled = cur===ISS.length-1;
   // 題字（マストヘッド）：紙名・小表記・脇の小表記は版共通定義から出す
-  $("paperName").textContent = ED.paperName;
-  $("paperNameSub").textContent = ED.paperNameSub || (ED.country==="jp" ? "THE WAR DAILY" : "");
-  $("mastLeft").innerHTML = (ED.mastSide || (ED.country==="jp" ? ["第二次大戦","日本版"] : ["第二次世界大戦", ED.countryName+"版"])).map(esc).join("<br>");
+  $("paperName").innerHTML = parenSub(ED.paperName);
+  $("paperNameSub").innerHTML = parenSub(ED.paperNameSub || (ED.country==="jp" ? "THE WAR DAILY" : ""));
+  $("mastLeft").innerHTML = (ED.mastSide || (ED.country==="jp" ? ["第二次大戦","日本版"] : ["第二次世界大戦", ED.countryName+"版"])).map(parenSub).join("<br>");
   $("paper").className = "";
   $("paper").id = "paper";
   if (!isVertical()) $("paper").classList.add("hz");
   $("paper").classList.add("pf-" + ED.country);
   $("paper").classList.toggle("extra", !!it.extra);
-  $("extraBand").textContent = ED.extraLabel || "号外";
+  $("extraBand").innerHTML = parenSub(ED.extraLabel || "号外");
   // 発行情報行：日付は題字脇には置かず、二重線の下のこの行に一本化する（2026-11-28、andy 指示）
   if (kind==="normal"){
     if (ED.country==="jp"){
@@ -517,8 +528,17 @@ function render(){
     $("headlineSubH").classList.add("hidden");
     $("coverPhotoH").classList.add("hidden");
     $("bodyH").classList.add("hidden");
-    $("vHead").innerHTML = vText(it.cover.headline);
-    $("headlineSub").textContent = it.cover.headlineSub || "";
+    if (ED.country==="jp"){
+      $("vHead").innerHTML = vText(it.cover.headline);
+      $("headlineSub").style.display = "";
+      $("headlineSub").textContent = it.cover.headlineSub || "";
+    } else {
+      // 他国編（中国編）の見出し字幕は別行にせず、見出しの末尾へカッコ表記・字幕サイズで統一する（2026-11-28、andy 指示）
+      $("vHead").innerHTML = vText(it.cover.headline) +
+        (it.cover.headlineSub ? `<span class="jaSub">（${vText(it.cover.headlineSub)}）</span>` : "");
+      $("headlineSub").style.display = "none";
+      $("headlineSub").textContent = "";
+    }
     $("paper").classList.toggle("nophoto", !it.photo);
     if (it.photo){
       $("coverPhoto").classList.remove("hidden");
@@ -534,7 +554,7 @@ function render(){
     for (const [key,label] of secs){
       const paras = it.body[key];
       if (!paras || !paras.length) continue;
-      html += `<div class="vSec"><div class="secHeadV">${esc(label)}</div>` + paras.map(p=>`<p>${vText(p)}</p>`).join("") + `</div>`;
+      html += `<div class="vSec"><div class="secHeadV">${parenSub(label)}</div>` + paras.map(p=>`<p>${vText(p)}</p>`).join("") + `</div>`;
     }
     // 本文の置き場所：写真のある号は見出しの下の本文欄へ。写真のない号は見出しのすぐ左から
     // 本文が始まる組版にするため、表紙の行の中へ入れる（2026-11-28、andy 決定）
@@ -554,11 +574,13 @@ function render(){
     $("headlineSub").classList.add("hidden");
     $("bodyV").classList.add("hidden");
     $("hHead").classList.remove("hidden");
-    $("headlineSubH").classList.remove("hidden");
+    $("headlineSubH").classList.add("hidden");
     $("bodyH").classList.remove("hidden");
     $("paper").classList.remove("nophoto");
-    $("hHead").textContent = it.cover.headline;
-    $("headlineSubH").textContent = it.cover.headlineSub || "";
+    // 見出しの日本語字幕は別行にせず、見出しの末尾へカッコ表記・字幕サイズで統一する（2026-11-28、andy 指示）
+    $("hHead").innerHTML = esc(it.cover.headline) +
+      (it.cover.headlineSub ? ` <span class="jaSub">（${esc(it.cover.headlineSub)}）</span>` : "");
+    $("headlineSubH").textContent = "";
     if (it.photo){
       $("coverPhotoH").classList.remove("hidden");
       $("photoImgH").src = it.photo.src;
@@ -573,7 +595,7 @@ function render(){
     for (const [key,label] of secs){
       const paras = it.body[key];
       if (!paras || !paras.length) continue;
-      html += `<div class="secHeadH">${esc(label)}</div>` + paras.map(p=>`<p>${esc(p)}</p>`).join("");
+      html += `<div class="secHeadH">${parenSub(label)}</div>` + paras.map(p=>`<p>${esc(p)}</p>`).join("");
     }
     $("bodyH").innerHTML = html;
   }

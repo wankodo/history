@@ -10,11 +10,11 @@ globalThis.WAR_EDITIONS = globalThis.WAR_EDITIONS || {};
 WAR_EDITIONS["ww2-it"] = {
   EDITION: {
     war: "ww2", country: "it", countryName: "イタリア", lang: "it", subLang: "ja",
-    paperName: "La Cronaca d'Italia",
-    paperNameSub: "ROMA",
-    mastSide: ["Seconda guerra mondiale", "Edizione italiana"],
-    sectionLabels: { war: "La Guerra", economy: "Economia", food: "Approvvigionamenti", tech: "Tecnica Militare" },
-    extraLabel: "EDIZIONE STRAORDINARIA",
+    paperName: "La Cronaca d'Italia（イタリア年代記）",
+    paperNameSub: "ROMA（ローマ）",
+    mastSide: ["Seconda guerra mondiale（第二次世界大戦）", "Edizione italiana（イタリア版）"],
+    sectionLabels: { war: "La Guerra（戦争）", economy: "Economia（経済）", food: "Approvvigionamenti（補給）", tech: "Tecnica Militare（軍事技術）" },
+    extraLabel: "EDIZIONE STRAORDINARIA（号外）",
     layout: "horizontal",
     warPeriod: "1940年6月〜1945年"
   },

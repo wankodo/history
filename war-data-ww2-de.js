@@ -10,11 +10,11 @@ globalThis.WAR_EDITIONS = globalThis.WAR_EDITIONS || {};
 WAR_EDITIONS["ww2-de"] = {
   EDITION: {
     war: "ww2", country: "de", countryName: "ドイツ", lang: "de", subLang: "ja",
-    paperName: "Die Kriegschronik",
-    paperNameSub: "BERLIN",
-    mastSide: ["Zweiter Weltkrieg", "Deutsche Ausgabe"],
-    sectionLabels: { war: "Von den Fronten", economy: "Wirtschaft", food: "Ernährung", tech: "Wehrtechnik" },
-    extraLabel: "Extrablatt",
+    paperName: "Die Kriegschronik（戦争年代記）",
+    paperNameSub: "BERLIN（ベルリン）",
+    mastSide: ["Zweiter Weltkrieg（第二次世界大戦）", "Deutsche Ausgabe（ドイツ版）"],
+    sectionLabels: { war: "Von den Fronten（前線から）", economy: "Wirtschaft（経済）", food: "Ernährung（食料）", tech: "Wehrtechnik（軍事技術）" },
+    extraLabel: "Extrablatt（号外）",
     layout: "horizontal",
     warPeriod: "1939年9月〜1945年5月"
   },
