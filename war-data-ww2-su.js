@@ -15,7 +15,7 @@ WAR_EDITIONS["ww2-su"] = {
     paperName: "Советский вестник",
     paperNameSub: "МОСКВА",
     mastSide: ["Вторая мировая война", "Советское издание"],
-    sectionLabels: { war: "戦況", economy: "経済", food: "食料・生活", tech: "技術" },
+    sectionLabels: { war: "На фронтах（戦況）", economy: "Народное хозяйство（経済）", food: "Снабжение（食料・生活）", tech: "Военная техника（技術）" },
     extraLabel: "ЭКСТРЕННЫЙ ВЫПУСК（号外）",
     layout: "horizontal",
     warPeriod: "1939年9月〜1945年9月"

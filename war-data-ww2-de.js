@@ -13,7 +13,7 @@ WAR_EDITIONS["ww2-de"] = {
     paperName: "Die Kriegschronik",
     paperNameSub: "BERLIN",
     mastSide: ["Zweiter Weltkrieg", "Deutsche Ausgabe"],
-    sectionLabels: { war: "戦況", economy: "経済", food: "食料・生活", tech: "技術" },
+    sectionLabels: { war: "Von den Fronten（戦況）", economy: "Wirtschaft（経済）", food: "Ernährung（食料・生活）", tech: "Wehrtechnik（技術）" },
     extraLabel: "Extrablatt（号外）",
     layout: "horizontal",
     warPeriod: "1939年9月〜1945年5月"

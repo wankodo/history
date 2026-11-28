@@ -13,7 +13,7 @@ WAR_EDITIONS["ww2-gb"] = {
     paperName: "The War Chronicle",
     paperNameSub: "LONDON",
     mastSide: ["Second World War", "British Edition"],
-    sectionLabels: { war: "戦況", economy: "経済", food: "食料・生活", tech: "技術" },
+    sectionLabels: { war: "War News（戦況）", economy: "Economy（経済）", food: "Food & Home Front（食料・生活）", tech: "New Weapons（技術）" },
     extraLabel: "EXTRA（号外）",
     layout: "horizontal",
     warPeriod: "1939年9月〜1945年9月"

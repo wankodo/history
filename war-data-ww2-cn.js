@@ -13,7 +13,7 @@ WAR_EDITIONS["ww2-cn"] = {
     paperName: "抗戰日報",
     paperNameSub: "KANGZHAN RIBAO",
     mastSide: ["第二次世界大戰", "中國版"],
-    sectionLabels: { war: "戦況", economy: "経済", food: "食料・生活", tech: "技術" },
+    sectionLabels: { war: "戰況（戦況）", economy: "經濟（経済）", food: "糧食・生活（食料・生活）", tech: "技術・兵器（技術）" },
     extraLabel: "號外（号外）",
     layout: "vertical",
     warPeriod: "1937年7月〜1945年9月"

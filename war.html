@@ -74,10 +74,12 @@
   /* 発行情報行（二重線と一本線の間）：2行が間延びしないよう行間をしっかり詰める（2026-11-28、andy 指示） */
   #paper .infoline{display:flex;justify-content:space-between;flex-wrap:wrap;gap:1px 6px;font-size:13px;line-height:1.3;border-bottom:1px solid var(--rule);padding:3px 2px 4px;color:var(--ink2)}
   /* 日付の西暦は「字幕」：元号が主表記で、西暦は現代読者向けの補助として小さく従属的に添える */
-  #paper .dateSub{font-size:.8em;color:var(--ink2);letter-spacing:0}
+  /* 字幕類（.dateSub／.jaSub）は周りと同じフォントを使う：font-family は継承とし、
+     字幕だけ別のフォント（UI側のフォント等）に切り替わらないようにする（2026-11-28、andy ルール） */
+  #paper .dateSub{font-size:.8em;color:var(--ink2);letter-spacing:0;font-family:inherit}
   /* 日本語字幕（カッコ表記）：他国編の外国語表記に添える日本語は、日付の西暦字幕（.dateSub）と
      同じ扱いで小さく従属的に表示する（2026-11-28、andy 指示） */
-  #paper .jaSub{font-size:.8em;color:var(--ink2);letter-spacing:0;font-weight:400}
+  #paper .jaSub{font-size:.8em;color:var(--ink2);letter-spacing:0;font-weight:400;font-family:inherit}
   /* 縦書き内の数字・英字（2026-11-28、andy 指摘で追加）：横向きで読みにくい問題への対処。
      数字2桁までは縦中横（横組み1文字分）、3桁以上と英字は1字ずつ正立させる */
   .tcy{text-combine-upright:all}
@@ -290,7 +292,7 @@ footer .credit{margin:8px 0 0;font-size:13px;color:#fff}
   </section>
 </main>
 
-<script src="war-weeks.js?v=20261128c"></script>
+<script src="war-weeks.js?v=20261128d"></script>
 <script>
 "use strict";
 // ===== ビューア：WW2 は7か国編が実データ。他編はデータを遅延読み込みする =====
@@ -314,7 +316,7 @@ let timer = null, syncTimer = null;
 // 号データの読み込みには版数クエリを付ける：データファイルを差し替えてもブラウザの
 // キャッシュに残った旧版が表示される事故（欄名の旧表記が実機で出た等）を防ぐため。
 // データ側を変更したら、この版数を上げること（2026-11-28）。
-const DATA_VER = "20261128c";
+const DATA_VER = "20261128d";
 function loadEdition(code){
   if (EDITIONS["ww2-"+code]) return Promise.resolve(EDITIONS["ww2-"+code]);
   if (LOADING[code]) return LOADING[code];

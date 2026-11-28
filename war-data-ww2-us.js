@@ -13,7 +13,7 @@ WAR_EDITIONS["ww2-us"] = {
     paperName: "The National Herald",
     paperNameSub: "WASHINGTON",
     mastSide: ["Second World War", "American Edition"],
-    sectionLabels: { war: "戦況", economy: "経済", food: "食料・生活", tech: "技術" },
+    sectionLabels: { war: "War News（戦況）", economy: "Business（経済）", food: "Farm & Food（食料・生活）", tech: "Science & Arms（技術）" },
     extraLabel: "EXTRA（号外）",
     layout: "horizontal",
     warPeriod: "1941年12月〜1945年9月"

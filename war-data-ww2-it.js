@@ -13,7 +13,7 @@ WAR_EDITIONS["ww2-it"] = {
     paperName: "La Cronaca d'Italia",
     paperNameSub: "ROMA",
     mastSide: ["Seconda guerra mondiale", "Edizione italiana"],
-    sectionLabels: { war: "戦況", economy: "経済", food: "食料・生活", tech: "技術" },
+    sectionLabels: { war: "La Guerra（戦況）", economy: "Economia（経済）", food: "Approvvigionamenti（食料・生活）", tech: "Tecnica Militare（技術）" },
     extraLabel: "EDIZIONE STRAORDINARIA（号外）",
     layout: "horizontal",
     warPeriod: "1940年6月〜1945年"
