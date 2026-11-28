@@ -7,11 +7,11 @@
 <title>戦争史｜歴史系ツール集</title>
 <link rel="icon" type="image/svg+xml" href="favicon-war.svg">
 <link rel="apple-touch-icon" href="favicon.png">
-<meta name="description" content="戦争と国を選ぶと、その国の目線で戦争を週刊の新聞として追えるコーナーです。戦況だけでなく経済・食料・技術の変化も、その国の公式資料をもとに報じます。第二次世界大戦の7か国編（完結）に加え、第一次世界大戦の8か国編を公開中です（ロシア編は順次公開）。">
+<meta name="description" content="戦争と国を選ぶと、その国の目線で戦争を週刊の新聞として追えるコーナーです。戦況だけでなく経済・食料・技術の変化も、その国の公式資料をもとに報じます。第二次世界大戦の7か国編と第一次世界大戦の9か国編を公開中です（いずれも本編・エピローグとも完結）。">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="歴史系ツール集">
 <meta property="og:title" content="戦争史">
-<meta property="og:description" content="戦争と国を選ぶと、その国の目線で戦争を週刊の新聞として追えるコーナーです。戦況だけでなく経済・食料・技術の変化も、その国の公式資料をもとに報じます。第二次世界大戦の7か国編（完結）に加え、第一次世界大戦の8か国編を公開中です（ロシア編は順次公開）。">
+<meta property="og:description" content="戦争と国を選ぶと、その国の目線で戦争を週刊の新聞として追えるコーナーです。戦況だけでなく経済・食料・技術の変化も、その国の公式資料をもとに報じます。第二次世界大戦の7か国編と第一次世界大戦の9か国編を公開中です（いずれも本編・エピローグとも完結）。">
 <meta property="og:url" content="https://wankodo.github.io/history/war.html">
 <meta property="og:image" content="https://wankodo.github.io/history/ogp-top.png">
 <meta property="og:image:width" content="1200">
@@ -213,7 +213,7 @@ footer .credit{margin:8px 0 0;font-size:13px;color:#fff}
 <div class="sitebar"><div class="sb-in"><a class="sb-name" href="index.html">歴史系ツール集</a><span style="display:flex;align-items:center;gap:12px;"><a href="https://wankodo.github.io/">よろず道具箱</a></span></div></div>
 <header class="site">
   <h1>戦争史</h1>
-  <span class="sub">戦争と国を選ぶと、その国の目線で戦争を追える新聞です ― 第二次世界大戦・7か国編（完結）と第一次世界大戦・8か国編を公開中</span>
+  <span class="sub">戦争と国を選ぶと、その国の目線で戦争を追える新聞です ― 第二次世界大戦・7か国編と第一次世界大戦・9か国編を公開中（いずれも完結）</span>
 </header>
 <main>
   <!-- 状態1：戦争の選択 -->
@@ -321,7 +321,7 @@ const COUNTRIES_WW1 = [
   { code:"at", name:"オーストリア＝ハンガリー", ready:true, period:"1914年7月〜1918年11月", catch:"多民族帝国の戦争と、その崩壊まで", cnt:"全121号" },
   { code:"gb", name:"イギリス", ready:true, period:"1914年8月〜1918年11月", catch:"大陸への大軍派遣と、海の戦争", cnt:"全137号" },
   { code:"fr", name:"フランス", ready:true, period:"1914年8月〜1918年11月", catch:"国土そのものが主戦場になった国の内側", cnt:"全134号" },
-  { code:"ru", name:"ロシア", ready:false, period:"1914年8月〜1918年3月", catch:"帝国の戦争と、革命による離脱まで", cnt:"準備中" },
+  { code:"ru", name:"ロシア", ready:true, period:"1914年8月〜1918年3月", catch:"帝国の戦争と、革命による離脱まで", cnt:"全98号" },
   { code:"us", name:"アメリカ", ready:true, period:"1917年4月〜1918年11月", catch:"中立の年月と、遅れて来た大軍", cnt:"全49号" },
   { code:"jp", name:"日本", ready:true, period:"1914年8月〜1918年11月", catch:"遠い戦争と、戦争景気に沸く内側", cnt:"全42号" },
   { code:"it", name:"イタリア", ready:true, period:"1915年5月〜1918年11月", catch:"参戦の駆け引きと、山岳戦線の死闘", cnt:"全76号" },
@@ -341,7 +341,7 @@ let timer = null, syncTimer = null;
 // 号データの読み込みには版数クエリを付ける：データファイルを差し替えてもブラウザの
 // キャッシュに残った旧版が表示される事故（欄名の旧表記が実機で出た等）を防ぐため。
 // データ側を変更したら、この版数を上げること（2026-11-28）。
-const DATA_VER = "20261128p";
+const DATA_VER = "20261128q";
 function loadEdition(war, code){
   const key = war + "-" + code;
   if (EDITIONS[key]) return Promise.resolve(EDITIONS[key]);
