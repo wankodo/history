@@ -7,11 +7,11 @@
 <title>戦争史｜歴史系ツール集</title>
 <link rel="icon" type="image/svg+xml" href="favicon-war.svg">
 <link rel="apple-touch-icon" href="favicon.png">
-<meta name="description" content="戦争と国を選ぶと、その国の目線で戦争を新聞として追えるコーナーです。戦況だけでなく経済・食料・技術の変化も、その国の公式資料をもとに報じます。第二次世界大戦の7か国編と第一次世界大戦の9か国編、日露戦争・日清戦争・南北戦争の各2か国編を公開中です。">
+<meta name="description" content="戦争と国を選ぶと、その国の目線で戦争を新聞として追えるコーナーです。戦況だけでなく経済・食料・技術の変化も、その国の公式資料をもとに報じます。第二次世界大戦の7か国編と第一次世界大戦の9か国編、日露戦争・日清戦争・南北戦争・普仏戦争の各2か国編を公開中です。">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="歴史系ツール集">
 <meta property="og:title" content="戦争史">
-<meta property="og:description" content="戦争と国を選ぶと、その国の目線で戦争を新聞として追えるコーナーです。戦況だけでなく経済・食料・技術の変化も、その国の公式資料をもとに報じます。第二次世界大戦の7か国編と第一次世界大戦の9か国編、日露戦争・日清戦争・南北戦争の各2か国編を公開中です。">
+<meta property="og:description" content="戦争と国を選ぶと、その国の目線で戦争を新聞として追えるコーナーです。戦況だけでなく経済・食料・技術の変化も、その国の公式資料をもとに報じます。第二次世界大戦の7か国編と第一次世界大戦の9か国編、日露戦争・日清戦争・南北戦争・普仏戦争の各2か国編を公開中です。">
 <meta property="og:url" content="https://wankodo.github.io/history/war.html">
 <meta property="og:image" content="https://wankodo.github.io/history/ogp-top.png">
 <meta property="og:image:width" content="1200">
@@ -213,7 +213,7 @@ footer .credit{margin:8px 0 0;font-size:13px;color:#fff}
 <div class="sitebar"><div class="sb-in"><a class="sb-name" href="index.html">歴史系ツール集</a><span style="display:flex;align-items:center;gap:12px;"><a href="https://wankodo.github.io/">よろず道具箱</a></span></div></div>
 <header class="site">
   <h1>戦争史</h1>
-  <span class="sub">戦争と国を選ぶと、その国の目線で戦争を追える新聞です ― 第二次世界大戦・第一次世界大戦・日露戦争・日清戦争・南北戦争を公開中</span>
+  <span class="sub">戦争と国を選ぶと、その国の目線で戦争を追える新聞です ― 第二次世界大戦・第一次世界大戦・日露戦争・日清戦争・南北戦争・普仏戦争を公開中</span>
 </header>
 <main>
   <!-- 状態1：戦争の選択 -->
@@ -311,6 +311,7 @@ const WARS = [
   { code:"rj", name:"日露戦争", years:"1904–1905年", desc:"日本とロシア、両国の目線で追う。月刊と号外の新聞。", cnt:"2か国編を公開中", gran:"month" },
   { code:"sj", name:"日清戦争", years:"1894–1895年", desc:"日本と清、両国の目線で追う。月刊と号外の新聞。", cnt:"2か国編を公開中", gran:"month" },
   { code:"acw", name:"南北戦争", years:"1861–1865年", desc:"合衆国と連合国、両陣営の目線で追う。月刊と号外の新聞。", cnt:"2か国編を公開中", gran:"month" },
+  { code:"fp", name:"普仏戦争", years:"1870–1871年", desc:"フランスとプロイセン／ドイツ、両国の目線で追う。月刊と号外の新聞。", cnt:"2か国編を公開中", gran:"month" },
   { code:"ww1", name:"第一次世界大戦", years:"1914–1918年", desc:"9か国の新聞で読み比べる。", cnt:"9か国編を公開中（完結）", gran:"week" },
   { code:"ww2", name:"第二次世界大戦", years:"1939–1945年（日本・中国は1937年開始）", desc:"7か国の目線で追う。", cnt:"7か国編を公開中（完結）", gran:"week" }
 ];
@@ -322,6 +323,10 @@ COUNTRIES_BY_WAR.sj = [
 COUNTRIES_BY_WAR.acw = [
   { code:"us", name:"アメリカ（合衆国）", ready:true, period:"1861年4月〜1865年6月", catch:"連邦の維持から奴隷解放へ、戦争目的が変わっていく内側", cnt:"公開中：プロローグ2号＋本編40号＋エピローグ2号" },
   { code:"cs", name:"アメリカ連合国", ready:true, period:"1861年4月〜1865年5月", catch:"州権と独立を掲げ、物資の尽きるまで戦った内側", cnt:"公開中：プロローグ2号＋本編28号＋エピローグ2号" }
+];
+COUNTRIES_BY_WAR.fp = [
+  { code:"fr", name:"フランス", ready:true, period:"1870年7月〜1871年5月", catch:"帝政の崩壊とパリ包囲、コミューンへ至る内側", cnt:"公開中：プロローグ2号＋本編13号＋エピローグ2号" },
+  { code:"de", name:"プロイセン／ドイツ", ready:true, period:"1870年7月〜1871年5月", catch:"セダンの勝利からヴェルサイユでの帝国宣言へ至る内側", cnt:"公開中：プロローグ2号＋本編14号＋エピローグ2号" }
 ];
 COUNTRIES_BY_WAR.rj = [
   { code:"jp", name:"日本", ready:true, period:"1904年2月〜1905年9月", catch:"列強ロシアに挑み、国民総動員で戦った戦争の内側", cnt:"公開中：プロローグ2号＋本編28号＋エピローグ2号" },
