@@ -1384,7 +1384,7 @@ themeToggle.addEventListener("click", () => {
 const dark = document.documentElement.getAttribute("data-theme") !== "dark";
 if(dark){ document.documentElement.setAttribute("data-theme","dark"); }
 else { document.documentElement.removeAttribute("data-theme"); }
-try{ localStorage.setItem("art-theme", dark ? "dark" : "light"); }catch(e){}
+try{ localStorage.setItem("creators-theme", dark ? "dark" : "light"); }catch(e){}
 syncThemeBtn();
 restyleMap();
 });
