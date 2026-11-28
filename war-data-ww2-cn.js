@@ -10,10 +10,10 @@ globalThis.WAR_EDITIONS = globalThis.WAR_EDITIONS || {};
 WAR_EDITIONS["ww2-cn"] = {
   EDITION: {
     war: "ww2", country: "cn", countryName: "中国", lang: "zh", subLang: "ja",
-    paperName: "抗戰日報（抗戦日報）",
+    paperName: "抗戰日報",
     paperNameSub: "KANGZHAN RIBAO（カンジャン・リーバオ）",
     mastSide: ["第二次世界大戰（第二次世界大戦）", "中國版（中国版）"],
-    sectionLabels: { war: "戰況（戦況）", economy: "經濟（経済）", food: "糧食・生活（食料・生活）", tech: "技術・兵器（技術・兵器）" },
+    sectionLabels: { war: "戦況", economy: "経済", food: "食料・生活", tech: "技術" },
     extraLabel: "號外（号外）",
     layout: "vertical",
     warPeriod: "1937年7月〜1945年9月"

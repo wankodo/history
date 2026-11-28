@@ -505,16 +505,15 @@ function render(){
     if (ED.country==="jp"){
       $("infoLeft").innerHTML = issueName(cur)+"　"+weekRangeEraSub(it.week);
     } else {
-      $("infoLeft").innerHTML = issueName(cur)+"　"+esc(weekRangeLocal(it.week, ED.lang)) +
-        ` <span class="dateSub">（${weekRange(it.week)}）</span>`;
+      // 他国編の日付は現地語のみ（日本語字幕は付けない。2026-11-28、andy 訂正「日付も」）
+      $("infoLeft").innerHTML = issueName(cur)+"　"+esc(weekRangeLocal(it.week, ED.lang));
     }
     $("infoRight").textContent = "戦争"+(it.week+1)+"週目";
   } else {
     if (ED.country==="jp"){
       $("infoLeft").innerHTML = issueName(cur)+"　対象期間："+periodLabelEraSub(it.period);
     } else {
-      $("infoLeft").innerHTML = issueName(cur)+"　対象期間："+esc(periodLabelLocal(it.period, ED.lang)) +
-        ` <span class="dateSub">（${periodLabelJa(it.period)}）</span>`;
+      $("infoLeft").innerHTML = issueName(cur)+"　対象期間："+esc(periodLabelLocal(it.period, ED.lang));
     }
     $("infoRight").textContent = kind==="prologue" ? "ダイジェスト号（本編開始前）" : "ダイジェスト号（終戦後）";
   }

@@ -10,10 +10,10 @@ globalThis.WAR_EDITIONS = globalThis.WAR_EDITIONS || {};
 WAR_EDITIONS["ww2-gb"] = {
   EDITION: {
     war: "ww2", country: "gb", countryName: "イギリス", lang: "en", subLang: "ja",
-    paperName: "The War Chronicle（戦争年代記）",
+    paperName: "The War Chronicle",
     paperNameSub: "LONDON（ロンドン）",
     mastSide: ["Second World War（第二次世界大戦）", "British Edition（イギリス版）"],
-    sectionLabels: { war: "War News（戦況）", economy: "Economy（経済）", food: "Food & Home Front（食料・銃後）", tech: "New Weapons（新兵器）" },
+    sectionLabels: { war: "戦況", economy: "経済", food: "食料・生活", tech: "技術" },
     extraLabel: "EXTRA（号外）",
     layout: "horizontal",
     warPeriod: "1939年9月〜1945年9月"

@@ -10,10 +10,10 @@ globalThis.WAR_EDITIONS = globalThis.WAR_EDITIONS || {};
 WAR_EDITIONS["ww2-us"] = {
   EDITION: {
     war: "ww2", country: "us", countryName: "アメリカ", lang: "en", subLang: "ja",
-    paperName: "The National Herald（国民の先触れ）",
+    paperName: "The National Herald",
     paperNameSub: "WASHINGTON（ワシントン）",
     mastSide: ["Second World War（第二次世界大戦）", "American Edition（アメリカ版）"],
-    sectionLabels: { war: "War News（戦況）", economy: "Business（経済）", food: "Farm & Food（農業・食料）", tech: "Science & Arms（科学・兵器）" },
+    sectionLabels: { war: "戦況", economy: "経済", food: "食料・生活", tech: "技術" },
     extraLabel: "EXTRA（号外）",
     layout: "horizontal",
     warPeriod: "1941年12月〜1945年9月"
